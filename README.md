@@ -21,6 +21,7 @@ X <- lapply(1:3, function(i) {
 })
 X <- do.call(rbind, X)
 parameters <- list(tau = 0.9, t = function() {0.75})
+library(supc)
 X.supc <- supc1(X, parameters)
 plot(X, col = 1:9) # fig.1(a) of the paper
 plot(X.supc, col = 1:9) # fig.1(d) of the paper
