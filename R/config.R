@@ -17,7 +17,7 @@ dist.parallelization <- function(i) {
 
 .dist <- function(x) {
   switch(.env$dist.mode[1],
-    "stat" = stats::dist(x, method = "euclidean", diag = FALSE, upper = FALSE, p = 2),
+    "stats" = stats::dist(x, method = "euclidean", diag = FALSE, upper = FALSE, p = 2),
     "amap" = amap::Dist(x, method = "euclidean", nbproc = .env$dist.parallelization, diag = FALSE, upper = FALSE),
     "gputools" = gputools::gpuDist(x, method = "euclidean", p = 2.0),
     stop("Unknown mode. Please use `dist.mode` to setup the function to compute distance matrix")
