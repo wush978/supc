@@ -8,3 +8,5 @@ Maintainer: Wush Wu <wush978@gmail.com>
 Description: Implements the self-updating process clustering algorithms.
 License: GPL (>= 3)
 LazyData: TRUE
+Imports: stats
+Suggests: amap, gputools
