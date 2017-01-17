@@ -7,13 +7,7 @@ matrix:
       sudo: false
     - r: release
       os: linux
-      sudo: true
-      addons:
-        apt:
-          packages:
-            - nvidia-cuda-toolkit
-      before_install:
-        - Rscript -e "install.packages('gputools')"
+      sudo: false
     - r: devel
       os: linux
       sudo: false
