@@ -1,22 +1,22 @@
 language: r
-sudo: true
-
-r:
-  - oldrel
-  - release
-  - devel
-os:
-  - linux
-  - osx
 
 matrix:
-  exclude:
-  - r: oldrel
-    os: osx
-  - r: devel
-    os: osx
+  include:
+    - r: oldrel
+      os: linux
+      sudo: false
+    - r: release
+      os: linux
+      sudo: true
+      addons:
+        apt:
+          packages:
+            - nvidia-cuda-toolkit
+      before_install:
+        - Rscript -e "install.packages('gputools')"
+    - r: devel
+      os: linux
+      sudo: false
+    - r: release
+      os: osx
 
-addons:
-  apt:
-    packages:
-      - nvidia-cuda-toolkit
