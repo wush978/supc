@@ -1,3 +1,4 @@
+library(supc)
 set.seed(1)
 mu <- list(
   x = c(0, 2, 1, 6, 8, 7, 3, 5, 4),
