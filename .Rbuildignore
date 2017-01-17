@@ -5,3 +5,4 @@ dev-doc
 .Rhistory
 vignettes/*.html
 .travis.yml
+appveyor.yml
