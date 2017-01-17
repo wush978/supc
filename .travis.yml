@@ -6,3 +6,8 @@ r:
 os:
   - linux
   - osx
+
+addons:
+  apt:
+    packages:
+      - nividia-cuda-toolkit
