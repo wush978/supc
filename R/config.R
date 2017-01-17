@@ -3,12 +3,19 @@
 .env$dist.mode <- "stats"
 .env$dist.parallelization <- 2
 
+#'@title Configure which package is used to compute the distance matrix
+#'@param mode either \code{"stats"}, \code{"amap"}, or \code{"gputools"}.
+#'@export
 dist.mode <- function(mode = c("stats", "amap", "gputools")) {
   stopifnot(mode[1] %in% c("stats", "amap", "gputools"))
   .env$dist.mode <- mode[1]
   invisible(NULL)
 }
 
+#'@title Configure how many cores will be used to calculate the distance matrix
+#'
+#'@param i integer.
+#'@export
 dist.parallelization <- function(i) {
   stopifnot(is.integer(i))
   stopifnot(i > 0)
