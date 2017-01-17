@@ -10,4 +10,4 @@ os:
 addons:
   apt:
     packages:
-      - nividia-cuda-toolkit
+      - nvidia-cuda-toolkit
