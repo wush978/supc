@@ -1,0 +1,16 @@
+---
+title: "Reproducible Example of Self-Updating Process Clustering"
+output: 
+  rmarkdown::html_vignette:
+    number_sections: yes
+    toc: yes
+bibliography: supc.bib
+author: Wush Wu
+vignette: >
+  %\VignetteIndexEntry{supc}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+This document shows how to reproduce the simulations in @doi:10.1080/00949655.2015.1049605.
+
