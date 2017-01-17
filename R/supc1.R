@@ -15,6 +15,22 @@
   x
 }
 
+#'@title Self-Updating Process Clustering
+#'
+#'@description TODO
+#'
+#'@param x matrix.
+#'@param parameters list.
+#'@param implementation either \code{"R"} or \code{"cpp"}.
+#'@param tolerance numeric value.
+#'
+#'@details
+#'TODO
+#'
+#'@export
+#'@examples
+#'print("hello example")
+#'
 supc1 <- function(x, parameters = list(tau = 3.5, t = function() {0.75}), implementation = c("R", "cpp"), tolerance = 1e-4) {
   switch(
     implementation[1],
