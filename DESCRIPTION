@@ -12,8 +12,9 @@ Imports:
     stats
 Suggests:
     amap,
-    gputools,
     knitr,
     rmarkdown
+Enhances:
+    gputools
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
