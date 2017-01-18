@@ -24,15 +24,22 @@
 #'@param implementation either \code{"R"} or \code{"cpp"}.
 #'@param tolerance numeric value.
 #'
+#'
+#'
 #'@details
 #'TODO
 #'
-#'@export
+#'@return
+#'\code{supc1} returns an object of \link{class} "supc".
+#'
+#'\item{One}{First item}
+#'\item{Two}{Second item}
+#'
 #'@examples
 #'print("hello example")
-#'
+#'@export
 supc1 <- function(x, parameters = list(tau = 3.5, t = function() {0.75}), implementation = c("R", "cpp"), tolerance = 1e-4) {
-  switch(
+  retval <- switch(
     implementation[1],
     "R" = {
       .supc1.R(x, parameters, tolerance)

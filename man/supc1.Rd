@@ -16,6 +16,12 @@ supc1(x, parameters = list(tau = 3.5, t = function() {     0.75 }),
 
 \item{tolerance}{numeric value.}
 }
+\value{
+\code{supc1} returns an object of \link{class} "supc".
+
+\item{One}{First item}
+\item{Two}{Second item}
+}
 \description{
 TODO
 }
@@ -24,6 +30,5 @@ TODO
 }
 \examples{
 print("hello example")
-
 }
 
