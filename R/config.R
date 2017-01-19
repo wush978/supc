@@ -30,3 +30,7 @@ dist.parallelization <- function(i) {
     stop("Unknown mode. Please use `dist.mode` to setup the function to compute distance matrix")
   )
 }
+
+#'@importFrom Rcpp loadRcppModules
+#'@useDynLib supc
+.onLoad <- function(libname, pkgname) { }

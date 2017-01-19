@@ -9,7 +9,10 @@
     diag(f) <- exp(-0 / .T)
     f <- f / colSums(f)
     .x <- f %*% x
-    if (sum(abs(.x - x)) < tolerance) break
+    if (sum(abs(.x - x)) < tolerance) {
+      attr(x, "dist") <- d
+      break
+    }
     x <- .x
   }
   x
@@ -39,7 +42,7 @@
 #'print("hello example")
 #'@export
 supc1 <- function(x, parameters = list(tau = 3.5, t = function() {0.75}), implementation = c("R", "cpp"), tolerance = 1e-4) {
-  retval <- switch(
+  cl.raw <- switch(
     implementation[1],
     "R" = {
       .supc1.R(x, parameters, tolerance)
@@ -48,4 +51,13 @@ supc1 <- function(x, parameters = list(tau = 3.5, t = function() {0.75}), implem
       stop("TODO")
     },
     stop("unknown implementation"))
+  cl <- .clusterize(attr(cl.raw, "dist"), tolerance)
+  cl.group <- split(seq_len(nrow(cl.raw)), cl)
+  cl.center0 <- lapply(cl.group, function(i) {
+    apply(cl.raw[i,], 2, mean)
+  })
+  cl.center <- do.call(rbind, cl.center0)
+  retval <- list(cluster = cl, centers = cl.center, size = table(cl))
+  class(retval) <- "supc"
+  retval
 }
