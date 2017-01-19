@@ -1,7 +1,7 @@
 .env <- new.env()
 
 .env$dist.mode <- "stats"
-.env$dist.parallelization <- 2
+.env$dist.parallelization <- 2L
 
 #'@title Configure which package is used to compute the distance matrix
 #'@param mode either \code{"stats"}, \code{"amap"}, or \code{"gputools"}.
@@ -17,6 +17,9 @@ dist.mode <- function(mode = c("stats", "amap", "gputools")) {
 #'@param i integer.
 #'@export
 dist.parallelization <- function(i) {
+  if (is.numeric(i)) {
+    if (as.integer(i) == i) i <- as.integer(i) else stop("i must be an integer")
+  }
   stopifnot(is.integer(i))
   stopifnot(i > 0)
   .env$dist.parallelization <- i
