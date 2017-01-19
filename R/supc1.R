@@ -41,20 +41,17 @@
 #'@examples
 #'print("hello example")
 #'@export
-supc1 <- function(x, parameters = list(tau = 3.5, t = function() {0.75}), implementation = c("R", "cpp"), tolerance = 1e-4) {
-  cl.raw <- switch(
-    implementation[1],
-    "R" = {
-      .supc1.R(x, parameters, tolerance)
-    },
-    "cpp" = {
-      stop("TODO")
-    },
-    stop("unknown implementation"))
+supc1 <- function(x, tau = 3.5, t = 0.75, tolerance = 1e-4) {
+  if (!is.function(t)) {
+    parameters <- list(tau = tau, t = function() {t})
+  } else {
+    parameters <- list(tau = tau, t = t)
+  }
+  cl.raw <- .supc1.R(x, parameters, tolerance)
   cl <- .clusterize(attr(cl.raw, "dist"), tolerance)
   cl.group <- split(seq_len(nrow(cl.raw)), cl)
   cl.center0 <- lapply(cl.group, function(i) {
-    apply(cl.raw[i,], 2, mean)
+    apply(cl.raw[i,,drop = FALSE], 2, mean)
   })
   cl.center <- do.call(rbind, cl.center0)
   retval <- list(cluster = cl, centers = cl.center, size = table(cl))

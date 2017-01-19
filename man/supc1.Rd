@@ -4,17 +4,16 @@
 \alias{supc1}
 \title{Self-Updating Process Clustering}
 \usage{
-supc1(x, parameters = list(tau = 3.5, t = function() {     0.75 }),
-  implementation = c("R", "cpp"), tolerance = 1e-04)
+supc1(x, tau = 3.5, t = 0.75, tolerance = 1e-04)
 }
 \arguments{
 \item{x}{matrix.}
 
+\item{tolerance}{numeric value.}
+
 \item{parameters}{list.}
 
 \item{implementation}{either \code{"R"} or \code{"cpp"}.}
-
-\item{tolerance}{numeric value.}
 }
 \value{
 \code{supc1} returns an object of \link{class} "supc".
