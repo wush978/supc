@@ -4,3 +4,4 @@
 vignettes/*.html
 src/*.o
 src/*.so
+supc.Rproj
