@@ -34,6 +34,6 @@ dist.parallelization <- function(i) {
   )
 }
 
-#'@importFrom Rcpp loadRcppModules
+#'@importFrom Rcpp sourceCpp
 #'@useDynLib supc
 .onLoad <- function(libname, pkgname) { }

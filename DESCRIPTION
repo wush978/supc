@@ -9,7 +9,8 @@ Description: Implements the self-updating process clustering algorithms.
 License: GPL (>= 3)
 LazyData: TRUE
 Imports:
-    stats
+    stats,
+    Rcpp
 Suggests:
     amap,
     knitr,

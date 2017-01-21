@@ -3,5 +3,5 @@
 export(dist.mode)
 export(dist.parallelization)
 export(supc1)
-importFrom(Rcpp,loadRcppModules)
+importFrom(Rcpp,sourceCpp)
 useDynLib(supc)
