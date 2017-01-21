@@ -20,4 +20,3 @@ LinkingTo: Rcpp(>= 0.12), BH(>= 1.62)
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 SystemRequirements: C++11
-biocViews:
