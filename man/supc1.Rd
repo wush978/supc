@@ -4,22 +4,27 @@
 \alias{supc1}
 \title{Self-Updating Process Clustering}
 \usage{
-supc1(x, tau = 3.5, t = 0.75, tolerance = 1e-04)
+supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
+  tolerance = 1e-04)
 }
 \arguments{
-\item{x}{matrix.}
+\item{x}{matrix. Each row is an instance of the data.}
+
+\item{r}{numeric vector or \code{NULL}. A parameter of the self-updating process. Please see section 2.3.1 of the paper Shiu and Chen 2016.}
+
+\item{rp}{numeric vector or \code{NULL}. If \code{r} is \code{NULL}, then \code{rp} will be used. The corresponding \code{r} is the \code{rp}-percentiles of the pairwise distances of the data. If both of \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.005, 0.01, 0.03, 0.1)}.}
+
+\item{t}{either numeric value, function, or one of \code{"static" or "dynamic"}.}
 
 \item{tolerance}{numeric value.}
-
-\item{parameters}{list.}
-
-\item{implementation}{either \code{"R"} or \code{"cpp"}.}
 }
 \value{
-\code{supc1} returns an object of \link{class} "supc".
+\code{supc1} returns a list of objects of \link{class} "supc".
 
-\item{One}{First item}
-\item{Two}{Second item}
+Each "supc" object contains the following elements:
+\item{cluster}{The cluster id of each instances.}
+\item{centers}{The center of each cluster.}
+\item{size}{The size of each cluster.}
 }
 \description{
 TODO
@@ -29,5 +34,9 @@ TODO
 }
 \examples{
 print("hello example")
+
+}
+\references{
+Shiu, Shang-Ying, and Ting-Li Chen. 2016. “On the Strengths of the Self-Updating Process Clustering Algorithm.” Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
 }
 
