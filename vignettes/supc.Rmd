@@ -14,6 +14,20 @@ vignette: >
 
 This document shows how to reproduce the simulations and examples in @doi:10.1080/00949655.2015.1049605.
 
+# Main algorithm
+
+## A single illustration
+
+## The effect of parameters
+
+# Simulation and Comparison
+
+## Data with noise
+
+## Large number of clusters
+
+## Unbalanced data
+
 # Applications
 
 ## Seeds Data
