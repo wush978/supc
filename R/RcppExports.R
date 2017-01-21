@@ -5,3 +5,15 @@
     .Call('supc_clusterize', PACKAGE = 'supc', dist, tolerance)
 }
 
+.test.dsymm <- function(d, diag, x, retval, side_is_left = TRUE) {
+    invisible(.Call('supc_test_dsymm', PACKAGE = 'supc', d, diag, x, retval, side_is_left))
+}
+
+.test.dgemm <- function(a, b, retval) {
+    invisible(.Call('supc_test_dgemm', PACKAGE = 'supc', a, b, retval))
+}
+
+.supc1.cpp.internal <- function(x, tau, RT, tolerance, dist, verbose) {
+    .Call('supc_supc1_cpp', PACKAGE = 'supc', x, tau, RT, tolerance, dist, verbose)
+}
+

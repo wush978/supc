@@ -1,5 +1,14 @@
 
-.supc1.R <- function(x, parameters, tolerance) {
+.supc1.cpp <- function(x, parameters, tolerance, verbose) {
+  stopifnot(length(parameters$tau) == length(parameters$t))
+  lapply(seq_along(parameters$tau), function(i) {
+    .current.tau <- parameters$tau[i]
+    .current.t <- parameters$t[[i]]
+    .supc1.cpp.internal(x, .current.tau, .current.t, tolerance, .dist, verbose)
+  })
+}
+
+.supc1.R <- function(x, parameters, tolerance, verbose) {
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
@@ -23,7 +32,9 @@
       diag(f) <- exp(-0 / .T)
       f <- f / colSums(f)
       .x <- f %*% x
-      if (sum(abs(.x - x)) < tolerance) {
+      .difference <- sum(abs(.x - x))
+      if (verbose) cat(sprintf("difference: %0.8f\n", .difference))
+      if (.difference < tolerance) {
         attr(x, "dist") <- d
         attr(x, "iteration") <- t
         break
@@ -108,9 +119,9 @@
 #'@references
 #'Shiu, Shang-Ying, and Ting-Li Chen. 2016. “On the Strengths of the Self-Updating Process Clustering Algorithm.” Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
 #'@export
-supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, drop = TRUE) {
+supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, drop = TRUE, implementation = c("R", "cpp"), verbose = FALSE) {
   parameters <- .get.parameters(x, r, rp, t)
-  cl.raw <- .supc1.R(x, parameters, tolerance)
+  cl.raw <- switch(implementation[1], "R" = .supc1.R(x, parameters, tolerance, verbose), "cpp" = .supc1.cpp(x, parameters, tolerance, verbose))
   retval <- lapply(
     cl.raw,
     function(.raw) {

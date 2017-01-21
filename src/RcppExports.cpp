@@ -17,3 +17,45 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_dsymm
+void test_dsymm(NumericVector d, double diag, NumericMatrix x, NumericMatrix retval, bool side_is_left);
+RcppExport SEXP supc_test_dsymm(SEXP dSEXP, SEXP diagSEXP, SEXP xSEXP, SEXP retvalSEXP, SEXP side_is_leftSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type d(dSEXP);
+    Rcpp::traits::input_parameter< double >::type diag(diagSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type retval(retvalSEXP);
+    Rcpp::traits::input_parameter< bool >::type side_is_left(side_is_leftSEXP);
+    test_dsymm(d, diag, x, retval, side_is_left);
+    return R_NilValue;
+END_RCPP
+}
+// test_dgemm
+void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval);
+RcppExport SEXP supc_test_dgemm(SEXP aSEXP, SEXP bSEXP, SEXP retvalSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type b(bSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type retval(retvalSEXP);
+    test_dgemm(a, b, retval);
+    return R_NilValue;
+END_RCPP
+}
+// supc1_cpp
+NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose);
+RcppExport SEXP supc_supc1_cpp(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP toleranceSEXP, SEXP distSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< Function >::type RT(RTSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    Rcpp::traits::input_parameter< Function >::type dist(distSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(supc1_cpp(x, tau, RT, tolerance, dist, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}

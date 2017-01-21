@@ -26,6 +26,9 @@ X.supc.ref <- structure(list(cluster = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L,
 "centers", "size"), class = "supc", iteration = 5)
 
 stopifnot(isTRUE(all.equal(X.supc, X.supc.ref)))
+X.supc <- supc1(X, r = 0.9, t = 0.75, implementation = "cpp")
+print(X.supc)
+stopifnot(isTRUE(all.equal(X.supc, X.supc.ref)))
 
 X.supc <- supc1(X, r = c(0.9, 0.9), t = c(0.75, 0.75))
 stopifnot(isTRUE(all.equal(X.supc, rep(list(X.supc.ref), 2))))
