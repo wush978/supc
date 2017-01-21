@@ -15,7 +15,8 @@
           parameters$d0 <- d
         }
       } else d <- .dist(x)
-      .T <- .current.t(t <- t + 1)
+      .T <- .current.t(t)
+      t <- t + 1
       f <- exp(-d / .T)
       f[d > .current.tau] <- 0
       f <- as.matrix(f)

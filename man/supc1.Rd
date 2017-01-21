@@ -5,7 +5,7 @@
 \title{Self-Updating Process Clustering}
 \usage{
 supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
-  tolerance = 1e-04)
+  tolerance = 1e-04, drop = TRUE)
 }
 \arguments{
 \item{x}{matrix. Each row is an instance of the data.}
@@ -16,7 +16,9 @@ supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
 
 \item{t}{either numeric value, function, or one of \code{"static" or "dynamic"}.}
 
-\item{tolerance}{numeric value.}
+\item{tolerance}{numeric value. The threshold of convergence.}
+
+\item{drop}{logical value. Whether to delete the list structure if its length is 1.}
 }
 \value{
 \code{supc1} returns a list of objects of \link{class} "supc".

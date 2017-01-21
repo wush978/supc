@@ -22,16 +22,28 @@ This document shows how to reproduce the simulations and examples in @doi:10.108
 
 The data presented in @Golub99molecularclassification shows the strength of the self-updating process that can isolate noises.
 
-First, we load the pre-processed and normalized dataset from package `multtest`(@multtest):
+First, we load the pre-processed and normalized dataset from package `supc`:
 
-```{r load-golub, eval = FALSE}
-data(golub, package = "multtest")
+```{r load-golub}
+library(supc)
+data(golub, package = "supc")
 ```
 
 ### Discover gene patterns
 
-In @doi:10.1080/00949655.2015.1049605, the parameter is: `r rawToChar(as.raw(c(0x60, 0x72, 0x20, 0x3d, 0x20, 0x34, 0x2e, 0x36, 0x60)))`. So we execute the function `supc1` with parameter `tau = 4.6`:
+In @doi:10.1080/00949655.2015.1049605, the parameter is: `r rawToChar(as.raw(c(0x60, 0x72, 0x20, 0x3d, 0x20, 0x34, 0x2e, 0x36, 0x60)))`. So we execute the function `supc1` with parameter as follow:
 
 ```{r golub-discover1, eval = FALSE}
+golub.supc <- supc1(golub, r = c(4, 4.3, 4.6, 4.7, 4.8), t = "dynamic")
 ```
 
+```{r golub-discover2}
+sum(golub.supc$size == 1)
+head(golub.supc$size, 4)
+```
+
+As a result, there are 1420 single-gene clusters and the four largest clusters are containing 580, 349, 276, and 176 genes, respectively. 
+
+```{r golub-discover3}
+heatmap(golub.supc$centers, Rowv = NA, Colv = NA, keep.dendro = FALSE, scale = "none", col = rainbow(256))
+```
