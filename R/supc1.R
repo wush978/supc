@@ -25,6 +25,7 @@
       .x <- f %*% x
       if (sum(abs(.x - x)) < tolerance) {
         attr(x, "dist") <- d
+        attr(x, "iteration") <- t
         break
       }
       x <- .x
@@ -121,6 +122,7 @@ supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance 
       cl.center <- do.call(rbind, cl.center0)
       retval <- list(cluster = cl, centers = cl.center, size = table(cl))
       class(retval) <- "supc"
+      attr(retval, "iteration") <- attr(.raw, "iteration")
       retval
     })
   if (drop && length(retval) == 1) retval[[1]] else retval
