@@ -12,5 +12,26 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This document shows how to reproduce the simulations in @doi:10.1080/00949655.2015.1049605.
+This document shows how to reproduce the simulations and examples in @doi:10.1080/00949655.2015.1049605.
+
+# Applications
+
+## Seeds Data
+
+## Golub Data
+
+The data presented in @Golub99molecularclassification shows the strength of the self-updating process that can isolate noises.
+
+First, we load the pre-processed and normalized dataset from package `multtest`(@multtest):
+
+```{r load-golub, eval = FALSE}
+data(golub, package = "multtest")
+```
+
+### Discover gene patterns
+
+In @doi:10.1080/00949655.2015.1049605, the parameter is: `r rawToChar(as.raw(c(0x60, 0x72, 0x20, 0x3d, 0x20, 0x34, 0x2e, 0x36, 0x60)))`. So we execute the function `supc1` with parameter `tau = 4.6`:
+
+```{r golub-discover1, eval = FALSE}
+```
 
