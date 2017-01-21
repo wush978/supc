@@ -38,15 +38,18 @@
   # tau
   if (is.null(r)) {
     d0 <- .dist(x)
-    retval$tau <- as.vector(quantiles(d0, rp))
+    retval$tau <- as.vector(quantile(d0, rp))
     retval$d0 <- d0
   } else {
     retval$tau <- r
   }
   # t
   if (is.numeric(t)) {
-    .t <- force(t)
-    retval$t <- rep(list(function(t) {.t}), length(retval$tau))
+    if (length(t) != length(retval$tau)) stop("The length of r, rp and t are inconsistent")
+    retval$t <- lapply(force(t), function(.t) {
+      .t <- force(.t)
+      function(t) {.t}      
+    })
   } else if (is.function(t)) {
     retval$t <- rep(list(t), length(retval$tau))
   } else if (is.character(t)) {
@@ -62,6 +65,7 @@
                        stop("Invalid parameter t")
     )
   } else if (is.list(t)) {
+    if (length(t) != length(retval$tau)) stop("The length of r, rp and t are inconsistent")
     lapply(t, function(.t) {
       if (!is.function(.t)) stop("Invalid parameter t")
     })

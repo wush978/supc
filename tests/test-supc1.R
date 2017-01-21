@@ -27,6 +27,31 @@ X.supc.ref <- structure(list(cluster = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L,
 
 stopifnot(isTRUE(all.equal(X.supc, X.supc.ref)))
 
+X.supc <- supc1(X, r = c(0.9, 0.9), t = c(0.75, 0.75))
+stopifnot(isTRUE(all.equal(X.supc, rep(list(X.supc.ref), 2))))
+stopifnot(isTRUE(all.equal(
+  supc1(X, r = quantile(dist(X), 0.85), t = 0.75),
+  supc1(X, rp = 0.85, t = 0.75)
+)))
+
+stopifnot(isTRUE(all.equal(
+  supc1(X, r =quantile(dist(X), seq(0.1, 0.5, by = 0.1)), t = quantile(dist(X), seq(0.1, 0.5, by = 0.1)) / 5),
+  supc1(X, rp = seq(0.1, 0.5, by = 0.1), t = "static")
+)))
+
+stopifnot(isTRUE(all.equal(
+  supc1(X, r =quantile(dist(X), seq(0.1, 0.5, by = 0.1)), t = lapply(quantile(dist(X), seq(0.1, 0.5, by = 0.1)), function(.r) {
+    force(.r)
+    function(t) .r / 20 + (.r / 50) * t
+  })),
+  supc1(X, rp = seq(0.1, 0.5, by = 0.1), t = "dynamic")
+)))
+
+stopifnot(!isTRUE(all.equal(
+  supc1(X, r = 0.9, t = "dynamic"),
+  supc1(X, r = 0.9, t = "static")
+)))
+
 dist.mode("amap")
 X.supc <- supc1(X, r = 0.9, t = 0.75)
 stopifnot(isTRUE(all.equal(X.supc, X.supc.ref)))
