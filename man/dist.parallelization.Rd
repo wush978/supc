@@ -9,4 +9,7 @@ dist.parallelization(i)
 \arguments{
 \item{i}{integer.}
 }
+\description{
+Only affect \code{\link[amap]{Dist}}.
+}
 

@@ -46,6 +46,7 @@
   })
 }
 
+#'@importFrom stats quantile
 .get.parameters <- function(x, r, rp, t) {
   retval <- list()
   # tau
@@ -99,8 +100,8 @@
 #'@param t either numeric value, function, or one of \code{"static" or "dynamic"}.
 #'@param tolerance numeric value. The threshold of convergence.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
-#'
-#'
+#'@param implementation eithor \code{"R"} or \code{"cpp"}. Choose the tool to calculating result.
+#'@param verbose logical value. Whether to show some messages during computing or not.
 #'
 #'@details
 #'TODO
@@ -117,7 +118,7 @@
 #'print("hello example")
 #'
 #'@references
-#'Shiu, Shang-Ying, and Ting-Li Chen. 2016. “On the Strengths of the Self-Updating Process Clustering Algorithm.” Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
+#'Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
 #'@export
 supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, drop = TRUE, implementation = c("R", "cpp"), verbose = FALSE) {
   parameters <- .get.parameters(x, r, rp, t)
@@ -138,3 +139,16 @@ supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance 
     })
   if (drop && length(retval) == 1) retval[[1]] else retval
 }
+
+#'@name golub
+#'@title Gene expression dataset from Golub et al. (1999)
+#'@description
+#'Gene expression data (3051 genes and 38 tumor mRNA samples) from the leukemia microarray study of Golub et al. (1999). 
+#'Each row (gene) is scaled to mean 0 and standard deviation 1.
+#'
+#'@return
+#'\item{golub}{The matrix of scaled gene expression data.}
+#'\item{golub.supc}{The result of \code{golub.supc <- supc1(golub, r = c(4, 4.3, 4.6, 4.7, 4.8), t = "dynamic")}}
+#'
+#'@aliases golub.supc
+NULL

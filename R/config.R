@@ -4,7 +4,12 @@
 .env$dist.parallelization <- 2L
 
 #'@title Configure which package is used to compute the distance matrix
+#'
+#'@description
+#'Configure which package is used to compute the distance matrix. Note that the fastest implementation depends on the data and machine.
+#'
 #'@param mode either \code{"stats"}, \code{"amap"}, or \code{"gputools"}.
+#'
 #'@export
 dist.mode <- function(mode = c("stats", "amap", "gputools")) {
   stopifnot(mode[1] %in% c("stats", "amap", "gputools"))
@@ -13,6 +18,9 @@ dist.mode <- function(mode = c("stats", "amap", "gputools")) {
 }
 
 #'@title Configure how many cores will be used to calculate the distance matrix
+#'
+#'@description
+#'Only affect \code{\link[amap]{Dist}}.
 #'
 #'@param i integer.
 #'@export

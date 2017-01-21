@@ -5,7 +5,8 @@
 \title{Self-Updating Process Clustering}
 \usage{
 supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
-  tolerance = 1e-04, drop = TRUE)
+  tolerance = 1e-04, drop = TRUE, implementation = c("R", "cpp"),
+  verbose = FALSE)
 }
 \arguments{
 \item{x}{matrix. Each row is an instance of the data.}
@@ -19,6 +20,10 @@ supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
 \item{tolerance}{numeric value. The threshold of convergence.}
 
 \item{drop}{logical value. Whether to delete the list structure if its length is 1.}
+
+\item{implementation}{eithor \code{"R"} or \code{"cpp"}. Choose the tool to calculating result.}
+
+\item{verbose}{logical value. Whether to show some messages during computing or not.}
 }
 \value{
 \code{supc1} returns a list of objects of \link{class} "supc".
@@ -39,6 +44,6 @@ print("hello example")
 
 }
 \references{
-Shiu, Shang-Ying, and Ting-Li Chen. 2016. “On the Strengths of the Self-Updating Process Clustering Algorithm.” Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
+Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
 }
 
