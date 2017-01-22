@@ -1,7 +1,8 @@
 .Rproj.user
 .Rhistory
 .RData
-vignettes/*.html
 src/*.o
 src/*.so
 supc.Rproj
+vignettes/supc.R
+vignettes/supc.html

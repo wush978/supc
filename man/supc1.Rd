@@ -5,17 +5,19 @@
 \title{Self-Updating Process Clustering}
 \usage{
 supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
-  tolerance = 1e-04, drop = TRUE, implementation = c("R", "cpp"),
+  tolerance = 1e-04, drop = TRUE, implementation = c("cpp", "R"),
   verbose = FALSE)
 }
 \arguments{
 \item{x}{matrix. Each row is an instance of the data.}
 
-\item{r}{numeric vector or \code{NULL}. A parameter of the self-updating process. Please see section 2.3.1 of the paper Shiu and Chen 2016.}
+\item{r}{numeric vector or \code{NULL}. The parameter \eqn{r} of the self-updating process.}
 
-\item{rp}{numeric vector or \code{NULL}. If \code{r} is \code{NULL}, then \code{rp} will be used. The corresponding \code{r} is the \code{rp}-percentiles of the pairwise distances of the data. If both of \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.005, 0.01, 0.03, 0.1)}.}
+\item{rp}{numeric vector or \code{NULL}. If \code{r} is \code{NULL}, then \code{rp} will be used. 
+The corresponding \code{r} is the \code{rp}-percentiles of the pairwise distances of the data. 
+If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.005, 0.01, 0.03, 0.1)}.}
 
-\item{t}{either numeric value, function, or one of \code{"static" or "dynamic"}.}
+\item{t}{either numeric value, function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.}
 
 \item{tolerance}{numeric value. The threshold of convergence.}
 
@@ -29,6 +31,10 @@ supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
 \code{supc1} returns a list of objects of \link{class} "supc".
 
 Each "supc" object contains the following elements:
+\item{x}{The input matrix.}
+\item{d0}{The pairwise distance matrix of \code{x}.}
+\item{r}{The value of \eqn{r} of the clustering.}
+\item{t}{The function \eqn{T(t)} of the clustering.}
 \item{cluster}{The cluster id of each instances.}
 \item{centers}{The center of each cluster.}
 \item{size}{The size of each cluster.}

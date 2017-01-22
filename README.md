@@ -24,14 +24,19 @@ To get the current development version from github:
 devtools::install_github("wush978/supc")
 ```
 
+## Algorithm
+
 ## Usage
 
-### Clustering
+Here we reproduce the section 2.3 of the paper as an usage example.
 
-After installation, we could apply the SUP to a matrix whose rows represent instances:
+### Data
+
+We generate the sample data as follow:
+
 
 ```r
-library(supc)
+set.seed(1)
 mu <- list(
   x = c(0, 2, 1, 6, 8, 7, 3, 5, 4),
   y = c(0, 0, 1, 0, 0, 1, 3, 3, 4)
@@ -40,24 +45,50 @@ X <- lapply(1:3, function(i) {
   cbind(rnorm(9, mu$x, 1/5), rnorm(9, mu$y, 1/5))
 })
 X <- do.call(rbind, X)
-parameters <- list(tau = 0.9, t = function() {0.75})
-X.supc <- supc1(X, parameters)
 ```
 
-The returned object has class "supc".
+### Clustering
+
+We could apply the SUP to a matrix whose rows represent instances:
+
+
+```r
+library(supc)
+X.supc <- supc1(X, r = 0.9, t = 0.75)
+str(X.supc)
+```
+
+```
+## List of 3
+##  $ cluster: int [1:27] 1 2 3 4 5 6 7 8 9 1 ...
+##  $ centers: num [1:9, 1:2] -0.018 2.047 1.087 6.209 8.015 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : chr [1:9] "1" "2" "3" "4" ...
+##   .. ..$ : NULL
+##  $ size   : 'table' int [1:9(1d)] 3 3 3 3 3 3 3 3 3
+##   ..- attr(*, "dimnames")=List of 1
+##   .. ..$ cl: chr [1:9] "1" "2" "3" "4" ...
+##  - attr(*, "class")= chr "supc"
+##  - attr(*, "iteration")= num 5
+```
+
+The returned object has class "supc" which contains the cluster label of each instances, the center of the clusters, and the size of the clusters.
 
 ### Heatmap
 
 We could draw a heatmap of the centers as follow:
 
+
 ```r
-heatmap(X.supc$centers, Rowv = NA, Colv = NA, keep.dendro = FALSE, scale = "none", col = rainbow(256))
+heatmap(X.supc$centers, Rowv = NA, Colv = NA, keep.dendro = FALSE, scale = "none")
 ```
 
-### Pair-wise distance plot
+![](README_files/figure-html/heatmap-1.png)<!-- -->
+
+### The frequency polygon of the pairwise distance
 
 ```r
-plot(X.supc)
+
 ```
 
 

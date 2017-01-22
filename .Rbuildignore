@@ -3,6 +3,10 @@
 .git
 dev-doc
 .Rhistory
-vignettes/*.html
 .travis.yml
 appveyor.yml
+README.Rmd
+README.md
+README_files
+vignettes/supc.html
+vignettes/supc.R
