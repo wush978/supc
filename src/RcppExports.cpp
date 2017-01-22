@@ -17,20 +17,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// test_dsymm
-void test_dsymm(NumericVector d, double diag, NumericMatrix x, NumericMatrix retval, bool side_is_left);
-RcppExport SEXP supc_test_dsymm(SEXP dSEXP, SEXP diagSEXP, SEXP xSEXP, SEXP retvalSEXP, SEXP side_is_leftSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type d(dSEXP);
-    Rcpp::traits::input_parameter< double >::type diag(diagSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type retval(retvalSEXP);
-    Rcpp::traits::input_parameter< bool >::type side_is_left(side_is_leftSEXP);
-    test_dsymm(d, diag, x, retval, side_is_left);
-    return R_NilValue;
-END_RCPP
-}
 // test_dgemm
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval);
 RcppExport SEXP supc_test_dgemm(SEXP aSEXP, SEXP bSEXP, SEXP retvalSEXP) {
