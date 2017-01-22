@@ -54,7 +54,7 @@
   function(t) {r / 20 + t * (r / 50)}
 }
 
-#'@importFrom stats quantile
+#'@importFrom stats quantile heatmap
 .get.parameters <- function(x, r, rp, t) {
   d0 <- .dist(x)
   retval <- list(d0 = d0)
@@ -156,7 +156,7 @@ supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance 
         apply(.raw[i,,drop = FALSE], 2, mean)
       })
       cl.center <- do.call(rbind, cl.center0)
-      retval <- list(x = x, d0 = parameters$d0, r = parameters$tau[.i], t = parameters$t[[.i]], cluster = cl, centers = cl.center, size = table(cl))
+      retval <- list(x = x, d0 = parameters$d0, r = as.vector(parameters$tau[.i]), t = parameters$t[[.i]], cluster = cl, centers = cl.center, size = table(cl))
       class(retval) <- "supc"
       attr(retval, "iteration") <- attr(.raw, "iteration")
       retval
@@ -180,6 +180,7 @@ freq.poly <- function(x, ...) {
   UseMethod("freq.poly")
 }
 
+#'@importFrom graphics hist plot lines title
 #'@export
 freq.poly.default <- function(x, ...) {
   d <- .dist(as.matrix(x))
@@ -225,7 +226,12 @@ freq.poly.supclist <- function(x, ...) {
   retval
 }
 
-#'@title Draw related plot of the clustering result
+#'@title Draw plots of the clustering result
+#'
+#'@description
+#'General function to draw plots for analysis
+#'
+#'@param x \code{supc} object to plot.
 #'@param type character value. \describe{
 #'  \item{\link[stats]{heatmap}}{Draw a Heat Map of the centers}
 #'}

@@ -2,15 +2,20 @@
 % Please edit documentation in R/supc1.R
 \name{plot.supc}
 \alias{plot.supc}
-\title{Draw related plot of the clustering result}
+\title{Draw plots of the clustering result}
 \usage{
 \method{plot}{supc}(x, type = "heatmap", ...)
 }
 \arguments{
+\item{x}{\code{supc} object to plot.}
+
 \item{type}{character value. \describe{
  \item{\link[stats]{heatmap}}{Draw a Heat Map of the centers}
 }}
 
 \item{...}{other parameters to be passed through.}
+}
+\description{
+General function to draw plots for analysis
 }
 
