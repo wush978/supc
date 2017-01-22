@@ -6,3 +6,4 @@ src/*.so
 supc.Rproj
 vignettes/supc.R
 vignettes/supc.html
+gh-pages/*

@@ -6,6 +6,7 @@ output:
     toc: yes
     mathjax: default
     pandoc_args: --include-in-header=header.xml
+    keep_md: yes
 bibliography: supc.bib
 author: Wush Wu
 vignette: >
@@ -16,6 +17,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 library(animation)
+library(knitr)
 show.obj <- function(obj) {
   paste(trimws(deparse(obj)), collapse = " ")
 }
@@ -23,9 +25,10 @@ show.obj <- function(obj) {
 quoted.string <- function(str) {
   sprintf("%s%s%s", .quote, str, .quote)
 }
+opts_chunk$set(fig.width = 5, fig.height = 5)
 ```
 
-This package implements the self-updating process clustering algorithms proposed in @Shui2016supc and shows how to reproduce the examples and figures in the paper.
+This package implements the self-updating process clustering algorithms proposed in @Shiu2016supc and shows how to reproduce the examples and figures in the paper.
 
 According to the paper, The Self-Updating Process (SUP) is a clustering algorithm that stands from the viewpoint of data
 points and simulates the process how data points move and perform self-clustering. It is an iterative
@@ -199,7 +202,7 @@ If we call `supc1` with `verbose = TRUE`, then the `supc1` will show the $L_1$ d
 
 ## Example
 
-Here we reproduce the section 2.3 of @Shui2016supc as an usage example.
+Here we reproduce the section 2.3 of @Shiu2016supc as an usage example.
 
 ### Data
 
@@ -308,4 +311,6 @@ We could draw a heatmap of the centers as follow:
 ```{r heatmap}
 plot(X.supc, type = "heatmap")
 ```
+
+# Reference
 
