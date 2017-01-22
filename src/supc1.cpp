@@ -137,7 +137,7 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
     }
     if (verbose) Rcout << "updating x ... ";
     dgemm(m, px->ncol(), f2.data(), ppx, ppretval);
-    Rcout << "done ";
+    if (verbose) Rcout << "done ";
     // check difference between px and pretval
     {
       double difference = 0.0;
