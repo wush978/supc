@@ -1,5 +1,5 @@
 [![Travis-ci Status](https://travis-ci.org/wush978/supc.svg?branch=master)](https://travis-ci.org/wush978/supc)
-[![Appveyor status](https://ci.appveyor.com/api/projects/status/ov2xlvx7edswtki7?svg=true)](https://ci.appveyor.com/project/wush978/supc)
+[![Appveyor status](https://ci.appveyor.com/api/projects/status/ov2xlvx7edswtki7/branch/master?svg=true)](https://ci.appveyor.com/project/wush978/supc)
 
 This package implements the algorithm developed in <http://dx.doi.org/10.1080/00949655.2015.1049605>
 
