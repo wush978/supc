@@ -38,3 +38,6 @@ artifacts:
 
   - path: '\*_*.zip'
     name: Bits
+
+environment:
+  TEST_GOLUB: TRUE
