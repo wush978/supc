@@ -12,4 +12,3 @@ dist.mode(mode = c("stats", "amap", "gputools"))
 \description{
 Configure which package is used to compute the distance matrix. Note that the fastest implementation depends on the data and machine.
 }
-

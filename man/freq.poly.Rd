@@ -16,4 +16,3 @@ freq.poly(x, ...)
 \description{
 Plot the frequency polygun of the pairwise distance.
 }
-

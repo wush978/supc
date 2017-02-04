@@ -28,7 +28,9 @@ quoted.string <- function(str) {
 opts_chunk$set(fig.width = 5, fig.height = 5)
 ```
 
-This package implements the self-updating process clustering algorithms proposed in @Shiu2016supc and shows how to reproduce the examples and figures in the paper.
+# Overview
+
+This package implements the self-updating process clustering algorithms proposed by @Shiu2016supc. This document shows how to reproduce the examples and figures in the paper.
 
 According to the paper, The Self-Updating Process (SUP) is a clustering algorithm that stands from the viewpoint of data
 points and simulates the process how data points move and perform self-clustering. It is an iterative
@@ -40,8 +42,6 @@ The paper shows that SUP is particularly competitive for:
 - Data with a large number of clusters
 - Unbalanced data
 
-This package let the user to choose the implementation of computing distance. Currently, `stats::dist`, `amap::Dist` and `gputools::gpuDist` are included. The user could choose the best fitted one according to the data. There is a c++ implementation of the main algorithm which costs about 50% times compared to the implementation in R. The vignettes also show how to plot figures for analysis purpose.
-
 # Installation
 
 To build the package from source, the Windows user requires [Rtools](http://cran.csie.ntu.edu.tw/bin/windows/Rtools/) and the Mac OS X user requires [gfortran](http://cran.csie.ntu.edu.tw/bin/macosx/tools/).
@@ -49,8 +49,8 @@ To build the package from source, the Windows user requires [Rtools](http://cran
 To get the current development version from github:
 
 ```r
-# install.packages('devtools')
-devtools::install_github("wush978/supc")
+# install.packages('remotes')
+remotes::install_github("wush978/supc")
 ```
 
 # Algorithm
@@ -58,12 +58,14 @@ devtools::install_github("wush978/supc")
 ## Notation
 
 - $x_1^{(0)}, ..., x_N^{(0)} \in \mathbb{R}^{p}$ are the data to be clustered.
-- $f_t$ is the truncated exponential decay function which measures the influence between two data point at $t$-th iteration.
+- $f_t$ is a function which measures the influence between two data point at the $t$-th iteration.
 - $\left\lVert \cdot \right\lVert_p$ is the $L_p$ norm.
 
 ## Truncated exponential decay function
 
-At $t$-th iteration, we define the $f_t$ as:
+This package uses $f_t$ as the truncated exponential decay function. Other functions such as the q-Gaussian and the inverse of the distance function can also be considered.
+
+At the $t$-th iteration, the truncated exponential decay function $f_t$ is:
 
 $$\begin{equation} f_t(x_i^{(t)}, x_j^{(t)}) = \left\{ \begin{array}{lc}
 exp\left(\cfrac{-\left\lVert x_i^{(t)} - x_j^{(t)} \right\lVert_2}{T(t)}\right) & \text{if } \left\lVert x_i^{(t)} - x_j^{(t)} \right\lVert_2 \leq r \\ 
@@ -92,50 +94,62 @@ The function `supc1` in this package implements the SUP clustering.
 
 ## Data
 
-The argument `x` should be a matrix whose rows represent the instances.
+The argument `x` should be a matrix in which the rows represent the instances and the columns represent the features.
 
 ## Parameters
 
-As shown in $\eqref{eq:influence}$, there are two important parameters in SUP:
+As shown in $\eqref{eq:influence}$, SUP requires the following two parameters:
 
-- $r$ which determines the truncation of the $f_t$.
-- $T(t)$ which controls the speed of convergence.
+- $r$ determines the truncation of the influential function $f_t$.
+- $T(t)$ controls the speed of the convergence.
 
 ### Control the parameter $r$
 
-`supc1` has two parameters `r` and `rp` to control $r$. The user should provide either `r` or `rp` to `supc1`.
+`supc1` provides two options for users to control the parameter $r$.
 
-The value of `r` will be directly used as $r$ in $\eqref{eq:influence}$.
+The user can directly supply the value of $r$ if `r` is given as a vector, then `supc1` will compute
+clustering results using each of the values provided in the numeric vector `r`. In such a case, `supc1`
+will return a `supclist` which contains `supc` objects for each value in `r`.
 
-If `r` is a vector, then `supc1` will compute all results corresponding to different value $r$. In such case, `supc1` will return a `supclist` which contain many `supc` object corresponding to the value in the numeric vector in `r`.
-
-The value of `rp` should between 0 and 1. The `supc1` will compute the quantile of the pairwise distance of the data as $r$ in $\eqref{eq:influence}$. If `rp` is a vector, `supc1` will compute as many objects as the number of value in `rp`.
+In stead of the value of $r$, the user can choose to supply the quantile of the pairwise distance between
+instances. In this case, the user should provide `rp`, which is a value between 0 and 1. `supc1` will compute
+the pairwise distances between all instances in the data to obtain the $r$ value according to the given `rp`
+value. If `rp` is a vector, `supc1` will return a `supclist`, which contains `supc` objects for each value in 
+`rp`.
 
 If neither `r` nor `rp` is provided, then `supc1` will use `r quoted.string(sprintf("rp = %s", show.obj(supc:::.rp.default)))` as the default.
 
 ### Control the parameter $T(t)$
 
-`supc1` has parameter `t` to control $T(t)$. 
+`supc1` has parameter `t` to control $T(t)$, which can be either static or dynamic temperature.
 
-If `t` is a function, then `supc1` will evaluate the value `t(i)` as $T(i)$ where `i` is an integer. For example, the value of `t(0)` will be $T(0)$ in $\eqref{eq:influence}$.
+By default, the package uses $T(t) = \frac{r}{5}$ and $T(t) = \frac{r}{20} + t \times \frac{r}{50}$ for `static` and `dynamic` 
+temperature, respectively, which are the temperatures used in the paper. In details, if a character value specified as `t = "static"`,
+`supc1` will set `t` as `function(r) {function(t) {r/5}}`, where `r` is the input value for parameter `r`. In this case,
+the temperature is kept as a constant of $\frac{r}{5}$ at each iteration. If a character value specified as `t = "dynamic"`, `supc1`
+will set `t` as `function(r)｛function(t) {r/20 + t * (r/50)}}`. In this case, the initial temperature is $\frac{r}{20}`, and the
+temperature gradually increases by \frac{r}{50} after each iteration.
 
-If `t` is a numeric value, then `supc1` set $T(t)$ as a constant whose value is `t` during the iteration.
+The package also allows user-specified temperature functions. If `t` is set as a numeric value, then `supc1` uses this value as the 
+static temperature throughout iterations. If `t` is set as a function, then `supc1` will uses the value `t(i)` as the temperature at 
+each of the $i$-th iteration.
 
-If `t` is a character value, only the first element will be used. This element should be either `"static"` or `"dynamic"`. If `t = "static"`, `supc1` will set `t` as `r quoted.string(show.obj(supc:::.t.static))` where `r` is the corresponding value of $r$ in $\eqref{eq:influence}$. This is a constant during iteration. Similarly, if `t = "dynamic"`, `supc1` will set `t` as `r quoted.string(show.obj(supc:::.t.dynamic))`. Mathematically, it is $T(t) = \frac{r}{20} + t \times \frac{r}{50}$. It will increase during the iteration.
-
-If the user want to set different $T(t)$ with different $r$, please set `t` as a list of functions and `supc1` will calculate the result of each pair of $T(t)$ and $r$.
+The user can use different temperatures $T(t)$ with different $r$ values by setting `t` as a list of function. Then `supc1` will calculate
+the clustering result for each pair of $T(t)$ and $r$.
 
 ## Utility
 
+This package let the user to choose the implementation of computing distance. Currently, `stats::dist`, `amap::Dist` and `gputools::gpuDist` are included. The user could choose the best fitted one according to the data. There is a c++ implementation of the main algorithm which costs about 50% times compared to the implementation in R. The vignettes also show how to plot figures for analysis purpose.
+
 ### Computation of the distance
 
-Please use `dist.mode` to select the package which will be used to compute the distance. `dist.mode("stats")`, `dist.mode("amap")`, and `dist.mode("gputools")` will pick `stats::dist`, `amap::Dist`, and `gputools::gpuDist` to compute the pairwise distance matrix respectively. It is recommended to compare the computation time of `stats::dist(x)`, `amap::Dist(x)` and `gputools::gpuDist(x)` before selecting the function.
+The user can use `dist.mode` to select the package to compute the pairwise distance between instances. Specifying `dist.mode("stats")`, `dist.mode("amap")`, and `dist.mode("gputools")` will select `stats::dist`, `amap::Dist`, and `gputools::gpuDist` to compute the pairwise distance matrix, respectively. It is recommended to compare the computation time of `stats::dist(x)`, `amap::Dist(x)` and `gputools::gpuDist(x)` before selecting the function.
 
 For example, on my machine whose CPU is `Intel(R) Core(TM) i7-4820K CPU @ 3.70GHz` and GPU is `NVIDIA Corporation GK107GL [Quadro K2000]`, the computation time of different function is:
 
 ![](dist.gif)
 
-The results show that `stats::dist` is the best choice if the matrix is small. `gputools::gpuDist` outperforms the others if the matrix is large. If there is no GPU, `amap::Dist` might be a better choice for large matrix.
+The results show that `stats::dist` is the best choice if the distance matrix is small. `gputools::gpuDist` outperforms the others if the distance matrix is larger. If there is no GPU, `amap::Dist` might be a better choice for larger distance matrices.
 
 ```{r computation-time, eval = FALSE, echo = FALSE}
 get.x <- function(m, n) {
@@ -194,11 +208,14 @@ if (!file.exists("dist.gif")) {
 
 ### Using implentation in `R` or in `C++`
 
-This package provide both implementation for better maintenance. The `C++` program runs faster when the number of instances is large. 
+This package provide both implementation for better maintenance. The `C++` program runs faster when the number of instances is larger. 
+Without specifying, the `supc1` will use the implementation in `C++` as default. If `implementation = "R"` is specified, then `supc1`
+will use the implementation in `R`.
 
 ### Verbose
 
-If we call `supc1` with `verbose = TRUE`, then the `supc1` will show the $L_1$ distance between each iteration to the screen in real-time. Therefore, you can monitor the iteration to check if the program is dead or not.
+Using `supc1` with `verbose = TRUE`, the program will show the $L_1$ distance between each iteration on the screen in real-time, so that 
+the user can monitor the iterations to check if the program is still running or dead.
 
 ## Example
 

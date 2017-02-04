@@ -12,4 +12,3 @@
 Gene expression data (3051 genes and 38 tumor mRNA samples) from the leukemia microarray study of Golub et al. (1999). 
 Each row (gene) is scaled to mean 0 and standard deviation 1.
 }
-

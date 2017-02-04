@@ -12,4 +12,3 @@ dist.parallelization(i)
 \description{
 Only affect \code{\link[amap]{Dist}}.
 }
-

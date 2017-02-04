@@ -5,8 +5,9 @@ Version: 0.1
 Date: 2016-09-12
 Author: Wush Wu
 Maintainer: Wush Wu <wush978@gmail.com>
-Description: Implements the self-updating process clustering algorithms proposed in Shiu and Chen (2016) and shows how to reproduce 
-  the examples and figures in the paper.
+Description: Implements the self-updating process clustering algorithms proposed
+    in Shiu and Chen (2016) and shows how to reproduce the examples and figures in
+    the paper.
 License: GPL (>= 3)
 LazyData: TRUE
 Depends:
@@ -19,8 +20,7 @@ Suggests:
     knitr,
     rmarkdown,
     animation
-Enhances:
-    gputools
+Enhances: gputools
 LinkingTo: Rcpp(>= 0.12), BH(>= 1.62)
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
