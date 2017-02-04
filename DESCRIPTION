@@ -3,7 +3,7 @@ Type: Package
 Title: The Self-Updating Process Clustering Algorithms
 Version: 0.1
 Date: 2016-09-12
-Author: Wush Wu
+Author: Wush Wu and Shang-Ying Shiu
 Maintainer: Wush Wu <wush978@gmail.com>
 Description: Implements the self-updating process clustering algorithms proposed
     in Shiu and Chen (2016) and shows how to reproduce the examples and figures in

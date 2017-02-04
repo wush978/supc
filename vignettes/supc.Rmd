@@ -8,7 +8,7 @@ output:
     pandoc_args: --include-in-header=header.xml
     keep_md: yes
 bibliography: supc.bib
-author: Wush Wu
+author: Wush Wu and Shang-Ying Shiu
 vignette: >
   %\VignetteIndexEntry{supc}
   %\VignetteEngine{knitr::rmarkdown}
