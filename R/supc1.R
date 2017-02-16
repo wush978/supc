@@ -32,7 +32,7 @@
       diag(f) <- exp(-0 / .T)
       f <- f / colSums(f)
       .x <- f %*% x
-      .difference <- sum(abs(.x - x))
+      .difference <- max(abs(.x - x))
       if (verbose) cat(sprintf("difference: %0.8f\n", .difference))
       if (.difference < tolerance) {
         attr(x, "dist") <- d
