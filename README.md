@@ -28,8 +28,8 @@ To build the package from source, the Windows user requires [Rtools](http://cran
 To get the current development version from github:
 
 ```r
-# install.packages('devtools')
-devtools::install_github("wush978/supc")
+# install.packages('remotes')
+remotes::install_github("wush978/supc")
 ```
 
 # Algorithm
