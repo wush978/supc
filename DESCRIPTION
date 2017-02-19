@@ -3,11 +3,12 @@ Type: Package
 Title: The Self-Updating Process Clustering Algorithms
 Version: 0.1
 Date: 2016-09-12
-Author: Wush Wu and Shang-Ying Shiu
+Author@R: c(
+  person("Wush", "Wu", email = "wush978@gmail.com", role = c("aut", "cre")), 
+  person("Shang-Ying", "Shiu", email = "", role = c("aut", "ctb")))
 Maintainer: Wush Wu <wush978@gmail.com>
 Description: Implements the self-updating process clustering algorithms proposed
-    in Shiu and Chen (2016) and shows how to reproduce the examples and figures in
-    the paper.
+    in Shiu and Chen (2016).
 License: GPL (>= 3)
 LazyData: TRUE
 Depends:
@@ -23,6 +24,6 @@ Suggests:
 Enhances: gputools
 LinkingTo: Rcpp(>= 0.12), BH(>= 1.62)
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0
 SystemRequirements: C++11
 Encoding: UTF-8
