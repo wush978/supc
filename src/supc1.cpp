@@ -142,7 +142,7 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
     {
       double difference = 0.0;
       for(int i = 0;i < m * n;i++) {
-        difference += std::max(difference, std::abs(ppx[i] - ppretval[i]));
+        difference = std::max(difference, std::abs(ppx[i] - ppretval[i]));
       }
       if (verbose) Rprintf("difference: %0.8f\n", difference);
       if (difference < tolerance) {
