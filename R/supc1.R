@@ -217,6 +217,7 @@ freq.poly.supclist <- function(x, ...) {
   .hist <- freq.poly(x[[1]]$d0, ...)
   lapply(x, function(x) lines(list(x = rep(x$r, 2), y = range(.hist$counts)), col = 2, lty = 2))
   title(sub = sprintf("r = %s", deparse(sapply(x, "[[", "r"))))
+  .hist
 }
 
 #'@export
