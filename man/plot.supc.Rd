@@ -9,8 +9,8 @@
 \arguments{
 \item{x}{\code{supc} object to plot.}
 
-\item{type}{character value. \describe{
- \item{\code{"heatmap"}: draw a heatmap to show the result of clustering}
+\item{type}{character value. \itemize{
+ \item{\code{"heatmap"}}{draw a heatmap to show the result of clustering}
 }}
 
 \item{...}{other parameters to be passed through.}

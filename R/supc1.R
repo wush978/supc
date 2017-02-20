@@ -230,11 +230,12 @@ freq.poly.supclist <- function(x, ...) {
 #'@title Draw plots of the clustering result
 #'
 #'@description
+#'
 #'General function to draw plots for analysis
 #'
 #'@param x \code{supc} object to plot.
-#'@param type character value. \describe{
-#'  \item{\code{"heatmap"}: draw a heatmap to show the result of clustering}
+#'@param type character value. \itemize{
+#'  \item{\code{"heatmap"}}{draw a heatmap to show the result of clustering}
 #'}
 #'@param ... other parameters to be passed through.
 #'
