@@ -4,15 +4,18 @@ matrix:
   include:
     - r: oldrel
       os: linux
+      dist: trusty
       sudo: false
     - r: release
       os: linux
+      dist: trusty
       sudo: false
       env: 
         - TEST_GOLUB=TRUE
     - r: devel
       os: linux
       sudo: false
+      dist: trusty
     - r: release
       os: osx
       env:
