@@ -94,7 +94,7 @@ The function `supc1` in this package implements the SUP clustering.
 
 ## Data
 
-The argument `x` should be a matrix in which the rows represent the instances and the columns represent the features.
+The argument `x` should be a matrix in which the rows represent the samples and the columns represent the variables.
 
 ## Parameters
 
@@ -112,8 +112,8 @@ clustering results using each of the values provided in the numeric vector `r`. 
 will return a `supclist` which contains `supc` objects for each value in `r`.
 
 In stead of the value of $r$, the user can choose to supply the quantile of the pairwise distance between
-instances. In this case, the user should provide `rp`, which is a value between 0 and 1. `supc1` will compute
-the pairwise distances between all instances in the data to obtain the $r$ value according to the given `rp`
+samples. In this case, the user should provide `rp`, which is a value between 0 and 1. `supc1` will compute
+the pairwise distances between all samples in the data to obtain the $r$ value according to the given `rp`
 value. If `rp` is a vector, `supc1` will return a `supclist`, which contains `supc` objects for each value in 
 `rp`.
 
@@ -143,7 +143,7 @@ This package let the user to choose the implementation of computing distance. Cu
 
 ### Computation of the distance
 
-The user can use `dist.mode` to select the package to compute the pairwise distance between instances. Specifying `dist.mode("stats")`, `dist.mode("amap")`, and `dist.mode("gputools")` will select `stats::dist`, `amap::Dist`, and `gputools::gpuDist` to compute the pairwise distance matrix, respectively. It is recommended to compare the computation time of `stats::dist(x)`, `amap::Dist(x)` and `gputools::gpuDist(x)` before selecting the function.
+The user can use `dist.mode` to select the package to compute the pairwise distance between samples. Specifying `dist.mode("stats")`, `dist.mode("amap")`, and `dist.mode("gputools")` will select `stats::dist`, `amap::Dist`, and `gputools::gpuDist` to compute the pairwise distance matrix, respectively. It is recommended to compare the computation time of `stats::dist(x)`, `amap::Dist(x)` and `gputools::gpuDist(x)` before selecting the function.
 
 For example, on my machine whose CPU is `Intel(R) Core(TM) i7-4820K CPU @ 3.70GHz` and GPU is `NVIDIA Corporation GK107GL [Quadro K2000]`, the computation time of different function is:
 
@@ -191,7 +191,7 @@ if (!file.exists("dist.gif")) {
     .y.min <- min(.ymap(unlist(dist.time)))
     .y <- seq(floor(.y.min / 0.5) * 0.5, ceiling(.y.max / 0.5) * 0.5, by = 0.5)
     animation::saveGIF(lapply(1:3, function(j) {
-      plot(.x, rep(1, length(.x)), type = 'n', ylim = c(.y.min, .y.max), xlab = "number of features", ylab = "computation time (seconds)", xaxt = 'n', yaxt = 'n')
+      plot(.x, rep(1, length(.x)), type = 'n', ylim = c(.y.min, .y.max), xlab = "number of variables", ylab = "computation time (seconds)", xaxt = 'n', yaxt = 'n')
       axis(1, .x, labels = expression(10^1, 10^1.5, 10^2, 10^2.5, 10^3))
       axis(2, .y[seq_along(.y) %% 2 == 1], labels = do.call(what = expression, lapply(.y, function(.) substitute(10^y, list(y = .))))[seq_along(.y) %% 2 == 1])
       lapply(1:3, function(i) {
@@ -200,7 +200,7 @@ if (!file.exists("dist.gif")) {
       })
       legend("topleft", c("stats::dist", "amap::Dist", "gputools::gpuDist"), lty = 1:3, pch = 1:3)
       title(main = "Comparing speed of computing distance")
-      title(sub = sprintf("number of instances: %d", floor(10^seq(2, 3, by = 0.5)[j])))
+      title(sub = sprintf("number of samples: %d", floor(10^seq(2, 3, by = 0.5)[j])))
     }), movie.name = "dist.gif", interval = 3)
   })
 }
@@ -208,7 +208,7 @@ if (!file.exists("dist.gif")) {
 
 ### Using implentation in `R` or in `C++`
 
-This package provide both implementation for better maintenance. The `C++` program runs faster when the number of instances is larger. 
+This package provide both implementation for better maintenance. The `C++` program runs faster when the number of samples is larger. 
 Without specifying, the `supc1` will use the implementation in `C++` as default. If `implementation = "R"` is specified, then `supc1`
 will use the implementation in `R`.
 
@@ -303,19 +303,19 @@ str(X.supc)
 - `d0`, the distance matrix of the data.
 - `r`, the value of $r$.
 - `t`, the function of $T(t)$.
-- `cluster`, the cluster label of each instances.
+- `cluster`, the cluster label of each samples.
 - `centers`, the center of the clusters.
 - `size`, the size of the clusters.
 
 #### Cluster
 
-We could retrieve the cluster ID of the instances via:
+We could retrieve the cluster ID of the samples via:
 
 ```{r}
 X.supc$cluster
 ```
 
-This vector represents the IDs of the resulting clusters of each instance. For example, the first instance, i.e. `X[1,]`, is clustered into cluster ID `X.supc$cluster[1]`.
+This vector represents the IDs of the resulting clusters of each sample. For example, the first sample, i.e. `X[1,]`, is clustered into cluster ID `X.supc$cluster[1]`.
 
 #### Centers
 
@@ -355,7 +355,7 @@ The supc1 will compute the results of all given r values and t values. In this c
 X.supcs$cluster
 ```
 
-The following graphs show clustering results using different `r` values. The IDs of the clusters each instance is clustered into is plotted in the graph. The major clusters are marked by blue circles. Note that the size of the major clusters increases with `r` value.
+The following graphs show clustering results using different `r` values. The IDs of the clusters each sample is clustered into is plotted in the graph. The major clusters are marked by blue circles. Note that the size of the major clusters increases with `r` value.
 
 The results show that the use of `r quoted.string("r = 0.9")` produces 23 clusters, including nine major clusters and 14 tiny clusters that can be identified as noise. The use of `r quoted.string("r = 1.7")` produces 15 clusters, including three major clusters and 12 tiny clusters that can be identified as noise. When the influential range `r` is set as large as 2.5, the major clusters consist of mixed data from both the normally distributed data points and the noise data points.
 
