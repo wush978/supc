@@ -3,7 +3,7 @@ Type: Package
 Title: The Self-Updating Process Clustering Algorithms
 Version: 0.1
 Date: 2016-09-12
-Author@R: c(
+Authors@R: c(
   person("Wush", "Wu", email = "wush978@gmail.com", role = c("aut", "cre")), 
   person("Shang-Ying", "Shiu", email = "", role = c("aut", "ctb")))
 Maintainer: Wush Wu <wush978@gmail.com>
