@@ -25,7 +25,7 @@ show.obj <- function(obj) {
 quoted.string <- function(str) {
   sprintf("%s%s%s", .quote, str, .quote)
 }
-opts_chunk$set(fig.width = 5, fig.height = 5)
+opts_chunk$set(fig.width = 8, fig.height = 5)
 ```
 
 # Overview
@@ -147,10 +147,6 @@ The user can use `dist.mode` to select the package to compute the pairwise dista
 
 For example, on my machine whose CPU is `Intel(R) Core(TM) i7-4820K CPU @ 3.70GHz` and GPU is `NVIDIA Corporation GK107GL [Quadro K2000]`, the computation time of different function is:
 
-![](dist.gif)
-
-The results show that `stats::dist` is the best choice if the distance matrix is small. `gputools::gpuDist` outperforms the others if the distance matrix is larger. If there is no GPU, `amap::Dist` might be a better choice for larger distance matrices.
-
 ```{r computation-time, eval = FALSE, echo = FALSE}
 get.x <- function(m, n) {
   matrix(rnorm(m * n), m, n)
@@ -165,46 +161,60 @@ dist.time <- lapply(list(stats::dist, function(x) amap::Dist(x, nbproc = 8), gpu
 })
 ```
 
-```{r computation-time-result, echo = FALSE, warning = FALSE, error = FALSE, results='none'}
-if (!file.exists("dist.gif")) {
-  dist.time <- list(structure(c(0, 0.000999999999839929, 0.00959999999986394, 
-  0.000399999999899592, 0.00270000000000437, 0.0268000000000939, 
-  0.00100000000002183, 0.00889999999999418, 0.106199999999899, 
-  0.00300000000006548, 0.0375999999999294, 0.795100000000002, 0.0112999999999374, 
-  0.191300000000047, 4.82540000000017), .Dim = c(3L, 5L)), structure(c(0.00180000000000291, 
-  0.00480000000015934, 0.022899999999936, 0.0024000000000342, 0.00780000000004293, 
-  0.0545000000000073, 0.00329999999985375, 0.02270000000035, 0.152599999999711, 
-  0.00759999999991123, 0.0563999999998487, 0.547500000000036, 0.0213999999999942, 
-  0.202700000000277, 2.1983000000002), .Dim = c(3L, 5L)), structure(c(0.00160000000005311, 
-  0.00650000000014188, 0.0901999999999134, 0.00140000000019427, 
-  0.00670000000009168, 0.0805000000000291, 0.00200000000004366, 
-  0.00779999999986103, 0.0997000000001208, 0.00200000000004366, 
-  0.0124000000001615, 0.140099999999984, 0.00420000000003711, 0.0291999999998552, 
-  0.332999999999993), .Dim = c(3L, 5L)))
-  
-  
-  local({
-    dist.time <- lapply(dist.time, `+`, 1e-5)
-    .x <- seq(1, 3, by = 0.5)
-    .ymap <- function(y) log(y, 10)
-    .y.max <- max(.ymap(unlist(dist.time)))
-    .y.min <- min(.ymap(unlist(dist.time)))
-    .y <- seq(floor(.y.min / 0.5) * 0.5, ceiling(.y.max / 0.5) * 0.5, by = 0.5)
-    animation::saveGIF(lapply(1:3, function(j) {
-      plot(.x, rep(1, length(.x)), type = 'n', ylim = c(.y.min, .y.max), xlab = "number of variables", ylab = "computation time (seconds)", xaxt = 'n', yaxt = 'n')
-      axis(1, .x, labels = expression(10^1, 10^1.5, 10^2, 10^2.5, 10^3))
-      axis(2, .y[seq_along(.y) %% 2 == 1], labels = do.call(what = expression, lapply(.y, function(.) substitute(10^y, list(y = .))))[seq_along(.y) %% 2 == 1])
-      lapply(1:3, function(i) {
-        lines(.x, .ymap(dist.time[[i]][j,]), lty = i)
-        points(.x, .ymap(dist.time[[i]][j,]), pch = i)
-      })
-      legend("topleft", c("stats::dist", "amap::Dist", "gputools::gpuDist"), lty = 1:3, pch = 1:3)
-      title(main = "Comparing speed of computing distance")
-      title(sub = sprintf("number of samples: %d", floor(10^seq(2, 3, by = 0.5)[j])))
-    }), movie.name = "dist.gif", interval = 3)
-  })
-}
+```{r computation-time-result, echo = FALSE, warning = FALSE, error = FALSE}
+dist.time <- list(structure(c(0, 0.000999999999839929, 0.00959999999986394, 
+0.000399999999899592, 0.00270000000000437, 0.0268000000000939, 
+0.00100000000002183, 0.00889999999999418, 0.106199999999899, 
+0.00300000000006548, 0.0375999999999294, 0.795100000000002, 0.0112999999999374, 
+0.191300000000047, 4.82540000000017), .Dim = c(3L, 5L)), structure(c(0.00180000000000291, 
+0.00480000000015934, 0.022899999999936, 0.0024000000000342, 0.00780000000004293, 
+0.0545000000000073, 0.00329999999985375, 0.02270000000035, 0.152599999999711, 
+0.00759999999991123, 0.0563999999998487, 0.547500000000036, 0.0213999999999942, 
+0.202700000000277, 2.1983000000002), .Dim = c(3L, 5L)), structure(c(0.00160000000005311, 
+0.00650000000014188, 0.0901999999999134, 0.00140000000019427, 
+0.00670000000009168, 0.0805000000000291, 0.00200000000004366, 
+0.00779999999986103, 0.0997000000001208, 0.00200000000004366, 
+0.0124000000001615, 0.140099999999984, 0.00420000000003711, 0.0291999999998552, 
+0.332999999999993), .Dim = c(3L, 5L)))
+
+
+local({
+  dist.time <- lapply(dist.time, `+`, 1e-5)
+  .x <- seq(1, 3, by = 0.5)
+  .ymap <- function(y) log(y, 10)
+  .y.max <- max(.ymap(unlist(dist.time)))
+  .y.min <- min(.ymap(unlist(dist.time)))
+  .y <- seq(floor(.y.min / 0.5) * 0.5, ceiling(.y.max / 0.5) * 0.5, by = 0.5)
+  # animation::saveGIF(lapply(1:3, function(j) {
+  if (interactive()) dev.off()
+  layout(matrix(c(
+    1,2,3,4,
+    5,5,5,5
+  ), byrow = TRUE, ncol = 4), heights = c(0.9, 0.1), widths = c(0.1, 0.3, 0.3, 0.3))
+  par(mar = c(5.1, 4.1, 4.1, 0))
+  plot(1, type = "n", axes=FALSE, xlab="", ylab="computation time (seconds)", ylim = c(.y.min, .y.max))
+  axis(2, .y[seq_along(.y) %% 2 == 1], labels = do.call(what = expression, lapply(.y, function(.) substitute(10^y, list(y = .))))[seq_along(.y) %% 2 == 1])
+  lapply(1:3, function(j) {
+    par(mar = c(5.1, 0.1, 4.1, 0.1))
+    plot(.x, rep(1, length(.x)), type = 'n', ylim = c(.y.min, .y.max), xlab = "number of variables", 
+         #ylab = "computation time (seconds)", 
+         xaxt = 'n', yaxt = 'n', bty = 'n')
+    axis(1, .x, labels = expression(10^1, 10^1.5, 10^2, 10^2.5, 10^3))
+    # axis(2, .y[seq_along(.y) %% 2 == 1], labels = do.call(what = expression, lapply(.y, function(.) substitute(10^y, list(y = .))))[seq_along(.y) %% 2 == 1])
+    lapply(1:3, function(i) {
+      lines(.x, .ymap(dist.time[[i]][j,]), lty = i)
+      points(.x, .ymap(dist.time[[i]][j,]), pch = i)
+    })
+    # title(main = "Comparing speed of computing distance")
+    mtext(sprintf("#samples:\n%d", floor(10^seq(2, 3, by = 0.5)[j])), side = 3)
+  }) #, movie.name = "dist.gif", interval = 3)
+  par(mar = rep(0, 4))
+  plot(1, type = "n", axes=FALSE, xlab="", ylab="")
+  legend("top", c("stats::dist", "amap::Dist", "gputools::gpuDist"), lty = 1:3, pch = 1:3, inset = 0, box.lty = 0)
+})
 ```
+
+The results show that `stats::dist` is the best choice if the distance matrix is small. `gputools::gpuDist` outperforms the others if the distance matrix is larger. If there is no GPU, `amap::Dist` might be a better choice for larger distance matrices.
 
 ### Using implentation in `R` or in `C++`
 
