@@ -10,7 +10,7 @@
 \item{x}{\code{supc} object to plot.}
 
 \item{type}{character value. \describe{
- \item{\link[stats]{heatmap}}{Draw a Heat Map of the centers}
+ \item{\code{"heatmap"}: draw a heatmap to show the result of clustering}
 }}
 
 \item{...}{other parameters to be passed through.}

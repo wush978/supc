@@ -234,7 +234,7 @@ freq.poly.supclist <- function(x, ...) {
 #'
 #'@param x \code{supc} object to plot.
 #'@param type character value. \describe{
-#'  \item{\link[stats]{heatmap}}{Draw a Heat Map of the centers}
+#'  \item{\code{"heatmap"}: draw a heatmap to show the result of clustering}
 #'}
 #'@param ... other parameters to be passed through.
 #'
@@ -243,9 +243,14 @@ plot.supc <- function(x, type = "heatmap", ...) {
   switch(type, "heatmap" = heatmap.supc(x, ...), stop("unsupported type"))
 }
 
-heatmap.supc <- function(x, ..., Rowv = NA, Colv = NA, keep.dendro = FALSE, scale = "none") {
-  argv <- list(..., x = x$centers, Rowv = Rowv, Colv = Colv, keep.dendro = keep.dendro, scale = scale)
-  do.call(heatmap, argv)
+heatmap.supc <- function(x, ..., yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0)) {
+  argv <- list(..., x = seq_len(nrow(x$x)), y = seq_len(ncol(x$x)), z = x$x[order(x$cluster),], yaxt = yaxt, xlab = xlab, ylab = ylab, mgp = mgp)
+  do.call(image, argv)
+  title(paste0("r=", x$r), line = 2.5)
+  abline(v = cumsum(x$size) + 0.5, lty = 2)
+  axis(side=2, at=seq_len(ncol(x$x)), labels=dimnames(x$x)[[2]], tick=FALSE, mgp=c(1.5,0,0))
+  axis(side=3, at=cumsum(x$size) + 0.5, labels=x$size, tick=FALSE, mgp=c(1.5,0,0))
+  mtext("Cluster Size", side = 3, line=1, cex=0.8)
 }
 
 #'@name golub
