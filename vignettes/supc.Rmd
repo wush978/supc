@@ -42,6 +42,12 @@ The paper shows that SUP is particularly competitive for:
 - Data with a large number of clusters
 - Unbalanced data
 
+## Introduction
+
+Clustering analysis is a common technique to discover patterns and has been widely applied to many disciplines for partition data into groups. In the literature, different families of clustering algorithms have been developed. The model-based methods @Banfield1993 make an assumption on the probabilistic distribution of data, and the distance-based method relies on the similarity between samples. There are two major types of the distance-based methods. The first type is hierarchical clustering, which clusters data into groups through a series of operations that operate on the similarity measure between samples. The second type defines an objective criterion and clusters the data which optimizes the criterion. k-means is one of the most popular clustering method of the second type. 
+
+The SUP is a distance-based method for clustering. The idea is similar to the gravity: every samples are graviate toward one another. The algorithm simulate the process of gravity iteratively and makes the samples merge into clusters on the sample space. During the iteration, all data points continue updating their positions until the system becomes stable. Therefore, the algorithm is named as Slef-Updating Process(SUP). More specifically, the user can tune the algorithm by changing the rule of the gravity.
+
 # Installation
 
 To build the package from source, the Windows user requires [Rtools](http://cran.csie.ntu.edu.tw/bin/windows/Rtools/) and the Mac OS X user requires [gfortran](http://cran.csie.ntu.edu.tw/bin/macosx/tools/).
@@ -293,7 +299,7 @@ After examing the data, there are sharp valleys at 0.9, 1.7, 2.1, 2.3, and more.
 
 ```{r}
 X.freq <- freq.poly(X, breaks = 50)
-abline(v = c(0.9, 1.7, 2.1, 2.5))
+abline(v = c(0.9, 1.7, 2.1, 2.5), lty = 2)
 ```
 
 For demonstration, the following computes clustering result by SUP using `supc::supc1` with `r quoted.string("r = 1.7")` and `t = "static"` (that is $T = r/5$).
