@@ -167,13 +167,13 @@ supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance 
   }
 }
 
-#'@title Plot the frequency polygun of pairwise distance
+#'@title Plot the frequency polygon of pairwise distance
 #'
 #'@param x either dist object or matrix.
 #'@param ... other parameters to be passed through to \code{\link[graphics]{hist}}.
 #'
 #'@description
-#'Plot the frequency polygun of the pairwise distance.
+#'Plot the frequency polygon of the pairwise distance.
 #'@aliases freq.poly.default freq.poly.dist
 #'@export
 freq.poly <- function(x, ...) {
@@ -185,7 +185,7 @@ freq.poly <- function(x, ...) {
 freq.poly.default <- function(x, ...) {
   d <- .dist(as.matrix(x))
   .hist <- hist(as.vector(d), plot = FALSE, ...)
-  plot(.hist$mids, .hist$counts, type = "l", xlab = "Distance", ylab = "Frequency", main = "Frequency Polygun of Pairwise Distance")
+  plot(.hist$mids, .hist$counts, type = "l", xlab = "Distance", ylab = "Frequency", main = "Frequency Polygon of Pairwise Distance")
   invisible(.hist)
 }
 
@@ -193,17 +193,17 @@ freq.poly.default <- function(x, ...) {
 freq.poly.dist <- function(x, ...) {
     d <- x
   .hist <- hist(as.vector(d), plot = FALSE, ...)
-  plot(.hist$mids, .hist$counts, type = "l", xlab = "Distance", ylab = "Frequency", main = "Frequency Polygun of Pairwise Distance")
+  plot(.hist$mids, .hist$counts, type = "l", xlab = "Distance", ylab = "Frequency", main = "Frequency Polygon of Pairwise Distance")
   invisible(.hist)
 }
 
-#'@title Plot the frequency polygun of pairwise distance
+#'@title Plot the frequency polygon of pairwise distance
 #'
 #'@param x either dist object or matrix.
 #'@param ... other parameters to be passed through to \code{\link[graphics]{hist}}.
 #'
 #'@description
-#'Plot the frequency polygun of the pairwise distance. The red dashed line is the used parameter \eqn{r}.
+#'Plot the frequency polygon of the pairwise distance. The red dashed line is the used parameter \eqn{r}.
 #'@aliases freq.poly.subclist
 #'@export
 freq.poly.supc <- function(x, ...) {

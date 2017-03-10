@@ -3,7 +3,7 @@
 \name{freq.poly.supc}
 \alias{freq.poly.supc}
 \alias{freq.poly.subclist}
-\title{Plot the frequency polygun of pairwise distance}
+\title{Plot the frequency polygon of pairwise distance}
 \usage{
 \method{freq.poly}{supc}(x, ...)
 }
@@ -13,5 +13,5 @@
 \item{...}{other parameters to be passed through to \code{\link[graphics]{hist}}.}
 }
 \description{
-Plot the frequency polygun of the pairwise distance. The red dashed line is the used parameter \eqn{r}.
+Plot the frequency polygon of the pairwise distance. The red dashed line is the used parameter \eqn{r}.
 }

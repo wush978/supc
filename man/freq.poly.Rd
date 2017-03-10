@@ -4,7 +4,7 @@
 \alias{freq.poly}
 \alias{freq.poly.default}
 \alias{freq.poly.dist}
-\title{Plot the frequency polygun of pairwise distance}
+\title{Plot the frequency polygon of pairwise distance}
 \usage{
 freq.poly(x, ...)
 }
@@ -14,5 +14,5 @@ freq.poly(x, ...)
 \item{...}{other parameters to be passed through to \code{\link[graphics]{hist}}.}
 }
 \description{
-Plot the frequency polygun of the pairwise distance.
+Plot the frequency polygon of the pairwise distance.
 }
