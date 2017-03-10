@@ -94,12 +94,12 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
       px = &retval2;
       pretval = &retval1;
     }
-    if (verbose) Rcout << "calculating distance... ";
+    if (verbose) Rcout << ".";
     pd.reset(new NumericVector(dist(*px)));
     if (pd->size() != d.size()) throw std::runtime_error("Inconsistent pd and d");
     double * ppd = &(pd->operator[](0)), * ppx = &(px->operator[](0)), * ppretval = &(pretval->operator[](0));
     double _T = getT(t++);
-    if (verbose) Rcout << "updating function f ... ";
+    if (verbose) Rcout << ".";
     for(int i = 0;i < d.size();i++) {
       if (ppd[i] > tau) {
         d[i] = 0.0;
@@ -108,9 +108,9 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
         d[i] = std::exp(- ppd[i] / _T);
       }
     }
-    if (verbose) Rcout << "arranging matrix ... ";
+    if (verbose) Rcout << ".";
     fill_sym_matrix(m, d.data(), 1.0, f1);
-    if (verbose) Rcout << "calculating column sum ... ";
+    if (verbose) Rcout << ".";
     // dsymm(m, 1, f1.data(), one_vector.data(), colsum.data());
     for(int j = 0;j < m;j++) {
       colsum[j] = 0;
@@ -125,7 +125,7 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
     // for(int i = 0;i < m;i++) {
     //   diag_matrix[i * m + i] = 1 / colsum[i];
     // }
-    if (verbose) Rcout << "standardizing f ... ";
+    if (verbose) Rcout << ".";
     // dsymm(m, m, f1.data(), diag_matrix.data(), f2.data()); //, CBLAS_SIDE::CblasRight);
     for(int j = 0;j < m;j++) {
       for(int i = 0;i < j;i++) {
@@ -135,16 +135,16 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
         f2[j * m + i] = f1[j * m + i] / colsum[i];
       }
     }
-    if (verbose) Rcout << "updating x ... ";
+    if (verbose) Rcout << ".";
     dgemm(m, px->ncol(), f2.data(), ppx, ppretval);
-    if (verbose) Rcout << "done ";
+    if (verbose) Rcout << ".";
     // check difference between px and pretval
     {
       double difference = 0.0;
       for(int i = 0;i < m * n;i++) {
         difference = std::max(difference, std::abs(ppx[i] - ppretval[i]));
       }
-      if (verbose) Rprintf("difference: %0.8f\n", difference);
+      if (verbose) Rprintf(" difference: %0.8f\n", difference);
       if (difference < tolerance) {
         // return px
         px->attr("dist") = *pd;
