@@ -381,7 +381,7 @@ for(i in 1:3) {
   ids <- paste(X.supcs[[i]]$cluster)
   plot(X, type = "n", main = sprintf("r = %0.1f", X.supcs[[i]]$r), xaxt = "n", yaxt = "n")
   text(X, labels = ids, col = "#999999")
-  text(X[1:n,], labels = ids)
+  text(X[1:n,], labels = ids[1:n])
   target.ids <- sort(unique(head(ids, n)))
   for(id in target.ids) {
     X.target <- X[ids == id,]
