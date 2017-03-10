@@ -109,7 +109,11 @@
 
 #'@title Self-Updating Process Clustering
 #'
-#'@description TODO
+#'@description 
+#'The SUP is a distance-based method for clustering. 
+#'The idea of this algorithm is similar to gravitational attraction: every samples gravitates toward one another. 
+#'The algorithm mimics the process of gravitational attraction iteratively that eventually merges the samples into clusters on the sample space. 
+#'During the iterations, all samples continue moving until the system becomes stable.
 #'
 #'@param x matrix. Each row is an instance of the data.
 #'@param r numeric vector or \code{NULL}. The parameter \eqn{r} of the self-updating process.
@@ -123,7 +127,7 @@
 #'@param verbose logical value. Whether to show some messages during computing or not.
 #'
 #'@details
-#'TODO
+#'Please check the vignettes via \code{vignettes("supc", package = "supc")} for details.
 #'
 #'@return
 #'\code{supc1} returns a list of objects of \link{class} "supc".
@@ -235,23 +239,55 @@ freq.poly.supclist <- function(x, ...) {
 #'
 #'@param x \code{supc} object to plot.
 #'@param type character value. \itemize{
-#'  \item{\code{"heatmap"}}{draw a heatmap to show the result of clustering}
+#'  \item{\code{"heatmap"}}{draw a heatmap to show the result of clustering. The clusters whose size is greater than parameter \code{major.size} are treated as major clusters.}
 #'}
 #'@param ... other parameters to be passed through.
+#'
+#'@examples
+#'\dontrun{
+#'data(golub, package = "supc")
+#'golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic")
+#'table(golub.supc$size)
+#'plot(golub.supc, type = "heatmap", major.size = 10)
+#'}
 #'
 #'@export
 plot.supc <- function(x, type = "heatmap", ...) {
   switch(type, "heatmap" = heatmap.supc(x, ...), stop("unsupported type"))
 }
 
-heatmap.supc <- function(x, ..., yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0)) {
+heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0)) {
+  dev.hold()
+  on.exit(dev.flush())
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op), add = TRUE)
+
   argv <- list(..., x = seq_len(nrow(x$x)), y = seq_len(ncol(x$x)), z = x$x[order(x$cluster),], yaxt = yaxt, xlab = xlab, ylab = ylab, mgp = mgp)
   do.call(image, argv)
   title(paste0("r=", x$r), line = 2.5)
-  abline(v = cumsum(x$size) + 0.5, lty = 2)
+  x.at.tail <- cumsum(x$size)
+  x.at.head <- c(0, head(x.at.tail, -1))
+  abline(v = x.at.tail[x$size > major.size] + 0.5, lty = 2)
   axis(side=2, at=seq_len(ncol(x$x)), labels=dimnames(x$x)[[2]], tick=FALSE, mgp=c(1.5,0,0))
-  axis(side=3, at=cumsum(x$size) + 0.5, labels=x$size, tick=FALSE, mgp=c(1.5,0,0))
-  mtext("Cluster Size", side = 3, line=1, cex=0.8)
+  major.at <- apply(cbind(x.at.head[x$size > major.size], x.at.tail[x$size > major.size]), 1, mean) + 0.5
+  major.label <- x$size[x$size > major.size]
+  mtext("Cluster Size", side = 3, line=1, padj = -0.5)
+  minor.size.table <- table(x$size[x$size <= major.size])
+  minor.size <- sort(unique(x$size[x$size <= major.size]), decreasing = TRUE)
+  minor.at <- numeric(length(minor.size))
+  segment.height <- par()$usr[4] + 0.1 * (diff(par()$usr[3:4]) / diff(par()$plt[3:4]) * (1 - par()$plt[4]))
+  y0 <- par()$usr[4]
+  y1 <- segment.height
+  for(i in seq_along(minor.size)) {
+    size <- minor.size[i]
+    x0 <- min(x.at.head[x$size == size]) + 0.6
+    x1 <- max(x.at.tail[x$size == size]) + 0.4
+    segments(y0 = y1, x0 = x0, x1 = x1, xpd = TRUE)
+    segments(y0 = y0, x0 = x0, y1 = y1, xpd = TRUE)
+    segments(y0 = y0, x0 = x1, y1 = y1, xpd = TRUE)
+    minor.at[i] <- mean(c(x0, x1))
+  }
+  axis(side = 3, at = c(major.at, minor.at), labels = c(major.label, minor.size), tick = FALSE, mgp = c(1.5, 0, 0), padj = -0.5)
 }
 
 #'@name golub

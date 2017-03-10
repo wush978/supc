@@ -40,10 +40,13 @@ Each "supc" object contains the following elements:
 \item{size}{The size of each cluster.}
 }
 \description{
-TODO
+The SUP is a distance-based method for clustering. 
+The idea of this algorithm is similar to gravitational attraction: every samples gravitates toward one another. 
+The algorithm mimics the process of gravitational attraction iteratively that eventually merges the samples into clusters on the sample space. 
+During the iterations, all samples continue moving until the system becomes stable.
 }
 \details{
-TODO
+Please check the vignettes via \code{vignettes("supc", package = "supc")} for details.
 }
 \examples{
 print("hello example")
