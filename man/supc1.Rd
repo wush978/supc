@@ -15,7 +15,7 @@ supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
 
 \item{rp}{numeric vector or \code{NULL}. If \code{r} is \code{NULL}, then \code{rp} will be used. 
 The corresponding \code{r} is the \code{rp}-percentiles of the pairwise distances of the data. 
-If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.005, 0.01, 0.03, 0.1)}.}
+If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.0005, 0.001, 0.01, 0.1, 0.3)}.}
 
 \item{t}{either numeric value, function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.}
 
