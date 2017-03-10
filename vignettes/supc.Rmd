@@ -6,7 +6,6 @@ output:
     toc: yes
     mathjax: default
     pandoc_args: --include-in-header=header.xml
-    keep_md: yes
 bibliography: supc.bib
 author: Wush Wu and Shang-Ying Shiu
 vignette: >
@@ -30,7 +29,7 @@ opts_chunk$set(fig.width = 8, fig.height = 5)
 
 # Overview
 
-This package implements the self-updating process clustering algorithm proposed by @Shiu2016supc. This document shows how to reproduce the examples and figures in the paper.
+This package implements the self-updating process clustering algorithm proposed by @Shiu2016supc . This document shows how to reproduce the examples and figures in the paper.
 
 The SUP is a distance-based method for clustering. The idea of this algorithm is similar to gravitational attraction: every samples gravitates toward one another. 
 The algorithm mimics the process of gravitational attraction iteratively that eventually merges the samples into clusters on the sample space. 
@@ -401,16 +400,16 @@ The user can use heatmaps to further understand the structure of the data and th
 The following graphs show the heatmaps of the data using clustering results with different `r` values.
 
 ```{r}
-plot(X.supcs[[1]], type = "heatmap")
+plot(X.supcs[[1]], type = "heatmap", major.size = 2)
 ```
 
 After specifying `type = "heatmap"`, the `plot` function will draw the corresponding heatmap of the given `supc` object.
-The samples will be ordered by the cluster IDs. The dashed lines split the samples into different clusters and the cluster size is annotated above the figure.
+The samples will be ordered by the cluster IDs. The dashed lines split the samples into different clusters and the cluster size is annotated above the figure. For those clusters whose size is smaller than the parameter `major.size`, the dashed lines will be omitted.
 
 The user could pass additional parameters to the underlying `image` function. For example:
 
 ```{r}
-plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24))
+plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
 ```
 
 # References

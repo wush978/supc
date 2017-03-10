@@ -142,7 +142,44 @@
 #'\item{size}{The size of each cluster.}
 #'
 #'@examples
-#'print("hello example")
+#'\dontrun{
+#'set.seed(1)
+#'X <- local({
+#'  mu <- list(
+#'    x = c(0, 2, 1, 6, 8, 7, 3, 5, 4),
+#'    y = c(0, 0, 1, 0, 0, 1, 3, 3, 4)
+#'  )
+#'  X <- lapply(1:5, function(i) {
+#'    cbind(rnorm(9, mu$x, 1/5), rnorm(9, mu$y, 1/5))
+#'  })
+#'  X <- do.call(rbind, X)
+#'  n <- nrow(X)
+#'  X <- rbind(X, matrix(0, 20, 2))
+#'  k <- 1
+#'  while(k <= 20) {
+#'    tmp <- c(13*runif(1)-2.5, 8*runif(1)-2.5)
+#'    y1 <- mu$x - tmp[1]
+#'    y2 <- mu$y - tmp[2]
+#'    y <- sqrt(y1^2+y2^2)
+#'    if (min(y)> 2){
+#'      X[k+n,] <- tmp
+#'      k <- k+1
+#'    }
+#'  }
+#'  X
+#'})
+#'X.supcs <- supc1(X, r = c(0.9, 1.7, 2.5), t = "dynamic")
+#'X.supcs$cluster
+#'plot(X.supcs[[1]], type = "heatmap", major.size = 2)
+#'plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
+#'
+#'X.supcs <- supc1(X, r = c(1.7, 2.5), t = list(
+#'  function(t) {1.7 / 20 + exp(t) * (1.7 / 50)},
+#'  function(t) {exp(t)}
+#'))
+#'plot(X.supcs[[1]], type = "heatmap", major.size = 2)
+#'plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
+#'}
 #'
 #'@references
 #'Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
