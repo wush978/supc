@@ -14,8 +14,6 @@ The paper shows that SUP is particularly competitive for:
 - Data with a large number of clusters
 - Unbalanced data
 
-
-
 # Installation
 
 To build the package from source, the Windows user requires [Rtools](http://cran.csie.ntu.edu.tw/bin/windows/Rtools/) and the Mac OS X user requires [gfortran](http://cran.csie.ntu.edu.tw/bin/macosx/tools/).
