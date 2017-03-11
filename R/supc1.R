@@ -294,21 +294,21 @@ plot.supc <- function(x, type = "heatmap", ...) {
 }
 
 heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0)) {
-  dev.hold()
-  on.exit(dev.flush())
-  op <- par(no.readonly = TRUE)
-  on.exit(par(op), add = TRUE)
+  grDevices::dev.hold()
+  on.exit(grDevices::dev.flush())
+  op <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(op), add = TRUE)
 
   argv <- list(..., x = seq_len(nrow(x$x)), y = seq_len(ncol(x$x)), z = x$x[order(x$cluster),], yaxt = yaxt, xlab = xlab, ylab = ylab, mgp = mgp)
-  do.call(image, argv)
+  do.call(graphics::image, argv)
   title(paste0("r=", x$r), line = 2.5)
   x.at.tail <- cumsum(x$size)
-  x.at.head <- c(0, head(x.at.tail, -1))
-  abline(v = x.at.tail[x$size > major.size] + 0.5, lty = 2)
-  axis(side=2, at=seq_len(ncol(x$x)), labels=dimnames(x$x)[[2]], tick=FALSE, mgp=c(1.5,0,0))
+  x.at.head <- c(0, utils::head(x.at.tail, -1))
+  graphics::abline(v = x.at.tail[x$size > major.size] + 0.5, lty = 2)
+  graphics::axis(side=2, at=seq_len(ncol(x$x)), labels=dimnames(x$x)[[2]], tick=FALSE, mgp=c(1.5,0,0))
   major.at <- apply(cbind(x.at.head[x$size > major.size], x.at.tail[x$size > major.size]), 1, mean) + 0.5
   major.label <- x$size[x$size > major.size]
-  mtext("Cluster Size", side = 3, line=1, padj = -0.5)
+  graphics::mtext("Cluster Size", side = 3, line=1, padj = -0.5)
   minor.size.table <- table(x$size[x$size <= major.size])
   minor.size <- sort(unique(x$size[x$size <= major.size]), decreasing = TRUE)
   minor.at <- numeric(length(minor.size))
@@ -319,9 +319,9 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
     size <- minor.size[i]
     x0 <- min(x.at.head[x$size == size]) + 0.6
     x1 <- max(x.at.tail[x$size == size]) + 0.4
-    segments(y0 = y1, x0 = x0, x1 = x1, xpd = TRUE)
-    segments(y0 = y0, x0 = x0, y1 = y1, xpd = TRUE)
-    segments(y0 = y0, x0 = x1, y1 = y1, xpd = TRUE)
+    graphics::segments(y0 = y1, x0 = x0, x1 = x1, xpd = TRUE)
+    graphics::segments(y0 = y0, x0 = x0, y1 = y1, xpd = TRUE)
+    graphics::segments(y0 = y0, x0 = x1, y1 = y1, xpd = TRUE)
     minor.at[i] <- mean(c(x0, x1))
   }
   axis(side = 3, at = c(major.at, minor.at), labels = c(major.label, minor.size), tick = FALSE, mgp = c(1.5, 0, 0), padj = -0.5)
