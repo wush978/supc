@@ -312,8 +312,8 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
   minor.size.table <- table(x$size[x$size <= major.size])
   minor.size <- sort(unique(x$size[x$size <= major.size]), decreasing = TRUE)
   minor.at <- numeric(length(minor.size))
-  segment.height <- par()$usr[4] + 0.1 * (diff(par()$usr[3:4]) / diff(par()$plt[3:4]) * (1 - par()$plt[4]))
-  y0 <- par()$usr[4]
+  segment.height <- graphics::par()$usr[4] + 0.1 * (diff(graphics::par()$usr[3:4]) / diff(graphics::par()$plt[3:4]) * (1 - graphics::par()$plt[4]))
+  y0 <- graphics::par()$usr[4]
   y1 <- segment.height
   if (display.minor.size) {
     for(i in seq_along(minor.size)) {
@@ -326,7 +326,7 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
       minor.at[i] <- mean(c(x0, x1))
     }
   }
-  axis(side = 3, at = c(major.at, minor.at), labels = c(major.label, minor.size), tick = FALSE, mgp = c(1.5, 0, 0), padj = -0.5)
+  graphics::axis(side = 3, at = c(major.at, minor.at), labels = c(major.label, minor.size), tick = FALSE, mgp = c(1.5, 0, 0), padj = -0.5)
 }
 
 #'@name golub
