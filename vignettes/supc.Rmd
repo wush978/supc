@@ -15,7 +15,6 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-library(animation)
 library(knitr)
 show.obj <- function(obj) {
   paste(trimws(deparse(obj)), collapse = " ")
