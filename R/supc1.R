@@ -301,7 +301,7 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
 
   argv <- list(..., x = seq_len(nrow(x$x)), y = seq_len(ncol(x$x)), z = x$x[order(x$cluster),], yaxt = yaxt, xlab = xlab, ylab = ylab, mgp = mgp)
   do.call(graphics::image, argv)
-  title(paste0("r=", x$r), line = 2.5)
+  title(sprintf("r=%0.4f", x$r), line = 2.5)
   x.at.tail <- cumsum(x$size)
   x.at.head <- c(0, utils::head(x.at.tail, -1))
   graphics::abline(v = x.at.tail[x$size > major.size] + 0.5, lty = 2)
