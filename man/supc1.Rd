@@ -14,18 +14,18 @@ supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
 \item{r}{numeric vector or \code{NULL}. The parameter \eqn{r} of the self-updating process.}
 
 \item{rp}{numeric vector or \code{NULL}. If \code{r} is \code{NULL}, then \code{rp} will be used. 
-The corresponding \code{r} is the \code{rp}-percentiles of the pairwise distances of the data. 
+The corresponding \code{r} is the \code{rp}-percentile of the pairwise distances of the data. 
 If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.0005, 0.001, 0.01, 0.1, 0.3)}.}
 
-\item{t}{either numeric value, function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.}
+\item{t}{either numeric vector, list of function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.}
 
 \item{tolerance}{numeric value. The threshold of convergence.}
 
 \item{drop}{logical value. Whether to delete the list structure if its length is 1.}
 
-\item{implementation}{eithor \code{"R"} or \code{"cpp"}. Choose the tool to calculating result.}
+\item{implementation}{eithor \code{"R"} or \code{"cpp"}. Choose the tool to calculate result.}
 
-\item{verbose}{logical value. Whether to show some messages during computing or not.}
+\item{verbose}{logical value. Whether to show the iteration history.}
 }
 \value{
 \code{supc1} returns a list of objects of \link{class} "supc".
@@ -35,13 +35,13 @@ Each "supc" object contains the following elements:
 \item{d0}{The pairwise distance matrix of \code{x}.}
 \item{r}{The value of \eqn{r} of the clustering.}
 \item{t}{The function \eqn{T(t)} of the clustering.}
-\item{cluster}{The cluster id of each instances.}
+\item{cluster}{The cluster id of each instance.}
 \item{centers}{The center of each cluster.}
 \item{size}{The size of each cluster.}
 }
 \description{
 The SUP is a distance-based method for clustering. 
-The idea of this algorithm is similar to gravitational attraction: every samples gravitates toward one another. 
+The idea of this algorithm is similar to gravitational attraction: every sample gravitates towards one another. 
 The algorithm mimics the process of gravitational attraction iteratively that eventually merges the samples into clusters on the sample space. 
 During the iterations, all samples continue moving until the system becomes stable.
 }
