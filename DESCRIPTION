@@ -7,7 +7,7 @@ Authors@R: c(
   person("Shang-Ying", "Shiu", email = "", role = c("aut", "ctb")))
 Maintainer: Wush Wu <wush978@gmail.com>
 Description: Implements the self-updating process clustering algorithms proposed
-    in Shiu and Chen (2016).
+    in Shiu and Chen (2016) <doi:10.1080/00949655.2015.1049605>.
 License: GPL (>= 3)
 LazyData: TRUE
 Depends:
