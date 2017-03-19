@@ -293,7 +293,7 @@ plot.supc <- function(x, type = "heatmap", ...) {
   switch(type, "heatmap" = heatmap.supc(x, ...), stop("unsupported type"))
 }
 
-heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0)) {
+heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0), title.digits = 4) {
   grDevices::dev.hold()
   on.exit(grDevices::dev.flush())
   op <- graphics::par(no.readonly = TRUE)
@@ -301,7 +301,7 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
 
   argv <- list(..., x = seq_len(nrow(x$x)), y = seq_len(ncol(x$x)), z = x$x[order(x$cluster),], yaxt = yaxt, xlab = xlab, ylab = ylab, mgp = mgp)
   do.call(graphics::image, argv)
-  title(sprintf("r=%0.4f", x$r), line = 2.5)
+  title(sprintf("r=%s", format(x$r, digits = title.digits)), line = 2.5)
   x.at.tail <- cumsum(x$size)
   x.at.head <- c(0, utils::head(x.at.tail, -1))
   graphics::abline(v = x.at.tail[x$size > major.size] + 0.5, lty = 2)
