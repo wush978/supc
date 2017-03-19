@@ -30,7 +30,7 @@ opts_chunk$set(fig.width = 8, fig.height = 5)
 
 This package implements the self-updating process clustering algorithm proposed by @Shiu2016supc . This document shows how to reproduce the examples and figures in the paper.
 
-The SUP is a distance-based method for clustering. The idea of this algorithm is similar to gravitational attraction: every samples gravitates toward one another. 
+The SUP is a distance-based method for clustering. The idea of this algorithm is similar to gravitational attraction: every sample gravitates towards one another. 
 The algorithm mimics the process of gravitational attraction iteratively that eventually merges the samples into clusters on the sample space. 
 During the iterations, all samples continue moving until the system becomes stable.
 
@@ -82,7 +82,7 @@ The SUP updates the data points via:
 
 $$\begin{equation} x_i^{(t+1)} = \sum_{j=1}^N{\frac{f_t(x_i^{(t)}, x_j^{(t)})}{\sum_{k=1}^N{f_t(x_i^{(t)}, x_k^{(t)})}} x_j^{(t)}} \label{eq:sup} \end{equation}$$
 
-The iteration stops after convergence. We compare the $L_{\infty}$ distance (i.e. $max_{1 \leq i \leq N} {\left\lVert x_i^{(t)} - x_i^{(t + 1)} \right\rVert_{\infty}}$) with `tolerance`. If the $L_{\infty}$ distance is lower than `tolerance`, then the computation stops and returns $x_1^{(t)}, ..., x_N^{(t)}$.
+The iteration stops after convergence. We compare the $L_{\infty}$ distance (i.e. $max_{1 \leq i \leq N} {\left| x_i^{(t)} - x_i^{(t + 1)} \right|}$) with `tolerance`. If the $L_{\infty}$ distance is less than `tolerance`, then the computation stops and returns $x_1^{(t)}, ..., x_N^{(t)}$.
 
 ## Clustering
 
@@ -228,7 +228,7 @@ will use the implementation in `R`.
 
 ### Verbose
 
-Using `supc1` with `verbose = TRUE`, the program will show the $L_1$ distance between each iteration on the screen in real-time, so that 
+Using `supc1` with `verbose = TRUE`, the program will show the $L_{\infty}$ distance between each iteration on the screen in real-time, so that 
 the user can monitor the iterations to check if the program is still running or dead.
 
 ## Example
@@ -288,7 +288,7 @@ freq.poly(X, breaks = 50)
 The user can also control the number of bins by specifying the argument breaks. Please see `?hist` for details.
 
 The object returned by `freq.poly` is the same as the object returned by the `hist` function. In this example, `X.freq$mids` is the vector of x-axis and `X.freq$count` is the vector of y-axis of the frequency plot.
-The user can use these two vectors to identify the exact locations of the valleys of the polygon, which are at 0.9, 1.7, 2.1, 2.5, etc. in this data set.
+The user can use these two vectors to identify the exact locations of the valleys of the polygon.
 
 After examing the data, there are sharp valleys at 0.9, 1.7, 2.1, 2.3, and more.
 
@@ -314,9 +314,9 @@ str(X.supc)
 - `d0`, the distance matrix of the data.
 - `r`, the value of $r$.
 - `t`, the function of $T(t)$.
-- `cluster`, the cluster label of each samples.
-- `centers`, the center of the clusters.
-- `size`, the size of the clusters.
+- `cluster`, the cluster label of each sample.
+- `centers`, the center of each cluster.
+- `size`, the size of each cluster.
 
 #### Cluster
 
@@ -354,7 +354,7 @@ Note that this clustering result shows that SUP identified `r length(X.supc$size
 
 To compute clustering results by multiple parameters, the user can directly pass a vector to the corresponding parameters `r`, `rp`, or `t`.
 
-For demonstration, the following uses `r quoted.string("r = c(0.9, 1.7, 2.5)")` according to the approximate locations of sharp values in the frequency polygon of pairwise distance.
+For demonstration, the following uses `r quoted.string("r = c(0.9, 1.7, 2.5)")` according to the approximate locations of sharp values in the frequency polygon of pairwise distances.
 
 ```{r}
 X.supcs <- supc1(X, r = c(0.9, 1.7, 2.5), t = "dynamic")
