@@ -293,7 +293,7 @@ plot.supc <- function(x, type = "heatmap", ...) {
   switch(type, "heatmap" = heatmap.supc(x, ...), stop("unsupported type"))
 }
 
-heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0), title.digits = 4) {
+heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0), title.digits = 4, display.minor.size = FALSE) {
   grDevices::dev.hold()
   on.exit(grDevices::dev.flush())
   op <- graphics::par(no.readonly = TRUE)
@@ -315,14 +315,16 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
   segment.height <- par()$usr[4] + 0.1 * (diff(par()$usr[3:4]) / diff(par()$plt[3:4]) * (1 - par()$plt[4]))
   y0 <- par()$usr[4]
   y1 <- segment.height
-  for(i in seq_along(minor.size)) {
-    size <- minor.size[i]
-    x0 <- min(x.at.head[x$size == size]) + 0.6
-    x1 <- max(x.at.tail[x$size == size]) + 0.4
-    graphics::segments(y0 = y1, x0 = x0, x1 = x1, xpd = TRUE)
-    graphics::segments(y0 = y0, x0 = x0, y1 = y1, xpd = TRUE)
-    graphics::segments(y0 = y0, x0 = x1, y1 = y1, xpd = TRUE)
-    minor.at[i] <- mean(c(x0, x1))
+  if (display.minor.size) {
+    for(i in seq_along(minor.size)) {
+      size <- minor.size[i]
+      x0 <- min(x.at.head[x$size == size]) + 0.6
+      x1 <- max(x.at.tail[x$size == size]) + 0.4
+      graphics::segments(y0 = y1, x0 = x0, x1 = x1, xpd = TRUE)
+      graphics::segments(y0 = y0, x0 = x0, y1 = y1, xpd = TRUE)
+      graphics::segments(y0 = y0, x0 = x1, y1 = y1, xpd = TRUE)
+      minor.at[i] <- mean(c(x0, x1))
+    }
   }
   axis(side = 3, at = c(major.at, minor.at), labels = c(major.label, minor.size), tick = FALSE, mgp = c(1.5, 0, 0), padj = -0.5)
 }
