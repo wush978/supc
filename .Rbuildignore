@@ -9,3 +9,5 @@ README.Rmd
 README.md
 README_files
 get.README.R
+vignettes/golub.Rmd
+.Rprofile
