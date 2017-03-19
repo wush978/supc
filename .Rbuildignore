@@ -9,7 +9,3 @@ README.Rmd
 README.md
 README_files
 get.README.R
-vignettes/supc.html
-vignettes/supc.md
-vignettes/supc.R
-vignettes/supc_files/*
