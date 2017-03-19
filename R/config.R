@@ -43,5 +43,5 @@ dist.parallelization <- function(i) {
 }
 
 #'@importFrom Rcpp sourceCpp
-#'@useDynLib supc
+#'@useDynLib supc, .registration = TRUE 
 .onLoad <- function(libname, pkgname) { }
