@@ -47,6 +47,12 @@ The paper shows that SUP is particularly competitive for:
 
 # Installation
 
+To install the package from CRAN:
+
+```r
+install.packages("supc")
+```
+
 To build the package from source, the Windows user requires [Rtools](https://CRAN.R-project.org/bin/windows/Rtools/) and the Mac OS X user requires [gfortran](https://CRAN.R-project.org/bin/macosx/tools/).
 
 To get the current development version from github:
