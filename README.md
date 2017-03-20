@@ -1,4 +1,7 @@
 
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/supc)](http://cran.r-project.org/package=supc/)
+[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/supc)](https://github.com/metacran/cranlogs.app)
+
 [![Travis-ci Status](https://travis-ci.org/wush978/supc.svg?branch=master)](https://travis-ci.org/wush978/supc)
 [![Appveyor status](https://ci.appveyor.com/api/projects/status/ov2xlvx7edswtki7/branch/master?svg=true)](https://ci.appveyor.com/project/wush978/supc)
 
@@ -13,6 +16,8 @@ The paper shows that SUP is particularly competitive for:
 - Data with noise
 - Data with a large number of clusters
 - Unbalanced data
+
+
 
 # Installation
 
