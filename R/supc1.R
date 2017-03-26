@@ -296,8 +296,6 @@ plot.supc <- function(x, type = "heatmap", ...) {
 heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", ylab = "Variables", mgp = c(1.5, 0, 0), title.digits = 4, display.minor.size = FALSE) {
   grDevices::dev.hold()
   on.exit(grDevices::dev.flush())
-  op <- graphics::par(no.readonly = TRUE)
-  on.exit(graphics::par(op), add = TRUE)
 
   argv <- list(..., x = seq_len(nrow(x$x)), y = seq_len(ncol(x$x)), z = x$x[order(x$cluster),], yaxt = yaxt, xlab = xlab, ylab = ylab, mgp = mgp)
   do.call(graphics::image, argv)
