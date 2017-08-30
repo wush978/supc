@@ -9,6 +9,7 @@
 #'\item{golub.supc}{The result of \code{golub.supc <- supc1(golub, r = c(4, 4.3, 4.6, 4.7, 4.8), t = "dynamic")}}
 #'
 #'@aliases golub.supc
+#'@references Golub, T. R., D. K. Slonim, P. Tamayo P., C. Huard C, M. Gaasenbeek M., J.P. J. P. Mesirov, H. H. Coller, et al. 1999. 「Molecular Classification of Cancer: Class Discovery and Class Prediction by Gene Expression Monitoring.」 Science 286 (5439): 531–37.
 NULL
 
 #'@name shape
@@ -59,4 +60,13 @@ NULL
 #'
 #'}
 #'@references Guha, S., R. Rastogi, and K. Shim. 2001. 「Cure: An Efficient Clustering Algorithm for Large Databases.」 Information Systems 26 (1): 35–38.
+NULL
+
+#'@name D31
+#'@title The Artificial Data of Consisting of as Many as 31 Randomly Placed Gaussian Clusters
+#'@description
+#'This artificial data was generated to show the strength of SUPC.
+#'Clustering \code{D31} dataset is difficult for the partition type of clustering algorithms that require an initial set.
+#'However, SUP correctly identifies the 31 major clusters.
+#'@references Veenman, C. J., M. J. T. Reinders, and E. Backer. 2002. 「A Maximum Variance Cluster Algorithm.」 IEEE Trans. Pattern Analysis and Machine Intelligence 24 (9): 1273–80.
 NULL
