@@ -7,7 +7,7 @@ output:
     mathjax: default
 bibliography: supc_demo.bib
 vignette: >
-  %\VignetteIndexEntry{supc}
+  %\VignetteIndexEntry{supc_demo}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -20,7 +20,7 @@ library(supc)
 ```
 
 
-### Example 1 - Data that has clusters of different sizes, densities and shapes
+# Example 1 - Data that has clusters of different sizes, densities and shapes
 
 The first artificial data was introduced in the paper that proposed the CURE clustering algorithm by @cure. The data was generated to have five clusters: one big circle, two small circles, and two ellipses. **Due to the large differences in sizes and shapes of the clusters, the challenge is to identify and distinguish between the five clusters**, while most of the clustering algorithms failed. In addition, some noise data points were generated to connect the two ellipses, and some were randomly scattered. The purpose of these noise data points, according to the authors, were to demonstrate that CURE is insensitive to outliers. The codes that generate this example data are provided in the reference manual. 
 
@@ -58,7 +58,7 @@ plot(x, col=x.supcs$cluster[[i]], main=paste("r=", x.supcs$r[[i]], sep=""))
 ```
 
 
-### Example 2 - Data that has many clusters
+# Example 2 - Data that has many clusters
 The second dataset was introduced in the paper by @veenman. The data was generated to consist of as many as 31 randomly placed Gaussian clusters. **Clustering such datasets is difficult for the partition type of clustering algorithms that require an initial set**, because proper selections of the initial sets are crucial to prevent these algorithms from trapping into a local minimum, which may consequently lead to poor clustering results.
 
 
@@ -97,7 +97,8 @@ text(x=x.supcs$centers[32:34,], labels=32:34, col=2)
 This result shows that SUP correctly identifies the 31 major clusters. SUP also identifies three data points as outliers, by forming them as isolated singleton clusters. If the user does not wish to separate out the outliers and the noise data points, two approaches can be taken: (i) merge each isolated tiny cluster to the closest major cluster, (ii) use a larger r value to extend the sizes of the major clusters, so that the outliers and the noise data points may be included.
 
 
-### Example 3 - Gene expression data
+# Example 3 - Gene expression data
+
 This example uses the gene expression data presented in @golub. We obtained the data from the **multtest** package in Bioconductor. We furthre normalized the expression values by genes to ensure an equal weight of each gene. In this example, we demonstrate the use of SUP in **discovering gene cluster patterns in the presence of scattered genes**.
 
 The following plot shows the frequency polygon of the pairwise distances between genes. In situations when there is no valley in the plot, we recommend the user to perform preliminary clusterings using the function default `rp` values, which covers a wide range from 0.0005 to 0.3. From there, subsequent changes of the r value can be made to achieve a better the clustering result. 
@@ -147,5 +148,5 @@ for (i in 1:3){
 
 
 
-### Reference
+# Reference
 
