@@ -306,7 +306,7 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
   graphics::axis(side=2, at=seq_len(ncol(x$x)), labels=dimnames(x$x)[[2]], tick=FALSE, mgp=c(1.5,0,0))
   major.at <- apply(cbind(x.at.head[x$size > major.size], x.at.tail[x$size > major.size]), 1, mean) + 0.5
   major.label <- x$size[x$size > major.size]
-  graphics::mtext("Cluster Size", side = 3, line=1, padj = -0.5)
+  # graphics::mtext("Cluster Size", side = 3, line=1, padj = -0.5)
   minor.size.table <- table(x$size[x$size <= major.size])
   minor.size <- sort(unique(x$size[x$size <= major.size]), decreasing = TRUE)
   minor.at <- numeric(length(minor.size))
@@ -326,16 +326,3 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
   }
   graphics::axis(side = 3, at = c(major.at, minor.at), labels = c(major.label, minor.size), tick = FALSE, mgp = c(1.5, 0, 0), padj = -0.5)
 }
-
-#'@name golub
-#'@title Gene expression dataset from Golub et al. (1999)
-#'@description
-#'Gene expression data (3051 genes and 38 tumor mRNA samples) from the leukemia microarray study of Golub et al. (1999). 
-#'Each row (gene) is scaled to mean 0 and standard deviation 1.
-#'
-#'@return
-#'\item{golub}{The matrix of scaled gene expression data.}
-#'\item{golub.supc}{The result of \code{golub.supc <- supc1(golub, r = c(4, 4.3, 4.6, 4.7, 4.8), t = "dynamic")}}
-#'
-#'@aliases golub.supc
-NULL
