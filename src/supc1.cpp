@@ -1,7 +1,9 @@
 #include <memory>
-#include <R_ext/BLAS.h>
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+#include "cblas_R.h"
 #include <Rcpp.h>
-#include "cblas_Rdgemm.h"
 
 using namespace Rcpp;
 
@@ -155,4 +157,197 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
     retval_is_retval2 = !retval_is_retval2;
     is_first = false;
   }
+}
+
+//[[Rcpp::export(".supc1.cpp2.internal")]]
+NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose) {
+  bool is_first = true;
+  int t = 0;
+  int m = x.nrow(), n = x.ncol();
+  std::vector<double> f1(m * m, 0.0), f2(m * m, 0.0), one_vector(m, 1.0), colsum(m, 0.0);
+  // d is the distance matrix
+  // d2 is the transformed matrix from d
+  // acc_shift is the accumulated shift
+  int d_size = m * (m - 1) / 2;
+  std::vector<double> d(d_size, -1.0), d2(d_size), acc_shift(m, 0.0);
+  
+  static std::vector<int> di, dj;
+  { // construct mapping index
+    di.resize(d_size);
+    dj.resize(d_size);
+    int q = 0;
+    for(int i = 0;i < m;i++) {
+      for(int j = i + 1;j < m;j++) {
+        di[q] = i;
+        dj[q] = j;
+        q++;
+      }
+    }
+  }
+
+  T getT(RT);
+  NumericMatrix retval1 = clone(x), retval2 = clone(x);
+  bool retval_is_retval2 = true;
+  NumericMatrix *px, *pretval;
+  double *ppx, *ppretval, _T, difference;
+  int skipped_distance_entry_count;
+#pragma omp parallel
+  {
+    std::vector<double> buffer(n);
+    double *pb = &buffer[0], local_difference;
+    int local_skipped_distance_entry_count;
+    while(true) {
+#pragma omp master
+      {
+        if (retval_is_retval2) {
+          px = &retval1;
+          pretval = &retval2;
+        } else {
+          px = &retval2;
+          pretval = &retval1;
+        }
+        ppx = px->begin();
+        if (verbose) Rcout << ".";
+        skipped_distance_entry_count = 0;
+      } // omp master
+      { // begin computing distance
+        local_skipped_distance_entry_count = 0;
+#pragma omp barrier
+#pragma omp for
+        for(int q = 0;q < d_size;q++) {
+          int i = di[q], j = dj[q];
+          if (d[q] - acc_shift[i] - acc_shift[j] < tau) {
+            double *p1 = ppx + i;
+            double *p2 = ppx + j;
+            cblas_Rdcopy(n, p1, m, pb, 1);
+            cblas_Rdaxpy(n, -1, p2, m, pb, 1);
+            d[q] = cblas_Rdnrm2(n, pb, 1);
+          } else {
+            local_skipped_distance_entry_count += 1;
+          }
+        } // omp for
+      } // end computing distance
+#pragma omp critical
+      {
+        skipped_distance_entry_count += local_skipped_distance_entry_count;
+      }
+#pragma omp barrier
+#pragma omp master
+      { // prepare transformation
+        ppx = px->begin();
+        ppretval = pretval->begin();
+        _T = getT(t++);
+        if (verbose) Rcout << "." << skipped_distance_entry_count << "/" << d_size;
+      }
+      // transformation
+#pragma omp barrier
+#pragma omp for
+      for(int i = 0;i < d_size;i++) {
+        if (d[i] > tau) {
+          d2[i] = 0.0;
+        }
+        else {
+          d2[i] = std::exp(- d[i] / _T);
+        }
+      }
+#pragma omp master
+      {
+        if (verbose) Rcout << ".";
+      }
+      {
+#pragma omp barrier
+#pragma omp for nowait 
+        for(int col = 0;col < m;col++) {
+          f1[col * m + col] = 1.0;
+          memcpy(
+            f1.data() + col * m + col + 1, 
+            d2.data() + (col * m - col * (col + 1) / 2), 
+            sizeof(double) * (m - 1 - col));
+        }
+      }
+#pragma omp master
+      {
+        if (verbose) Rcout << ".";
+      }
+#pragma omp barrier
+#pragma omp for
+      for(int j = 0;j < m;j++) {
+        colsum[j] = 0;
+        for(int i = 0;i < j;i++) {
+          colsum[j] += f1[i * m + j];
+        }
+        for(int i = j;i < m;i++) {
+          colsum[j] += f1[j * m + i];
+        }
+      }
+#pragma omp master
+      {
+        if (verbose) Rcout << ".";
+      }
+#pragma omp barrier
+#pragma omp for
+      for(int j = 0;j < m;j++) {
+        for(int i = 0;i < j;i++) {
+          f2[j * m + i] = f1[i * m + j] / colsum[i];
+        }
+        for(int i = j;i < m;i++) {
+          f2[j * m + i] = f1[j * m + i] / colsum[i];
+        }
+      }
+#pragma omp master
+      {
+        if (verbose) Rcout << ".";
+        dgemm(m, px->ncol(), f2.data(), ppx, ppretval);
+        if (verbose) Rcout << ".";
+      // check difference between px and pretval
+        difference = 0.0;
+      }
+      local_difference = 0;
+#pragma omp barrier
+#pragma omp for
+      for(int i = 0;i < m;i++) {
+        cblas_Rdcopy(n, ppx + i, m, pb, 1);
+        cblas_Rdaxpy(n, -1, ppretval + i, m, pb, 1);
+        acc_shift[i] += cblas_Rdnrm2(n, pb, 1);
+        for(int j = 0;j < n;j++) {
+          local_difference = std::max(local_difference, std::abs(pb[j]));
+        }
+      }
+#pragma omp critical
+      {
+        difference = std::max(difference, local_difference);
+      }
+#pragma omp barrier
+#pragma omp master
+      {
+        if (verbose) Rprintf(" difference: %0.8f\n", difference);
+      }
+      {
+        if (difference < tolerance) {
+#pragma omp for
+          for(int q = 0;q < d_size;q++) {
+            int i = di[q], j = dj[q];
+            double *p1 = ppx + i;
+            double *p2 = ppx + j;
+            cblas_Rdcopy(n, p1, m, pb, 1);
+            cblas_Rdaxpy(n, -1, p2, m, pb, 1);
+            d[q] = cblas_Rdnrm2(n, pb, 1);
+          } // omp for
+        
+#pragma omp master
+          {
+            px->attr("dist") = wrap(d);
+            px->attr("iteration") = wrap(t);
+          }
+          break;
+        }
+#pragma omp master
+        {
+          retval_is_retval2 = !retval_is_retval2;
+          is_first = false;
+        }
+      }
+    } // while
+  } // omp parallel
+  return *px;
 }

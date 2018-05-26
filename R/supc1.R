@@ -1,4 +1,13 @@
 
+.supc1.cpp2 <- function(x, parameters, tolerance, verbose) {
+  stopifnot(length(parameters$tau) == length(parameters$t))
+  lapply(seq_along(parameters$tau), function(i) {
+    .current.tau <- parameters$tau[i]
+    .current.t <- parameters$t[[i]]
+    .supc1.cpp2.internal(x, .current.tau, .current.t, tolerance, .dist, verbose)
+  })
+}
+
 .supc1.cpp <- function(x, parameters, tolerance, verbose) {
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
@@ -186,7 +195,12 @@
 #'@export
 supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, drop = TRUE, implementation = c("cpp", "R"), verbose = FALSE) {
   parameters <- .get.parameters(x, r, rp, t)
-  cl.raw <- switch(implementation[1], "R" = .supc1.R(x, parameters, tolerance, verbose), "cpp" = .supc1.cpp(x, parameters, tolerance, verbose))
+  cl.raw <- switch(
+    implementation[1], 
+    "R" = .supc1.R(x, parameters, tolerance, verbose), 
+    "cpp" = .supc1.cpp(x, parameters, tolerance, verbose),
+    "cpp2" = .supc1.cpp2(x, parameters, tolerance, verbose)
+    )
   retval <- lapply(
     seq_along(cl.raw),
     function(.i) {

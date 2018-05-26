@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // clusterize
 SEXP clusterize(NumericVector dist, double tolerance);
-RcppExport SEXP supc_clusterize(SEXP distSEXP, SEXP toleranceSEXP) {
+RcppExport SEXP _supc_clusterize(SEXP distSEXP, SEXP toleranceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,7 +19,7 @@ END_RCPP
 }
 // test_dgemm
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval);
-RcppExport SEXP supc_test_dgemm(SEXP aSEXP, SEXP bSEXP, SEXP retvalSEXP) {
+RcppExport SEXP _supc_test_dgemm(SEXP aSEXP, SEXP bSEXP, SEXP retvalSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type a(aSEXP);
@@ -31,7 +31,7 @@ END_RCPP
 }
 // supc1_cpp
 NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose);
-RcppExport SEXP supc_supc1_cpp(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP toleranceSEXP, SEXP distSEXP, SEXP verboseSEXP) {
+RcppExport SEXP _supc_supc1_cpp(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP toleranceSEXP, SEXP distSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -44,4 +44,45 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(supc1_cpp(x, tau, RT, tolerance, dist, verbose));
     return rcpp_result_gen;
 END_RCPP
+}
+// supc1_cpp2
+NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose);
+RcppExport SEXP _supc_supc1_cpp2(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP toleranceSEXP, SEXP distSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< Function >::type RT(RTSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    Rcpp::traits::input_parameter< Function >::type dist(distSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(supc1_cpp2(x, tau, RT, tolerance, dist, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_dist
+NumericVector test_dist(NumericMatrix x);
+RcppExport SEXP _supc_test_dist(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_dist(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_supc_clusterize", (DL_FUNC) &_supc_clusterize, 2},
+    {"_supc_test_dgemm", (DL_FUNC) &_supc_test_dgemm, 3},
+    {"_supc_supc1_cpp", (DL_FUNC) &_supc_supc1_cpp, 6},
+    {"_supc_supc1_cpp2", (DL_FUNC) &_supc_supc1_cpp2, 6},
+    {"_supc_test_dist", (DL_FUNC) &_supc_test_dist, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_supc(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
