@@ -224,6 +224,86 @@ supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance 
   }
 }
 
+#'@export
+supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = NULL, groups = NULL, tolerance = 1e-4, drop = TRUE, implementation = c("cpp", "R"), verbose = FALSE) {
+  parameters <- .get.parameters(x, r, rp, t)
+  cl.raw <- switch(
+    implementation[1], 
+    "R" = .supc.random.R(x = x, parameters = parameters, k = k, groups = groups, tolerance = tolerance, verbose = verbose),
+    "cpp" = .supc.random.cpp(x = x, parameters = parameters, k = k, groups = groups, tolerance = tolerance, verbose = verbose)
+    )
+  retval <- lapply(
+    seq_along(cl.raw),
+    function(.i) {
+      .raw <- cl.raw[[.i]]
+      cl <- .clusterize(.dist(.raw), tolerance)
+      cl.group <- split(seq_len(nrow(.raw)), cl)
+      cl.center0 <- lapply(cl.group, function(i) {
+        apply(.raw[i,,drop = FALSE], 2, mean)
+      })
+      cl.center <- do.call(rbind, cl.center0)
+      retval <- list(x = x, d0 = parameters$d0, r = as.vector(parameters$tau[.i]), t = parameters$t[[.i]], cluster = cl, centers = cl.center, size = table(cl))
+      class(retval) <- "supc"
+      attr(retval, "iteration") <- attr(.raw, "iteration")
+      attr(retval, "groups") <- attr(.raw, "groups")
+      retval
+    })
+  if (drop && length(retval) == 1) retval[[1]] else {
+    class(retval) <- "supclist"
+    retval
+  }
+}
+
+.supc.random.R <- function(x, parameters, k, groups, tolerance, verbose) {
+  stopifnot(length(parameters$tau) == length(parameters$t))
+  lapply(seq_along(parameters$tau), function(i) {
+    .current.tau <- parameters$tau[i]
+    .current.t <- parameters$t[[i]]
+    is.first <- TRUE
+    t <- 0
+    if (is.null(groups)) {
+      groups <- list()
+    } else {
+      stopifnot(is.list(groups))
+    }
+    .group.idx <- rep(seq_len(k), ceiling(nrow(x) / k))
+    repeat{
+      if (is.first) {
+        if (is.null(parameters$d0)) {
+          parameters$d0 <- .dist(x)
+        }
+      }
+      .T <- .current.t(t)
+      t <- t + 1
+      if (t > length(groups)) {
+        groups[[t]] <- .group.idx[sample(nrow(x))]
+      }
+      group <- groups[[t]]
+      .x <- x
+      for(.g in seq_len(k)) {
+        .idx <- group == .g
+        d <- .dist(x[.idx,])
+        f <- exp(-d / .T)
+        f[d > .current.tau] <- 0
+        f <- as.matrix(f)
+        diag(f) <- exp(-0 / .T)
+        f <- f / colSums(f)
+        .x[.idx,] <- f %*% x[.idx,]
+      }
+      .difference <- max(abs(.x - x))
+      if (verbose) cat(sprintf("difference: %0.8f\n", .difference))
+      if (.difference < tolerance) {
+        attr(x, "iteration") <- t
+        attr(x, "groups") <- groups
+        break
+      }
+      x <- .x
+      is.first <- FALSE
+    }
+    x
+  })
+}
+
 #'@title Plot the frequency polygon of pairwise distance
 #'
 #'@param x either dist object or matrix.

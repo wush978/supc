@@ -12,6 +12,8 @@ X <- do.call(rbind, X)
 dist.mode("stats")
 X.supc <- supc1(X, r = 0.9, t = 0.75)
 
+X.supc.random <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "R")
+
 X.supc.ref <- structure(list(cluster = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 
 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 
 8L, 9L), centers = structure(c(-0.0180254152322607, 2.046727139439, 
