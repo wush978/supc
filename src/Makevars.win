@@ -1,0 +1,5 @@
+CXX_STD = CXX11
+
+PKG_CXXFLAGS = -fopenmp #-DSUPC_DEBUG
+
+PKG_LIBS = -fopenmp  $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) 

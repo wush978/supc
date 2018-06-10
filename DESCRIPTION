@@ -1,7 +1,7 @@
 Package: supc
 Type: Package
 Title: The Self-Updating Process Clustering Algorithms
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(
   person("Wush", "Wu", email = "wush978@gmail.com", role = c("aut", "cre")), 
   person("Shang-Ying", "Shiu", email = "", role = c("aut", "ctb")))

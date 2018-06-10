@@ -2,14 +2,22 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 .clusterize <- function(dist, tolerance) {
-    .Call('supc_clusterize', PACKAGE = 'supc', dist, tolerance)
+    .Call(`_supc_clusterize`, dist, tolerance)
 }
 
 .test.dgemm <- function(a, b, retval) {
-    invisible(.Call('supc_test_dgemm', PACKAGE = 'supc', a, b, retval))
+    invisible(.Call(`_supc_test_dgemm`, a, b, retval))
 }
 
 .supc1.cpp.internal <- function(x, tau, RT, tolerance, dist, verbose) {
-    .Call('supc_supc1_cpp', PACKAGE = 'supc', x, tau, RT, tolerance, dist, verbose)
+    .Call(`_supc_supc1_cpp`, x, tau, RT, tolerance, dist, verbose)
+}
+
+.supc1.cpp2.internal <- function(x, tau, RT, tolerance, dist, verbose) {
+    .Call(`_supc_supc1_cpp2`, x, tau, RT, tolerance, dist, verbose)
+}
+
+.test.dist <- function(x) {
+    .Call(`_supc_test_dist`, x)
 }
 

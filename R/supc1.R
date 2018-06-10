@@ -1,4 +1,13 @@
 
+.supc1.cpp2 <- function(x, parameters, tolerance, verbose) {
+  stopifnot(length(parameters$tau) == length(parameters$t))
+  lapply(seq_along(parameters$tau), function(i) {
+    .current.tau <- parameters$tau[i]
+    .current.t <- parameters$t[[i]]
+    .supc1.cpp2.internal(x, .current.tau, .current.t, tolerance, .dist, verbose)
+  })
+}
+
 .supc1.cpp <- function(x, parameters, tolerance, verbose) {
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
@@ -123,7 +132,9 @@
 #'@param t either numeric vector, list of function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.
 #'@param tolerance numeric value. The threshold of convergence.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
-#'@param implementation eithor \code{"R"} or \code{"cpp"}. Choose the tool to calculate result.
+#'@param implementation eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the tool to calculate result.
+#'The \code{"cpp2"} computes the distance in C++ with OpenMP and uses the triangle inequality to speed up calculation.
+#'The computation under \code{"cpp2"} might be faster than \code{"cpp"} if \code{nrow(x)} is large.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details
@@ -184,9 +195,14 @@
 #'@references
 #'Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
 #'@export
-supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, drop = TRUE, implementation = c("cpp", "R"), verbose = FALSE) {
+supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, drop = TRUE, implementation = c("cpp", "R", "cpp2"), verbose = FALSE) {
   parameters <- .get.parameters(x, r, rp, t)
-  cl.raw <- switch(implementation[1], "R" = .supc1.R(x, parameters, tolerance, verbose), "cpp" = .supc1.cpp(x, parameters, tolerance, verbose))
+  cl.raw <- switch(
+    implementation[1], 
+    "R" = .supc1.R(x, parameters, tolerance, verbose), 
+    "cpp" = .supc1.cpp(x, parameters, tolerance, verbose),
+    "cpp2" = .supc1.cpp2(x, parameters, tolerance, verbose)
+    )
   retval <- lapply(
     seq_along(cl.raw),
     function(.i) {
