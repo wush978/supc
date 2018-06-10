@@ -5,7 +5,7 @@
 \title{Self-Updating Process Clustering}
 \usage{
 supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
-  tolerance = 1e-04, drop = TRUE, implementation = c("cpp", "R"),
+  tolerance = 1e-04, drop = TRUE, implementation = c("cpp", "R", "cpp2"),
   verbose = FALSE)
 }
 \arguments{
@@ -23,7 +23,9 @@ If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{
 
 \item{drop}{logical value. Whether to delete the list structure if its length is 1.}
 
-\item{implementation}{eithor \code{"R"} or \code{"cpp"}. Choose the tool to calculate result.}
+\item{implementation}{eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the tool to calculate result.
+The \code{"cpp2"} computes the distance in C++ with OpenMP and uses the triangle inequality to speed up calculation.
+The computation under \code{"cpp2"} might be faster than \code{"cpp"} if \code{nrow(x)} is large.}
 
 \item{verbose}{logical value. Whether to show the iteration history.}
 }
