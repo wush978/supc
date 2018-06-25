@@ -227,10 +227,16 @@ supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance 
 #'@export
 supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = NULL, groups = NULL, tolerance = 1e-4, drop = TRUE, implementation = c("cpp", "R"), verbose = FALSE) {
   parameters <- .get.parameters(x, r, rp, t)
+  if (is.null(groups)) parameters$groups <- rep(list(NULL), length(parameters$tau)) else {
+    stopifnot(is.list(groups))
+    if (!is.list(groups[[1]])) {
+      parameters$groups <- rep(list(groups), length(parameters$tau))
+    } else parameters$groups <- groups
+  }
   cl.raw <- switch(
     implementation[1], 
-    "R" = .supc.random.R(x = x, parameters = parameters, k = k, groups = groups, tolerance = tolerance, verbose = verbose),
-    "cpp" = .supc.random.cpp(x = x, parameters = parameters, k = k, groups = groups, tolerance = tolerance, verbose = verbose)
+    "R" = .supc.random.R(x = x, parameters = parameters, k = k, tolerance = tolerance, verbose = verbose),
+    "cpp" = .supc.random.cpp(x = x, parameters = parameters, k = k, tolerance = tolerance, verbose = verbose)
     )
   retval <- lapply(
     seq_along(cl.raw),
@@ -254,11 +260,21 @@ supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = 
   }
 }
 
-.supc.random.R <- function(x, parameters, k, groups, tolerance, verbose) {
+.supc.random.cpp <- function(x, parameters, k, tolerance, verbose) {
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
     .current.t <- parameters$t[[i]]
+    groups <- parameters$groups[[i]]
+    .supc1.cpp.internal(x, .current.tau, .current.t, tolerance, .dist, verbose)
+  })
+}
+
+.supc.random.R <- function(x, parameters, k, tolerance, verbose) {
+  lapply(seq_along(parameters$tau), function(i) {
+    .current.tau <- parameters$tau[i]
+    .current.t <- parameters$t[[i]]
+    groups <- parameters$groups[[i]]
     is.first <- TRUE
     t <- 0
     if (is.null(groups)) {
