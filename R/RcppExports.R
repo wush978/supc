@@ -13,8 +13,8 @@
     .Call(`_supc_supc1_cpp`, x, tau, RT, tolerance, dist, verbose)
 }
 
-.supc1.cpp2.internal <- function(x, tau, RT, tolerance, dist, verbose) {
-    .Call(`_supc_supc1_cpp2`, x, tau, RT, tolerance, dist, verbose)
+.supc1.cpp2.internal <- function(x, tau, RT, tolerance, verbose) {
+    .Call(`_supc_supc1_cpp2`, x, tau, RT, tolerance, verbose)
 }
 
 .test.dist <- function(x) {
