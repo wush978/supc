@@ -4,7 +4,7 @@
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
     .current.t <- parameters$t[[i]]
-    .supc1.cpp2.internal(x, .current.tau, .current.t, tolerance, .dist, verbose)
+    .supc1.cpp2.internal(x, .current.tau, .current.t, tolerance, verbose)
   })
 }
 

@@ -160,7 +160,7 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
 }
 
 //[[Rcpp::export(".supc1.cpp2.internal")]]
-NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose) {
+NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose) {
   bool is_first = true;
   int t = 0;
   int m = x.nrow(), n = x.ncol();
