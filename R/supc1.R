@@ -233,10 +233,14 @@ supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = 
       parameters$groups <- rep(list(groups), length(parameters$tau))
     } else parameters$groups <- groups
   }
+  if (length(k) == 1) parameters$k <- rep(k, length(parameters$tau)) else {
+    stopifnot(length(k) == length(parameters$tau))
+    parameters$k <- k
+  }
   cl.raw <- switch(
     implementation[1], 
-    "R" = .supc.random.R(x = x, parameters = parameters, k = k, tolerance = tolerance, verbose = verbose),
-    "cpp" = .supc.random.cpp(x = x, parameters = parameters, k = k, tolerance = tolerance, verbose = verbose)
+    "R" = .supc.random.R(x = x, parameters = parameters, tolerance = tolerance, verbose = verbose),
+    "cpp" = .supc.random.cpp(x = x, parameters = parameters, tolerance = tolerance, verbose = verbose)
     )
   retval <- lapply(
     seq_along(cl.raw),
@@ -260,21 +264,23 @@ supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = 
   }
 }
 
-.supc.random.cpp <- function(x, parameters, k, tolerance, verbose) {
+.supc.random.cpp <- function(x, parameters, tolerance, verbose) {
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
     .current.t <- parameters$t[[i]]
     groups <- parameters$groups[[i]]
-    .supc1.cpp.internal(x, .current.tau, .current.t, tolerance, .dist, verbose)
+    k <- parameters$k[i]
+    .supc.random.internal(x, .current.tau, .current.t, k, groups, tolerance, verbose)
   })
 }
 
-.supc.random.R <- function(x, parameters, k, tolerance, verbose) {
+.supc.random.R <- function(x, parameters, tolerance, verbose) {
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
     .current.t <- parameters$t[[i]]
     groups <- parameters$groups[[i]]
+    k <- parameters$k[i]
     is.first <- TRUE
     t <- 0
     if (is.null(groups)) {
