@@ -270,8 +270,13 @@ supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = 
     .current.tau <- parameters$tau[i]
     .current.t <- parameters$t[[i]]
     groups <- parameters$groups[[i]]
+    if (is.null(groups)) {
+      groups <- list()
+    } else {
+      stopifnot(is.list(groups))
+    }
     k <- parameters$k[i]
-    .supc.random.internal(x, .current.tau, .current.t, k, groups, tolerance, verbose)
+    .supc.random.cpp.internal(x, .current.tau, .current.t, k, groups, tolerance, verbose)
   })
 }
 

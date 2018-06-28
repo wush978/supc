@@ -17,6 +17,10 @@
     .Call(`_supc_supc1_cpp2`, x, tau, RT, tolerance, verbose)
 }
 
+.supc.random.cpp.internal <- function(x, tau, RT, k, groups, tolerance, verbose) {
+    .Call(`_supc_supc_random_cpp`, x, tau, RT, k, groups, tolerance, verbose)
+}
+
 .test.dist <- function(x) {
     .Call(`_supc_test_dist`, x)
 }

@@ -60,6 +60,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// supc_random_cpp
+NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose);
+RcppExport SEXP _supc_supc_random_cpp(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP kSEXP, SEXP groupsSEXP, SEXP toleranceSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< Function >::type RT(RTSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< List >::type groups(groupsSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(supc_random_cpp(x, tau, RT, k, groups, tolerance, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_dist
 NumericVector test_dist(NumericMatrix x);
 RcppExport SEXP _supc_test_dist(SEXP xSEXP) {
@@ -77,6 +94,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_supc_test_dgemm", (DL_FUNC) &_supc_test_dgemm, 3},
     {"_supc_supc1_cpp", (DL_FUNC) &_supc_supc1_cpp, 6},
     {"_supc_supc1_cpp2", (DL_FUNC) &_supc_supc1_cpp2, 5},
+    {"_supc_supc_random_cpp", (DL_FUNC) &_supc_supc_random_cpp, 7},
     {"_supc_test_dist", (DL_FUNC) &_supc_test_dist, 1},
     {NULL, NULL, 0}
 };

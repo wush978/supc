@@ -51,7 +51,7 @@ X.supc.random <- supc.random(
     1L, 1L, 1L, 1L, 2L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 2L, 1L, 
     2L, 1L, 2L, 1L, 2L), c(2L, 2L, 1L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 
     1L, 1L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L, 2L, 2L, 1L, 
-    2L)))
+    2L)), verbose = TRUE)
 
 X.supc.random.ref <- structure(list(centers = structure(c(-0.0110232054981912, 2.04667439425716, 
 1.08664629703604, 6.21022208490163, 8.01590315496933, 6.79579855623855, 
@@ -72,6 +72,15 @@ stopifnot(isTRUE(all.equal(
 )))
 
 stopifnot(X.supc.random$cluster == X.supc$cluster)
+X.supc.random.cpp <- supc.random(
+  X, r = 0.9, t = 0.75, k = 2, implementation = "cpp", 
+  groups = .group, verbose = TRUE)
+stopifnot(isTRUE(all.equal(
+  X.supc.random.cpp[names(X.supc.random.ref)],
+  X.supc.random.ref
+)))
+
+stopifnot(X.supc.random.cpp$cluster == X.supc$cluster)
 
 
 
