@@ -5,8 +5,8 @@
 \title{Self-Updating Process Clustering}
 \usage{
 supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
-  tolerance = 1e-04, drop = TRUE, implementation = c("cpp", "R", "cpp2"),
-  verbose = FALSE)
+  tolerance = 1e-04, cluster.tolerance = 10 * tolerance, drop = TRUE,
+  implementation = c("cpp", "R", "cpp2"), verbose = FALSE)
 }
 \arguments{
 \item{x}{matrix. Each row is an instance of the data.}
@@ -20,6 +20,9 @@ If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{
 \item{t}{either numeric vector, list of function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.}
 
 \item{tolerance}{numeric value. The threshold of convergence.}
+
+\item{cluster.tolerance}{numeric value. After iterations, if the distance of two points are smaller than \code{cluster.tolerance},
+then they are specified as the same cluster.}
 
 \item{drop}{logical value. Whether to delete the list structure if its length is 1.}
 

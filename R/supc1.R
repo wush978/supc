@@ -131,6 +131,8 @@
 #'If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.0005, 0.001, 0.01, 0.1, 0.3)}.
 #'@param t either numeric vector, list of function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.
 #'@param tolerance numeric value. The threshold of convergence.
+#'@param cluster.tolerance numeric value. After iterations, if the distance of two points are smaller than \code{cluster.tolerance},
+#'then they are specified as the same cluster.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
 #'@param implementation eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the tool to calculate result.
 #'The \code{"cpp2"} computes the distance in C++ with OpenMP and uses the early-stop to speed up calculation.
@@ -194,7 +196,7 @@
 #'@references
 #'Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
 #'@export
-supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, drop = TRUE, implementation = c("cpp", "R", "cpp2"), verbose = FALSE) {
+supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, cluster.tolerance = 10 * tolerance, drop = TRUE, implementation = c("cpp", "R", "cpp2"), verbose = FALSE) {
   parameters <- .get.parameters(x, r, rp, t)
   cl.raw <- switch(
     implementation[1], 
@@ -206,7 +208,7 @@ supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance 
     seq_along(cl.raw),
     function(.i) {
       .raw <- cl.raw[[.i]]
-      cl <- .clusterize(attr(.raw, "dist"), tolerance)
+      cl <- .clusterize(attr(.raw, "dist"), cluster.tolerance)
       cl.group <- split(seq_len(nrow(.raw)), cl)
       cl.center0 <- lapply(cl.group, function(i) {
         apply(.raw[i,,drop = FALSE], 2, mean)
