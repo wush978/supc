@@ -133,8 +133,7 @@
 #'@param tolerance numeric value. The threshold of convergence.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
 #'@param implementation eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the tool to calculate result.
-#'The \code{"cpp2"} computes the distance in C++ with OpenMP and uses the triangle inequality to speed up calculation.
-#'The computation under \code{"cpp2"} might be faster than \code{"cpp"} if \code{nrow(x)} is large.
+#'The \code{"cpp2"} computes the distance in C++ with OpenMP and uses the early-stop to speed up calculation.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details

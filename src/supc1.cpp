@@ -169,8 +169,8 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   // d2 is the transformed matrix from d
   // acc_shift is the accumulated shift
   int d_size = m * (m - 1) / 2;
-  std::vector<double> d(d_size, -1.0), d2(d_size), acc_shift(m, 0.0);
-  
+  std::vector<double> d(d_size, -1.0), d2(d_size);
+  double tau_squared = tau * tau;
   static std::vector<int> di, dj;
   { // construct mapping index
     di.resize(d_size);
@@ -190,12 +190,10 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   bool retval_is_retval2 = true;
   NumericMatrix *px, *pretval;
   double *ppx, *ppretval, _T, difference;
-  int skipped_distance_entry_count;
 #pragma omp parallel
   {
     std::vector<double> buffer(n);
     double *pb = &buffer[0], local_difference;
-    int local_skipped_distance_entry_count;
     while(true) {
 #pragma omp master
       {
@@ -208,47 +206,40 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
         }
         ppx = px->begin();
         if (verbose) Rcout << ".";
-        skipped_distance_entry_count = 0;
       } // omp master
       { // begin computing distance
-        local_skipped_distance_entry_count = 0;
 #pragma omp barrier
 #pragma omp for
         for(int q = 0;q < d_size;q++) {
           int i = di[q], j = dj[q];
-          if (d[q] - acc_shift[i] - acc_shift[j] < tau) {
-            double *p1 = ppx + i;
-            double *p2 = ppx + j;
-            cblas_Rdcopy(n, p1, m, pb, 1);
-            cblas_Rdaxpy(n, -1, p2, m, pb, 1);
-            d[q] = cblas_Rdnrm2(n, pb, 1);
-          } else {
-            local_skipped_distance_entry_count += 1;
+          double *p1 = ppx + i,  *p2 = ppx + j, *pd = d.data() + q, element_distance;
+          *pd = 0;
+          for(int k = 0;k < n;k++) {
+            element_distance = *p1 - *p2;
+            *pd += element_distance * element_distance;
+            if (*pd > tau_squared) {
+              *pd = 0.0;
+              break;
+            }
+            p1 += m;
+            p2 += m;
           }
+          if (*pd > 0) *pd = std::sqrt(*pd);
         } // omp for
       } // end computing distance
-#pragma omp critical
-      {
-        skipped_distance_entry_count += local_skipped_distance_entry_count;
-      }
 #pragma omp barrier
 #pragma omp master
       { // prepare transformation
         ppx = px->begin();
         ppretval = pretval->begin();
         _T = getT(t++);
-        if (verbose) Rcout << "." << skipped_distance_entry_count << "/" << d_size;
       }
       // transformation
 #pragma omp barrier
 #pragma omp for
       for(int i = 0;i < d_size;i++) {
-        if (d[i] > tau) {
-          d2[i] = 0.0;
-        }
-        else {
-          d2[i] = std::exp(- d[i] / _T);
-        }
+        if (d[i] == 0) d2[i] = 0;
+        else d2[i] = std::exp(- d[i] / _T);
       }
 #pragma omp master
       {
@@ -308,7 +299,6 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       for(int i = 0;i < m;i++) {
         cblas_Rdcopy(n, ppx + i, m, pb, 1);
         cblas_Rdaxpy(n, -1, ppretval + i, m, pb, 1);
-        acc_shift[i] += cblas_Rdnrm2(n, pb, 1);
         for(int j = 0;j < n;j++) {
           local_difference = std::max(local_difference, std::abs(pb[j]));
         }
@@ -327,11 +317,11 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
 #pragma omp for
           for(int q = 0;q < d_size;q++) {
             int i = di[q], j = dj[q];
-            double *p1 = ppx + i;
-            double *p2 = ppx + j;
+            double *p1 = ppx + i, *p2 = ppx + j, *pd = d.data() + q;
+            if (*pd > 0) continue;
             cblas_Rdcopy(n, p1, m, pb, 1);
             cblas_Rdaxpy(n, -1, p2, m, pb, 1);
-            d[q] = cblas_Rdnrm2(n, pb, 1);
+            *pd = cblas_Rdnrm2(n, pb, 1);
           } // omp for
         
 #pragma omp master

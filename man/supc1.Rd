@@ -24,8 +24,7 @@ If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{
 \item{drop}{logical value. Whether to delete the list structure if its length is 1.}
 
 \item{implementation}{eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the tool to calculate result.
-The \code{"cpp2"} computes the distance in C++ with OpenMP and uses the triangle inequality to speed up calculation.
-The computation under \code{"cpp2"} might be faster than \code{"cpp"} if \code{nrow(x)} is large.}
+The \code{"cpp2"} computes the distance in C++ with OpenMP and uses the early-stop to speed up calculation.}
 
 \item{verbose}{logical value. Whether to show the iteration history.}
 }
