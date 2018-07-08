@@ -196,7 +196,17 @@
 #'@references
 #'Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
 #'@export
-supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance = 1e-4, cluster.tolerance = 10 * tolerance, drop = TRUE, implementation = c("cpp", "R", "cpp2"), verbose = FALSE) {
+supc1 <- function(
+  x, 
+  r = NULL, 
+  rp = NULL, 
+  t = c("static", "dynamic"), 
+  tolerance = 1e-4, 
+  cluster.tolerance = 10 * tolerance, 
+  drop = TRUE, 
+  implementation = c("cpp", "R", "cpp2"), 
+  verbose = FALSE
+  ) {
   parameters <- .get.parameters(x, r, rp, t)
   cl.raw <- switch(
     implementation[1], 
