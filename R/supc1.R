@@ -225,7 +225,6 @@ supc1 <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), tolerance 
   }
 }
 
-#'@export
 supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = NULL, groups = NULL, tolerance = 1e-4, drop = TRUE, implementation = c("cpp", "R"), verbose = FALSE) {
   parameters <- .get.parameters(x, r, rp, t)
   if (is.null(groups)) parameters$groups <- rep(list(NULL), length(parameters$tau)) else {
