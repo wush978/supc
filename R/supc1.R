@@ -152,6 +152,8 @@
 #'\item{cluster}{The cluster id of each instance.}
 #'\item{centers}{The center of each cluster.}
 #'\item{size}{The size of each cluster.}
+#'\item{iteration}{The number of iterations before convergence.}
+#'\item{result}{The position of data after iterations.}
 #'
 #'@examples
 #'\dontrun{
@@ -224,9 +226,18 @@ supc1 <- function(
         apply(.raw[i,,drop = FALSE], 2, mean)
       })
       cl.center <- do.call(rbind, cl.center0)
-      retval <- list(x = x, d0 = parameters$d0, r = as.vector(parameters$tau[.i]), t = parameters$t[[.i]], cluster = cl, centers = cl.center, size = table(cl))
+      retval <- list(
+        x = x, 
+        d0 = parameters$d0, 
+        r = as.vector(parameters$tau[.i]), 
+        t = parameters$t[[.i]], 
+        cluster = cl, 
+        centers = cl.center, 
+        size = table(cl),
+        result = structure(as.vector(.raw), .Dim = dim(.raw)),
+        iteration = attr(.raw, "iteration")
+      )
       class(retval) <- "supc"
-      attr(retval, "iteration") <- attr(.raw, "iteration")
       retval
     })
   if (drop && length(retval) == 1) retval[[1]] else {

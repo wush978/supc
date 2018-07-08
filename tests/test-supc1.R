@@ -34,16 +34,31 @@ checkers <- local({
   ), .Dim = c(9L, 2L), .Dimnames = list(c("1", "2", "3", "4", "5", 
   "6", "7", "8", "9"), NULL)), size = structure(c(3L, 3L, 3L, 3L, 
   3L, 3L, 3L, 3L, 3L), .Dim = 9L, .Dimnames = structure(list(cl = c("1", 
-  "2", "3", "4", "5", "6", "7", "8", "9")), .Names = "cl"), class = "table")), .Names = c("cluster", 
-  "centers", "size"))
-  ref.check.name <- c("cluster", "centers", "size")
+  "2", "3", "4", "5", "6", "7", "8", "9")), .Names = "cl"), class = "table"), result = 
+    structure(c(-0.0180261933327141, 2.04672690185634, 1.08716459103973, 
+6.20911479359631, 8.01478639248956, 6.79821233636245, 3.120060897386, 
+5.08557036591521, 3.97988628297925, -0.0180240066479849, 2.04672737537831, 
+1.0871717225937, 6.20911329944317, 8.01477212538717, 6.79821139564722, 
+3.12006089738845, 5.08556899922362, 3.97988108345371, -0.0180260457145569, 
+2.0467271410823, 1.08717187986439, 6.2091144357991, 8.01476981396315, 
+6.79821249868371, 3.12006089755786, 5.08557040799994, 3.97987973791727, 
+-0.16238970131008, 0.0922997350318823, 1.10583302184102, 0.0381040643950639, 
+-0.0861576055475903, 1.12872663987661, 2.95353852178939, 2.9359332333143, 
+3.95579429846029, -0.162391325928923, 0.0922972350517618, 1.10583386393582, 
+0.0381086887425844, -0.0860622340754393, 1.12872647385683, 2.95353852178015, 
+2.93593015772972, 3.95578556171455, -0.162389811987271, 0.0922983014691015, 
+1.10583388297537, 0.0381050372627042, -0.0860470909879731, 1.12872665130206, 
+2.95353852113276, 2.9359333291038, 3.95578332477825), .Dim = c(27L, 
+2L)), iteration = 4L), .Names = c("cluster", 
+  "centers", "size", "result", "iteration"))
+  ref.check.name <- c("cluster", "centers", "size", "result", "iteration")
   # construct the checker
   class.attr.checker <- function(supc.obj) {
     # check consistency
     stopifnot(class(supc.obj) == "supc")
     attr.ref <- structure(list(names = c("x", "d0", "r", "t", "cluster", "centers", 
-  "size"), class = "supc", iteration = 4L), .Names = c("names", 
-  "class", "iteration"))
+  "size", "result", "iteration"), class = "supc"), .Names = c("names", 
+  "class"))
     stopifnot(isTRUE(all.equal(attributes(supc.obj), attr.ref)))
     # check with reference object
   }
@@ -82,7 +97,7 @@ get.implementations <- function(argv) {
 ## construct checkers
 checkers <- function(supc.objs) {
   ref.obj <- supc.objs[[1]]
-  list.check.names <- c("x", "d0", "r", "cluster", "centers", "size")
+  list.check.names <- c("x", "d0", "r", "cluster", "centers", "size", "result", "iteration")
   lapply(supc.objs, function(supc.obj) {
     . <- all.equal(
       lapply(supc.obj, "[", list.check.names),

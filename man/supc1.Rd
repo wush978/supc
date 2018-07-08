@@ -42,6 +42,7 @@ Each "supc" object contains the following elements:
 \item{cluster}{The cluster id of each instance.}
 \item{centers}{The center of each cluster.}
 \item{size}{The size of each cluster.}
+\item{result}{The position of data after iterations.}
 }
 \description{
 The SUP is a distance-based method for clustering. 
