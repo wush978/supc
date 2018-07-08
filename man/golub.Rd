@@ -13,5 +13,5 @@ Gene expression data (3051 genes and 38 tumor mRNA samples) from the leukemia mi
 Each row (gene) is scaled to mean 0 and standard deviation 1.
 }
 \references{
-Golub, T. R., D. K. Slonim, P. Tamayo P., C. Huard C, M. Gaasenbeek M., J.P. J. P. Mesirov, H. H. Coller, et al. 1999. 「Molecular Classification of Cancer: Class Discovery and Class Prediction by Gene Expression Monitoring.」 Science 286 (5439): 531–37.
+Golub, T. R., D. K. Slonim, P. Tamayo P., C. Huard C, M. Gaasenbeek M., J.P. J. P. Mesirov, H. H. Coller, et al. 1999. Molecular Classification of Cancer: Class Discovery and Class Prediction by Gene Expression Monitoring. Science 286 (5439): 531–37.
 }
