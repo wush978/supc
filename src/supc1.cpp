@@ -217,8 +217,8 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
           for(int k = 0;k < n;k++) {
             element_distance = *p1 - *p2;
             *pd += element_distance * element_distance;
-            if (*pd > tau_squared) {
-              *pd = -1;
+            if (*pd > tau * tau + DBL_EPSILON) {
+              *pd = -1.0;
               break;
             }
             p1 += m;
@@ -239,7 +239,10 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
 #pragma omp for
       for(int i = 0;i < d_size;i++) {
         if (d[i] < 0) d2[i] = 0;
-        else d2[i] = std::exp(- d[i] / _T);
+        else {
+          if (d[i] > tau) d2[i] = 0;
+          else d2[i] = std::exp(- d[i] / _T);
+        }
       }
 #pragma omp master
       {
