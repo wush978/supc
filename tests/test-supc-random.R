@@ -1,3 +1,4 @@
+function() {
 library(supc)
 set.seed(1)
 mu <- list(
@@ -119,3 +120,4 @@ stopifnot(!isTRUE(all.equal(
   supc1(X, r = 0.9, t = "dynamic"),
   supc1(X, r = 0.9, t = "static")
 )))
+}
