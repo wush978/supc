@@ -14,7 +14,8 @@ Depends:
     R (>= 3.0.2)
 Imports:
     stats,
-    Rcpp
+    Rcpp,
+    dbscan
 Suggests:
     amap,
     knitr,

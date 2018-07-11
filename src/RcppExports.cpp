@@ -5,18 +5,6 @@
 
 using namespace Rcpp;
 
-// clusterize
-SEXP clusterize(NumericVector dist, double tolerance);
-RcppExport SEXP _supc_clusterize(SEXP distSEXP, SEXP toleranceSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type dist(distSEXP);
-    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
-    rcpp_result_gen = Rcpp::wrap(clusterize(dist, tolerance));
-    return rcpp_result_gen;
-END_RCPP
-}
 // test_dgemm
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval);
 RcppExport SEXP _supc_test_dgemm(SEXP aSEXP, SEXP bSEXP, SEXP retvalSEXP) {
@@ -90,7 +78,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_supc_clusterize", (DL_FUNC) &_supc_clusterize, 2},
     {"_supc_test_dgemm", (DL_FUNC) &_supc_test_dgemm, 3},
     {"_supc_supc1_cpp", (DL_FUNC) &_supc_supc1_cpp, 6},
     {"_supc_supc1_cpp2", (DL_FUNC) &_supc_supc1_cpp2, 5},

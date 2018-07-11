@@ -116,6 +116,10 @@
   retval
 }
 
+.clusterize <- function(x, tolerance) {
+  dbscan::dbscan(x, eps = tolerance, minPts = 1)$cluster
+}
+
 #'@title Self-Updating Process Clustering
 #'
 #'@description 
@@ -220,7 +224,7 @@ supc1 <- function(
     seq_along(cl.raw),
     function(.i) {
       .raw <- cl.raw[[.i]]
-      cl <- .clusterize(attr(.raw, "dist"), cluster.tolerance)
+      cl <- .clusterize(.raw, cluster.tolerance)
       cl.group <- split(seq_len(nrow(.raw)), cl)
       cl.center0 <- lapply(cl.group, function(i) {
         apply(.raw[i,,drop = FALSE], 2, mean)
