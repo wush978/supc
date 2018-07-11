@@ -1,4 +1,4 @@
-function() {
+# function() {
 library(supc)
 set.seed(1)
 mu <- list(
@@ -29,7 +29,7 @@ X.supc.ref <- structure(list(cluster = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L,
 ref.check.name <- c("cluster", "centers", "size")
 stopifnot(isTRUE(all.equal(X.supc[ref.check.name], X.supc.ref)))
 
-X.supc.random <- supc.random(
+X.supc.random <- supc:::supc.random(
   X, r = 0.9, t = 0.75, k = 2, implementation = "R", 
   groups = .group <- list(c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 
     1L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 1L, 2L), c(1L, 1L, 
@@ -73,7 +73,7 @@ stopifnot(isTRUE(all.equal(
 )))
 
 stopifnot(X.supc.random$cluster == X.supc$cluster)
-X.supc.random.cpp <- supc.random(
+X.supc.random.cpp <- supc:::supc.random(
   X, r = 0.9, t = 0.75, k = 2, implementation = "cpp", 
   groups = .group, verbose = TRUE)
 stopifnot(isTRUE(all.equal(
@@ -120,4 +120,4 @@ stopifnot(!isTRUE(all.equal(
   supc1(X, r = 0.9, t = "dynamic"),
   supc1(X, r = 0.9, t = "static")
 )))
-}
+# }

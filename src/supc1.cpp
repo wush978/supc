@@ -170,7 +170,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   // acc_shift is the accumulated shift
   int d_size = m * (m - 1) / 2;
   std::vector<double> d(d_size, -1.0), d2(d_size);
-  double tau_squared = tau * tau;
+  const double tau_squared = tau * tau + DBL_EPSILON;
   static std::vector<int> di, dj;
   { // construct mapping index
     di.resize(d_size);
@@ -217,7 +217,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
           for(int k = 0;k < n;k++) {
             element_distance = *p1 - *p2;
             *pd += element_distance * element_distance;
-            if (*pd > tau * tau + DBL_EPSILON) {
+            if (*pd > tau_squared) {
               *pd = -1.0;
               break;
             }
@@ -345,6 +345,15 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   return *px;
 }
 
+// use this function in openmp parallel block
+template<typename T, typename TV>
+void parallel_fill(const int tid, const int tcount, const TV x, T& v) {
+  auto chunksize = v.size() / tcount;
+  auto begin = v.begin() + chunksize * tid;
+  auto end = (tid + 1 == tcount) ? v.end() : begin + chunksize;
+  std::fill(begin, end, x);
+}
+
 //[[Rcpp::export(".supc.random.cpp.internal")]]
 NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose) {
   bool is_first = true;
@@ -361,26 +370,30 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
     }
   }
   
-  std::vector<double> f1(m * m, 0.0), f2(m * m, 0.0), one_vector(m, 1.0), colsum(m, 0.0);
+  // All these variables will be re-initialized according to the group size
+  std::vector<int> current_group_row_id;
+  std::vector<double> f1, f2, one_vector, colsum, buf, buf2;
   // d is the distance matrix
   // d2 is the transformed matrix from d
-  // acc_shift is the accumulated shift
-  int d_size = m * (m - 1) / 2;
-  std::vector<double> d(d_size, -1.0), d2(d_size), acc_shift(m, 0.0);
+  int d_size;
+  auto get_d_size = [](const int group_size) {
+    return group_size * (group_size - 1) / 2;
+  };
+  std::vector<double> d, d2;
   
-  static std::vector<int> di, dj;
-  { // construct mapping index
+  std::vector<int> di, dj;
+  auto set_di_dj = [](const int group_size, const int d_size, std::vector<int>& di, std::vector<int>& dj) {
     di.resize(d_size);
     dj.resize(d_size);
     int q = 0;
-    for(int i = 0;i < m;i++) {
-      for(int j = i + 1;j < m;j++) {
+    for(int i = 0;i < group_size;i++) {
+      for(int j = i + 1;j < group_size;j++) {
         di[q] = i;
         dj[q] = j;
         q++;
       }
     }
-  }
+  };
 
   T getT(RT);
   NumericMatrix retval1 = clone(x), retval2 = clone(x);
@@ -390,12 +403,19 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
   int skipped_distance_entry_count;
   SEXP pidx;
   int* idx;
-  int groups_counter = 0;
+  int groups_counter = 0, group_size;
+  double tau_squared = tau * tau + DBL_EPSILON;
 #pragma omp parallel
   {
     std::vector<double> buffer(n);
-    double *pb = &buffer[0], local_difference;
-    int local_skipped_distance_entry_count;
+    double *pb = &buffer[0];
+#if defined(_OPENMP)
+    const int tid = omp_get_thread_num();
+    const int tcount = omp_get_num_threads();
+#else
+    const int tid = 0;
+    const int tcount = 1;
+#endif
     while(true) {
 #pragma omp master
       {
@@ -416,155 +436,143 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
         pidx = VECTOR_ELT(wrap(groups), groups_counter);
         if (Rf_length(pidx) != m) throw std::runtime_error("Inconsistent group");
         idx = INTEGER(pidx);
-      } // omp master
-      { // begin computing distance
-        local_skipped_distance_entry_count = 0;
-#pragma omp barrier
-#pragma omp for
-        for(int q = 0;q < d_size;q++) {
-          int i = di[q], j = dj[q];
-          if (idx[i] == idx[j]) {
-            if (d[q] - acc_shift[i] - acc_shift[j] < tau) {
-              double *p1 = ppx + i;
-              double *p2 = ppx + j;
-              cblas_Rdcopy(n, p1, m, pb, 1);
-              cblas_Rdaxpy(n, -1, p2, m, pb, 1);
-              d[q] = cblas_Rdnrm2(n, pb, 1);
-            } else {
-              local_skipped_distance_entry_count += 1;
-            }
-          } else {
-            local_skipped_distance_entry_count += 1;
-          }
-        } // omp for
-      } // end computing distance
-#pragma omp critical
-      {
-        skipped_distance_entry_count += local_skipped_distance_entry_count;
-      }
-#pragma omp barrier
-#pragma omp master
-      { // prepare transformation
+        group_size = 0;
         ppx = px->begin();
         ppretval = pretval->begin();
         _T = getT(t++);
-        if (verbose) Rcout << "." << skipped_distance_entry_count << "/" << d_size;
-      }
-      // transformation
-#pragma omp barrier
-#pragma omp for
-      for(int q = 0;q < d_size;q++) {
-        int i = di[q], j = dj[q];
-        if (idx[i] == idx[j]) {
-          if (d[q] > tau) {
-            d2[q] = 0.0;
+      } // omp master
+      for (int group_id = 1;group_id <= k;group_id++){
+#pragma omp master
+        {
+          current_group_row_id.clear();
+          group_size = 0;
+          for(int i = 0;i < m;i++) {
+            if (idx[i] == group_id) {
+              group_size += 1;
+              current_group_row_id.push_back(i);
+            }
           }
-          else {
-            d2[q] = std::exp(- d[q] / _T);
-          }
-        } else {
-          d2[q] = 0.0;
+          d_size = get_d_size(group_size);
+          set_di_dj(group_size, d_size, di, dj);
+          f1.resize(group_size * group_size);
+          f2.resize(group_size * group_size);
+          d.resize(d_size);
+          d2.resize(d_size);
+          one_vector.resize(group_size);
+          colsum.resize(group_size);
+          buf.resize(group_size * n);
+          buf2.resize(buf.size());
         }
-      }
-#pragma omp master
-      {
-        if (verbose) Rcout << ".";
-      }
-      {
 #pragma omp barrier
-#ifdef SUPC_DEBUG
-#pragma omp master
-      {
-        Rprintf("\n");
-        for(int q = 0;q < d_size;q++) {
-          int i = di[q], j = dj[q];
-          Rprintf("%d %d %f\n", i + 1, j + 1, d2[q]);
+        { // initialization
+          parallel_fill(tid, tcount, 0.0, f1);
+          parallel_fill(tid, tcount, 0.0, f2);
+          parallel_fill(tid, tcount, 0.0, d);
+          parallel_fill(tid, tcount, 1.0, one_vector);
+          parallel_fill(tid, tcount, 0.0, colsum);
         }
-      }
-#endif //SUPC_DEBUG
-#pragma omp for nowait 
-        for(int col = 0;col < m;col++) {
-          f1[col * m + col] = 1.0;
-          memcpy(
-            f1.data() + col * m + col + 1, 
-            d2.data() + (col * m - col * (col + 1) / 2), 
-            sizeof(double) * (m - 1 - col));
-        }
-      }
-#pragma omp master
-      {
-        if (verbose) Rcout << ".";
-      }
-#pragma omp barrier
-#pragma omp for
-      for(int j = 0;j < m;j++) {
-        colsum[j] = 0;
-        for(int i = 0;i < j;i++) {
-          colsum[j] += f1[i * m + j];
-        }
-        for(int i = j;i < m;i++) {
-          colsum[j] += f1[j * m + i];
-        }
-      }
-#pragma omp master
-      {
-        if (verbose) Rcout << ".";
-      }
-#pragma omp barrier
-#pragma omp for
-      for(int j = 0;j < m;j++) {
-        for(int i = 0;i < j;i++) {
-          f2[j * m + i] = f1[i * m + j] / colsum[i];
-        }
-        for(int i = j;i < m;i++) {
-          f2[j * m + i] = f1[j * m + i] / colsum[i];
-        }
-      }
-#pragma omp master
-      {
-        if (verbose) Rcout << ".";
-        dgemm(m, px->ncol(), f2.data(), ppx, ppretval);
-        if (verbose) Rcout << ".";
-      // check difference between px and pretval
-        difference = 0.0;
-      }
-      local_difference = 0;
-#pragma omp barrier
-#pragma omp for
-      for(int i = 0;i < m;i++) {
-        cblas_Rdcopy(n, ppx + i, m, pb, 1);
-        cblas_Rdaxpy(n, -1, ppretval + i, m, pb, 1);
-        acc_shift[i] += cblas_Rdnrm2(n, pb, 1);
-        for(int j = 0;j < n;j++) {
-          local_difference = std::max(local_difference, std::abs(pb[j]));
-        }
-      }
-#pragma omp critical
-      {
-        difference = std::max(difference, local_difference);
-      }
-#pragma omp barrier
-#pragma omp master
-      {
-        if (verbose) Rprintf(" difference: %0.8f\n", difference);
-      }
-      {
-        if (difference < tolerance) {
+        { // begin computing distance
 #pragma omp for
           for(int q = 0;q < d_size;q++) {
-            int i = di[q], j = dj[q];
-            double *p1 = ppx + i;
-            double *p2 = ppx + j;
-            cblas_Rdcopy(n, p1, m, pb, 1);
-            cblas_Rdaxpy(n, -1, p2, m, pb, 1);
-            d[q] = cblas_Rdnrm2(n, pb, 1);
+            int i = current_group_row_id[di[q]];
+            int j = current_group_row_id[dj[q]];
+            double *p1 = ppx + i, *p2 = ppx + j, *pd = d.data() + q, element_distance;
+            *pd = 0;
+            for(int k = 0;k < n;k++) {
+              element_distance = *p1 - *p2;
+              *pd += element_distance * element_distance;
+              if (*pd > tau_squared) {
+                *pd = -1.0;
+                break;
+              }
+              p1 += m;
+              p2 += m;
+            }
+            if (*pd < 0) {
+              d2[q] = 0;
+            } else {
+              *pd = std::sqrt(*pd);
+              if (d[q] > tau) d2[q] = 0;
+              else d2[q] = std::exp(-d[q] / _T);
+            }
           } // omp for
-        
+#pragma omp master
+          if (verbose) Rcout << ".";
+#pragma omp for
+          for(int col = 0;col < group_size;col++) {
+            f1[col * group_size + col] = 1.0;
+            memcpy(
+              f1.data() + col * group_size + col + 1,
+              d2.data() + (col * group_size - col * (col + 1) / 2),
+              sizeof(double) * (group_size - 1 - col)
+            );
+          }
+#pragma omp master
+          if (verbose) Rcout << ".";
+#pragma omp barrier
+#pragma omp for
+          for(int j = 0;j < group_size;j++) {
+            colsum[j] = 0;
+            for(int i = 0;i < j;i++) {
+              colsum[j] += f1[i * group_size + j];
+            }
+            for(int i = j;i < group_size;i++) {
+              colsum[j] += f1[j * group_size + i];
+            }
+          }
+#pragma omp master
+          if (verbose) Rcout << ".";
+#pragma omp barrier
+#pragma omp for
+          for(int j = 0;j < group_size;j++) {
+            for(int i = 0;i < j;i++) {
+              f2[j * group_size + i] = f1[i * group_size + j] / colsum[i];
+            }
+            for(int i = j;i < group_size;i++) {
+              f2[j * group_size + i] = f1[j * group_size + i] / colsum[i];
+            }
+          }
+        } // end computing distance
+#pragma omp master
+          if (verbose) Rcout << ".";
+        { // original dgemm
+#pragma omp for
+          for(int q = 0;q < group_size;q++) {
+            int row = current_group_row_id[q];
+            cblas_Rdcopy(n, ppx + row, m, buf.data() + q, group_size);
+          }
 #pragma omp master
           {
-            px->attr("dist") = wrap(d);
-            px->attr("iteration") = wrap(t);
+            dgemm(group_size, n, f2.data(), buf.data(), buf2.data());
+            if (verbose) Rcout << ".";
           }
+#pragma omp barrier
+#pragma omp for
+          for(int q = 0;q < group_size;q++) {
+            int row = current_group_row_id[q];
+            cblas_Rdcopy(n, buf2.data() + q, group_size, ppretval + row, m);
+          }
+        } // end dgemm
+      } // for loop of group_id
+      { // check difference between px and pretval
+#pragma omp master
+        difference = 0.0;
+#pragma omp barrier
+#pragma omp for reduction (std::max:difference)
+        for(int i = 0;i < m;i++) {
+          cblas_Rdcopy(n, ppx + i, m, pb, 1);
+          cblas_Rdaxpy(n, -1, ppretval + i, m, pb, 1);
+          for(int j = 0;j < n;j++) {
+            difference = std::max(difference, std::abs(pb[j]));
+          }
+        }
+#pragma omp master
+        {
+          if (verbose) Rprintf(" difference: %0.8f\n", difference);
+        }
+      } // end check difference between px and pretval
+      { // check difference and tolerance
+        if (difference < tolerance) {
           break;
         }
 #pragma omp master
@@ -573,7 +581,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
           is_first = false;
           groups_counter++;
         }
-      }
+      } // end check difference and tolerance
     } // while
   } // omp parallel
   px->attr("iteration") = wrap(groups.size());
