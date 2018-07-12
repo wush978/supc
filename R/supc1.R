@@ -138,8 +138,8 @@
 #'@param cluster.tolerance numeric value. After iterations, if the distance of two points are smaller than \code{cluster.tolerance},
 #'then they are specified as the same cluster.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
-#'@param implementation eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the tool to calculate result.
-#'The \code{"cpp2"} computes the distance in C++ with OpenMP and uses the early-stop to speed up calculation.
+#'@param implementation eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the engine to calculate result.
+#'The \code{"cpp2"} parallelly computes the distance in C++ with OpenMP, which is not supported under OS X, and uses the early-stop to speed up calculation.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details
@@ -250,7 +250,104 @@ supc1 <- function(
   }
 }
 
-supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = NULL, groups = NULL, tolerance = 1e-4, drop = TRUE, implementation = c("cpp", "R"), verbose = FALSE) {
+#'@title Randomized Self-Updating Process Clustering
+#'
+#'@description 
+#'The Randomized Self-Updating Process Clustering(randomized SUPC) is a modification of the original SUPC algorithm. 
+#'The randomized SUPC randomly generates the partition of the instances during each iterations. 
+#'The self updating process is conducted independently in each partition in order to reduce the computation and the memory.
+#'
+#'@param x matrix. Each row is an instance of the data.
+#'@param r numeric vector or \code{NULL}. The parameter \eqn{r} of the self-updating process.
+#'@param rp numeric vector or \code{NULL}. If \code{r} is \code{NULL}, then \code{rp} will be used. 
+#'The corresponding \code{r} is the \code{rp}-percentile of the pairwise distances of the data. 
+#'If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.0005, 0.001, 0.01, 0.1, 0.3)}.
+#'@param t either numeric vector, list of function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.
+#'@param k integer value. The size of the partition.
+#'@param groups list. The first element is the partition of the first iteration, and the second element is the partition
+#'of the second iteration, etc. If the number of the iteration exceeds \code{length(groups)}, then new partition will be 
+#'generated.
+#'@param tolerance numeric value. The threshold of convergence.
+#'@param cluster.tolerance numeric value. After iterations, if the distance of two points are smaller than \code{cluster.tolerance},
+#'then they are specified as the same cluster.
+#'@param drop logical value. Whether to delete the list structure if its length is 1.
+#'@param implementation eithor \code{"R"} or \code{"cpp"}. Choose the engine to calculate result.
+#'@param verbose logical value. Whether to show the iteration history.
+#'
+#'@details
+#'Please check the vignettes via \code{vignettes("supc", package = "supc")} for details.
+#'
+#'@return
+#'\code{supc1} returns a list of objects of \link{class} "supc".
+#'
+#'Each "supc" object contains the following elements:
+#'\item{x}{The input matrix.}
+#'\item{d0}{The pairwise distance matrix of \code{x}.}
+#'\item{r}{The value of \eqn{r} of the clustering.}
+#'\item{t}{The function \eqn{T(t)} of the clustering.}
+#'\item{cluster}{The cluster id of each instance.}
+#'\item{centers}{The center of each cluster.}
+#'\item{size}{The size of each cluster.}
+#'\item{iteration}{The number of iterations before convergence.}
+#'\item{groups}{The partition of each iteration.}
+#'\item{result}{The position of data after iterations.}
+#'
+#'@examples
+#'\dontrun{
+#'set.seed(1)
+#'X <- local({
+#'  mu <- list(
+#'    x = c(0, 2, 1, 6, 8, 7, 3, 5, 4),
+#'    y = c(0, 0, 1, 0, 0, 1, 3, 3, 4)
+#'  )
+#'  X <- lapply(1:5, function(i) {
+#'    cbind(rnorm(9, mu$x, 1/5), rnorm(9, mu$y, 1/5))
+#'  })
+#'  X <- do.call(rbind, X)
+#'  n <- nrow(X)
+#'  X <- rbind(X, matrix(0, 20, 2))
+#'  k <- 1
+#'  while(k <= 20) {
+#'    tmp <- c(13*runif(1)-2.5, 8*runif(1)-2.5)
+#'    y1 <- mu$x - tmp[1]
+#'    y2 <- mu$y - tmp[2]
+#'    y <- sqrt(y1^2+y2^2)
+#'    if (min(y)> 2){
+#'      X[k+n,] <- tmp
+#'      k <- k+1
+#'    }
+#'  }
+#'  X
+#'})
+#'X.supcs <- supc.random(X, r = c(0.9, 1.7, 2.5), t = "dynamic", k = 2)
+#'X.supcs$cluster
+#'plot(X.supcs[[1]], type = "heatmap", major.size = 2)
+#'plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
+#'
+#'X.supcs <- supc.random(X, k = 2, r = c(1.7, 2.5), t = list(
+#'  function(t) {1.7 / 20 + exp(t) * (1.7 / 50)},
+#'  function(t) {exp(t)}
+#'))
+#'plot(X.supcs[[1]], type = "heatmap", major.size = 2)
+#'plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
+#'}
+#'
+#'@references
+#'Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
+#'@export
+supc.random <- function(
+  x, 
+  r = NULL, 
+  rp = NULL, 
+  t = c("static", "dynamic"), 
+  k = NULL, 
+  groups = NULL, 
+  tolerance = 1e-4, 
+  cluster.tolerance = 10 * tolerance, 
+  drop = TRUE, 
+  implementation = c("cpp", "R"), 
+  verbose = FALSE
+  ) {
   parameters <- .get.parameters(x, r, rp, t)
   if (is.null(groups)) parameters$groups <- rep(list(NULL), length(parameters$tau)) else {
     stopifnot(is.list(groups))
@@ -271,16 +368,26 @@ supc.random <- function(x, r = NULL, rp = NULL, t = c("static", "dynamic"), k = 
     seq_along(cl.raw),
     function(.i) {
       .raw <- cl.raw[[.i]]
-      cl <- .clusterize(.dist(.raw), tolerance)
+      cl <- .clusterize(.raw, cluster.tolerance)
       cl.group <- split(seq_len(nrow(.raw)), cl)
       cl.center0 <- lapply(cl.group, function(i) {
         apply(.raw[i,,drop = FALSE], 2, mean)
       })
       cl.center <- do.call(rbind, cl.center0)
-      retval <- list(x = x, d0 = parameters$d0, r = as.vector(parameters$tau[.i]), t = parameters$t[[.i]], cluster = cl, centers = cl.center, size = table(cl))
+      retval <- list(
+        x = x, 
+        d0 = parameters$d0, 
+        r = as.vector(parameters$tau[.i]), 
+        t = parameters$t[[.i]], 
+        cluster = cl, 
+        centers = cl.center, 
+        size = table(cl),
+        result = structure(as.vector(.raw), .Dim = dim(.raw)),
+        iteration = attr(.raw, "iteration"),
+        groups = attr(.raw, "groups")
+      )
       class(retval) <- "supc"
       attr(retval, "iteration") <- attr(.raw, "iteration")
-      attr(retval, "groups") <- attr(.raw, "groups")
       retval
     })
   if (drop && length(retval) == 1) retval[[1]] else {
