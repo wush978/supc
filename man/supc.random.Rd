@@ -91,7 +91,7 @@ X.supcs$cluster
 plot(X.supcs[[1]], type = "heatmap", major.size = 2)
 plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
 
-X.supcs <- supc1(X, r = c(1.7, 2.5), t = list(
+X.supcs <- supc.random(X, k = 2, r = c(1.7, 2.5), t = list(
  function(t) {1.7 / 20 + exp(t) * (1.7 / 50)},
  function(t) {exp(t)}
 ))

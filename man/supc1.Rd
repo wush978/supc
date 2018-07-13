@@ -36,7 +36,7 @@ The \code{"cpp2"} parallelly computes the distance in C++ with OpenMP, which is 
 
 Each "supc" object contains the following elements:
 \item{x}{The input matrix.}
-\item{d0}{The pairwise distance matrix of \code{x}.}
+\item{d0}{The pairwise distance matrix of \code{x} or \code{NULL}.}
 \item{r}{The value of \eqn{r} of the clustering.}
 \item{t}{The function \eqn{T(t)} of the clustering.}
 \item{cluster}{The cluster id of each instance.}
