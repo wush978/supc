@@ -75,6 +75,10 @@ local({
   lapply(checkers, function(checker) {
     lapply(objs, checker)
   })
+  lapply(objs, function(obj) {
+    freq.poly(obj)
+    plot(obj)
+  })
   NULL
 })
   
@@ -105,6 +109,10 @@ checkers <- function(supc.objs) {
     )
     . <- isTRUE(.)
     if (interactive()) if (!.) browser() else stopifnot(.)
+  })
+  lapply(supc.objs, function(supc.obj) {
+    freq.poly(supc.obj)
+    lapply(supc.obj, plot)
   })
   NULL
 }
@@ -151,3 +159,4 @@ for(.mode in .mode.list) {
     NULL
   })
 }
+
