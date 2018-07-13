@@ -65,10 +65,10 @@
 
 #'@importFrom stats quantile heatmap
 .get.parameters <- function(x, r, rp, t) {
-  d0 <- .dist(x)
-  retval <- list(d0 = d0)
+  retval <- list()
   # tau
   if (is.null(r)) {
+    d0 <- .dist(x)
     if (is.null(rp)) {
       retval$tau <- as.vector(quantile(d0, .rp.default))
     } else {
@@ -150,7 +150,7 @@
 #'
 #'Each "supc" object contains the following elements:
 #'\item{x}{The input matrix.}
-#'\item{d0}{The pairwise distance matrix of \code{x}.}
+#'\item{d0}{The pairwise distance matrix of \code{x} or \code{NULL}.}
 #'\item{r}{The value of \eqn{r} of the clustering.}
 #'\item{t}{The function \eqn{T(t)} of the clustering.}
 #'\item{cluster}{The cluster id of each instance.}
@@ -503,6 +503,7 @@ freq.poly.dist <- function(x, ...) {
 #'@aliases freq.poly.subclist
 #'@export
 freq.poly.supc <- function(x, ...) {
+  if (is.null(x$d0)) x$d0 <- .dist(x$x)
   .hist <- freq.poly(x$d0, ...)
   lines(list(x = rep(x$r, 2), y = range(.hist$counts)), col = 2, lty = 2)
   title(sub = sprintf("r = %f", x$r))
@@ -510,6 +511,7 @@ freq.poly.supc <- function(x, ...) {
 
 #'@export
 freq.poly.supclist <- function(x, ...) {
+  if (is.null(x[[1]]$d0)) x[[1]]$d0 <- .dist(x[[1]]$x)
   .hist <- freq.poly(x[[1]]$d0, ...)
   lapply(x, function(x) lines(list(x = rep(x$r, 2), y = range(.hist$counts)), col = 2, lty = 2))
   title(sub = sprintf("r = %s", deparse(sapply(x, "[[", "r"))))
