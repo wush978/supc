@@ -1,4 +1,3 @@
-# function() {
 library(supc)
 X <- local({
   set.seed(1)
@@ -17,7 +16,7 @@ X <- local({
 
 # parameters <- list(tau = 0.9, t = function() {0.75})
 dist.mode("stats")
-imeplementations <- local({
+implementations <- local({
   .group <- list(c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 
     1L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 1L, 2L), c(1L, 1L, 
     2L, 2L, 2L, 2L, 1L, 1L, 2L, 1L, 2L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 
@@ -52,9 +51,14 @@ local({
   check.names.ref <- c("x", "r", "cluster", "centers", "size")
   objs <- lapply(implementations, function(.) .(X))
   stopifnot(isTRUE(all.equal(
-    objs[[1]][check.names.ref],
-    objs[[2]][check.names.ref]
+    objs[[1]]$cluster,
+    objs[[2]]$cluster
+  )))
+  stopifnot(isTRUE(all.equal(
+    objs[[2]][check.names.ref],
+    objs[[3]][check.names.ref]
   )))
   lapply(objs, function(obj) stopifnot(is.null(obj$d0)))
+  invisible(NULL)
 })
 
