@@ -558,7 +558,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
 #pragma omp master
         difference = 0.0;
 #pragma omp barrier
-#pragma omp for reduction (std::max:difference)
+#pragma omp for reduction (max:difference)
         for(int i = 0;i < m;i++) {
           cblas_Rdcopy(n, ppx + i, m, pb, 1);
           cblas_Rdaxpy(n, -1, ppretval + i, m, pb, 1);
