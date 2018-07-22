@@ -21,6 +21,7 @@ Suggests:
     knitr,
     rmarkdown,
     fields
+Enhances: gputools
 LinkingTo: Rcpp(>= 0.12), BH(>= 1.62)
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
