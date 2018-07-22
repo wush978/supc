@@ -9,5 +9,5 @@ Clustering \code{D31} dataset is difficult for the partition type of clustering 
 However, SUP correctly identifies the 31 major clusters.
 }
 \references{
-Veenman, C. J., M. J. T. Reinders, and E. Backer. 2002. 「A Maximum Variance Cluster Algorithm.」 IEEE Trans. Pattern Analysis and Machine Intelligence 24 (9): 1273–80.
+Veenman, C. J., M. J. T. Reinders, and E. Backer. 2002. A Maximum Variance Cluster Algorithm. IEEE Trans. Pattern Analysis and Machine Intelligence 24 (9): 1273–80.
 }

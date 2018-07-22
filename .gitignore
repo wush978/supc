@@ -3,6 +3,7 @@
 .RData
 src/*.o
 src/*.so
+src/Makevars
 supc.Rproj
 vignettes/supc.R
 vignettes/supc.html

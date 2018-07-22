@@ -50,5 +50,5 @@ shape <- makedata(50, 1000)
 }
 }
 \references{
-Guha, S., R. Rastogi, and K. Shim. 2001. 「Cure: An Efficient Clustering Algorithm for Large Databases.」 Information Systems 26 (1): 35–38.
+Guha, S., R. Rastogi, and K. Shim. 2001. Cure: An Efficient Clustering Algorithm for Large Databases. Information Systems 26 (1): 35–38.
 }
