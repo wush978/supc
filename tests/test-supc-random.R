@@ -48,7 +48,7 @@ implementations <- local({
 
 ## Checking
 local({
-  check.names.ref <- c("x", "r", "cluster", "centers", "size")
+  check.names.ref <- c("x", "r", "cluster", "centers", "size", "result", "iteration")
   objs <- lapply(implementations, function(.) .(X))
   stopifnot(isTRUE(all.equal(
     objs[[1]]$cluster,
@@ -60,5 +60,32 @@ local({
   )))
   lapply(objs, function(obj) stopifnot(is.null(obj$d0)))
   invisible(NULL)
+})
+
+## check supclist
+local({
+  objs <- {
+    .k <- rpois(1, 4) + 2
+    .idx <- rep(seq_len(.k), 1 + nrow(X) / .k)
+    length(.idx) <- nrow(X)
+    .group <- lapply(1:100, function(.) {
+      sample(.idx)
+    })
+    list(
+      supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "R", groups = .group),
+      supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "cpp", groups = .group)
+    )
+  }
+  stopifnot(sapply(objs, class) == "supclist")
+  stopifnot(sapply(objs, length) == 3)
+  check.names.ref <- c("x", "r", "cluster", "centers", "size", "iteration", "result")
+  for(i in 1:3) {
+    . <- all.equal(
+      objs[[1]][[i]][check.names.ref],
+      objs[[2]][[i]][check.names.ref]
+    )
+    stopifnot(isTRUE(.))
+    
+  }  
 })
 

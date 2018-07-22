@@ -584,8 +584,12 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
       } // end check difference and tolerance
     } // while
   } // omp parallel
-  px->attr("iteration") = wrap(groups.size());
-  px->attr("groups") = groups;
+  px->attr("iteration") = wrap(++groups_counter);
+  List returned_groups(groups_counter);
+  for(int i = 0;i < groups_counter;i++) {
+    returned_groups[i] = groups[i];
+  }
+  px->attr("groups") = returned_groups;
   return *px;
 }
 
