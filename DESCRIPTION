@@ -8,6 +8,7 @@ Authors@R: c(
 Maintainer: Wush Wu <wush978@gmail.com>
 Description: Implements the self-updating process clustering algorithms proposed
     in Shiu and Chen (2016) <doi:10.1080/00949655.2015.1049605>.
+URL: https://github.com/wush978/supc
 License: GPL (>= 3)
 LazyData: TRUE
 Depends:
@@ -23,7 +24,8 @@ Suggests:
     fields
 Enhances: gputools
 LinkingTo: Rcpp(>= 0.12), BH(>= 1.62)
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown
 RoxygenNote: 6.0.1
 SystemRequirements: C++11
 Encoding: UTF-8
+Additional_repositories: https://github.com/nullsatz/gputools
