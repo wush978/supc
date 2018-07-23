@@ -28,4 +28,4 @@ VignetteBuilder: knitr, rmarkdown
 RoxygenNote: 6.0.1
 SystemRequirements: C++11
 Encoding: UTF-8
-Additional_repositories: https://github.com/nullsatz/gputools
+Additional_repositories: https://cran.microsoft.com/snapshot/2017-10-01/
