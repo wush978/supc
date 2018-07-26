@@ -207,7 +207,7 @@ supc1 <- function(
   cluster.tolerance = 10 * tolerance, 
   drop = TRUE, 
   implementation = c("cpp", "R", "cpp2"), 
-  verbose = FALSE
+  verbose = (nrow(X) > 10000)
   ) {
   parameters <- .get.parameters(x, r, rp, t)
   cl.raw <- switch(
@@ -342,7 +342,7 @@ supc.random <- function(
   cluster.tolerance = 10 * tolerance, 
   drop = TRUE, 
   implementation = c("cpp", "R"), 
-  verbose = FALSE
+  verbose = (nrow(X) > 10000)
   ) {
   parameters <- .get.parameters(x, r, rp, t)
   if (is.null(groups)) parameters$groups <- rep(list(NULL), length(parameters$tau)) else {
