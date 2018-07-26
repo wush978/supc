@@ -6,7 +6,7 @@
 \usage{
 supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
   tolerance = 1e-04, cluster.tolerance = 10 * tolerance, drop = TRUE,
-  implementation = c("cpp", "R", "cpp2"), verbose = FALSE)
+  implementation = c("cpp", "R", "cpp2"), verbose = (nrow(x) > 10000))
 }
 \arguments{
 \item{x}{matrix. Each row is an instance of the data.}

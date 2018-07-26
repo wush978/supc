@@ -6,7 +6,8 @@
 \usage{
 supc.random(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
   k = NULL, groups = NULL, tolerance = 1e-04, cluster.tolerance = 10 *
-  tolerance, drop = TRUE, implementation = c("cpp", "R"), verbose = FALSE)
+  tolerance, drop = TRUE, implementation = c("cpp", "R"),
+  verbose = (nrow(x) > 10000))
 }
 \arguments{
 \item{x}{matrix. Each row is an instance of the data.}
