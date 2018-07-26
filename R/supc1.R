@@ -116,10 +116,6 @@
   retval
 }
 
-.clusterize <- function(x, tolerance) {
-  dbscan::dbscan(x, eps = tolerance, minPts = 1)$cluster
-}
-
 #'@title Self-Updating Process Clustering
 #'
 #'@description 

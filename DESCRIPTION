@@ -1,7 +1,7 @@
 Package: supc
 Type: Package
 Title: The Self-Updating Process Clustering Algorithms
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(
   person("Wush", "Wu", email = "wush978@gmail.com", role = c("aut", "cre")), 
   person("Shang-Ying", "Shiu", email = "", role = c("aut", "ctb")))
@@ -14,13 +14,13 @@ Depends:
     R (>= 3.0.2)
 Imports:
     stats,
-    Rcpp,
-    dbscan
+    Rcpp
 Suggests:
     amap,
     knitr,
     rmarkdown,
-    fields
+    fields,
+    dbscan
 Enhances: gputools
 LinkingTo: Rcpp(>= 0.12), BH(>= 1.62)
 VignetteBuilder: knitr
