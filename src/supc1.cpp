@@ -156,7 +156,6 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
     }
     retval_is_retval2 = !retval_is_retval2;
     is_first = false;
-    if (!(t % 10)) Rcpp::checkUserInterrupt();
   }
 }
 
@@ -191,7 +190,6 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   bool retval_is_retval2 = true;
   NumericMatrix *px, *pretval;
   double *ppx, *ppretval, _T, difference;
-  bool is_interrupted = false;
 #pragma omp parallel
   {
     std::vector<double> buffer(n);
@@ -340,20 +338,10 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
         {
           retval_is_retval2 = !retval_is_retval2;
           is_first = false;
-          if (!(t % 10)) {
-            try {
-              Rcpp::checkUserInterrupt();
-            } catch (Rcpp::internal::InterruptedException& e) {
-              is_interrupted = true;
-            }
-          }
         }
-#pragma omp barrier
-        if (is_interrupted) break;
       }
     } // while
   } // omp parallel
-  if (is_interrupted) throw Rcpp::internal::InterruptedException();
   return *px;
 }
 
@@ -417,7 +405,6 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
   int* idx;
   int groups_counter = 0, group_size;
   double tau_squared = tau * tau + DBL_EPSILON;
-  bool is_interrupted;
 #pragma omp parallel
   {
     std::vector<double> buffer(n);
@@ -593,22 +580,10 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
           retval_is_retval2 = !retval_is_retval2;
           is_first = false;
           groups_counter++;
-          if (!(groups_counter % 10)) {
-            try {
-              Rcpp::checkUserInterrupt();
-            } catch (Rcpp::internal::InterruptedException& e) {
-              is_interrupted = true;
-            }
-          }
         }
-#pragma omp barrier
-        if (is_interrupted) break;
       } // end check difference and tolerance
     } // while
   } // omp parallel
-  if (is_interrupted) {
-    throw Rcpp::internal::InterruptedException();
-  }
   px->attr("iteration") = wrap(++groups_counter);
   List returned_groups(groups_counter);
   for(int i = 0;i < groups_counter;i++) {
