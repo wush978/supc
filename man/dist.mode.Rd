@@ -10,5 +10,6 @@ dist.mode(mode = c("stats", "amap", "gputools"))
 \item{mode}{either \code{"stats"}, \code{"amap"}, or \code{"gputools"}.}
 }
 \description{
-Configure which package is used to compute the distance matrix. Note that the fastest implementation depends on the data and machine.
+Configure which package is used to compute the distance matrix. \
+Note that the speed depends on the data and the hardware.
 }
