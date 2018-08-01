@@ -118,9 +118,6 @@ checkers <- function(supc.objs) {
 }
 ## checking
 .mode.list <- c("stats", "amap")
-if (require("gputools")) {
-  .mode.list <- append(.mode.list, "gputools")
-}
 for(.mode in .mode.list) {
   dist.mode(.mode)
   local({
