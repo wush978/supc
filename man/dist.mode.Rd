@@ -18,3 +18,9 @@ and \code{"amap"} are registered by default.}
 Configure which package is used to compute the distance matrix or register one.
 Note that the speed depends on the data and the hardware.
 }
+\examples{
+# use stats::dist to compute the pairwise distance
+dist.mode("stats") 
+# use gputools to compute the pairwise distance with GPU
+dist.mode("gputools", function(x) gputools::gpuDist(x, method = "euclidean", p = 2.0)) 
+}
