@@ -9,3 +9,9 @@ for(i in 1:10) {
   g2 <- supc:::.clusterize(m2, tol)
   stopifnot(g1 == g2)
 }
+
+cl0 <- supc:::.clusterize(supc:::.test.r, 1e-3)
+for(i in 1:100) {
+  cl <- supc:::.clusterize(supc:::.test.r, 1e-3)
+  stopifnot(isTRUE(all.equal(cl, cl0)))
+}
