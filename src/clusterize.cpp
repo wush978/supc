@@ -21,17 +21,18 @@ SEXP clusterize(const NumericMatrix& X, double threshold) {
   std::sort(sorted_index.begin(), sorted_index.end(), [&pr](int i, int j) {
     return pr[i] < pr[j];
   });
-  std::map<int, int> inverted_index_for_sorted_index;
+  std::vector<int> inverted_index_for_sorted_index(X.nrow(), 0);
   for(int i = 0;i < X.nrow();i++) inverted_index_for_sorted_index[sorted_index[i]] = i;
   
   // start clusterize
   std::vector<bool> visited(X.nrow(), false);
   std::vector<int> possible_candidates;
   std::vector<int> candidates;
+  std::vector<bool> is_candidate(X.nrow(), false);
   
   const double *p = &X[0];
   int nrow = X.nrow(), ncol = X.ncol();
-  double threshold_squared = threshold * threshold;
+  double threshold_squared = threshold * threshold + DOUBLE_EPS;
   auto is_neighbor = [&](int i, int j) {
     const double *pi = p + i;
     const double *pj = p + j;
@@ -41,8 +42,10 @@ SEXP clusterize(const NumericMatrix& X, double threshold) {
       tmp = tmp * tmp;
       distance += tmp;
       if (distance > threshold_squared) return false;
+      pi += nrow;
+      pj += nrow;
     }
-    return true;
+    return std::sqrt(distance) < threshold;
   };
   
   // use reference column to find possible candidates
@@ -65,8 +68,11 @@ SEXP clusterize(const NumericMatrix& X, double threshold) {
   auto filter_possible_candidates = [&](int current_index) {
     for(int index : possible_candidates) {
       if (visited[index]) continue;
-      if (std::find(candidates.begin(), candidates.end(), index) != candidates.end()) continue;
-      if (is_neighbor(current_index, index)) candidates.push_back(index);
+      if (is_candidate[index]) continue;
+      if (is_neighbor(current_index, index)) {
+        candidates.push_back(index);
+        is_candidate[index] = true;
+      }
     }
   };
   
@@ -75,7 +81,7 @@ SEXP clusterize(const NumericMatrix& X, double threshold) {
     visited[i] = true;
     cluster[i] = ++last_cluster_id;
     candidates.clear();
-    
+    std::fill(is_candidate.begin(), is_candidate.end(), false);
     get_possible_candidates(i);
     filter_possible_candidates(i);
     while(!candidates.empty()) {
