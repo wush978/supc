@@ -21,3 +21,5 @@ matrix:
       env:
         - TEST_GOLUB=TRUE
 
+env:
+  - MAKE="make -j4"
