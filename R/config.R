@@ -21,8 +21,8 @@
 #'@examples
 #'# use stats::dist to compute the pairwise distance
 #'dist.mode("stats") 
-#'# use gputools to compute the pairwise distance with GPU
-#'dist.mode("gputools", function(x) gputools::gpuDist(x, method = "euclidean", p = 2.0)) 
+#'## use gputools to compute the pairwise distance with GPU
+#'# dist.mode("gputools", function(x) gputools::gpuDist(x, method = "euclidean", p = 2.0)) 
 #'@export
 dist.mode <- function(mode = c("stats", "amap"), FUN = NULL) {
   if (is.null(FUN)) {

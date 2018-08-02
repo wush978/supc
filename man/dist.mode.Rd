@@ -21,6 +21,6 @@ Note that the speed depends on the data and the hardware.
 \examples{
 # use stats::dist to compute the pairwise distance
 dist.mode("stats") 
-# use gputools to compute the pairwise distance with GPU
-dist.mode("gputools", function(x) gputools::gpuDist(x, method = "euclidean", p = 2.0)) 
+## use gputools to compute the pairwise distance with GPU
+# dist.mode("gputools", function(x) gputools::gpuDist(x, method = "euclidean", p = 2.0)) 
 }
