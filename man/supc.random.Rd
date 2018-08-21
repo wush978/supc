@@ -10,7 +10,7 @@ supc.random(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
   verbose = (nrow(x) > 10000))
 }
 \arguments{
-\item{x}{matrix. Each row is an instance of the data.}
+\item{x}{data matrix. Each row is an instance of the data.}
 
 \item{r}{numeric vector or \code{NULL}. The parameter \eqn{r} of the self-updating process.}
 
@@ -20,7 +20,7 @@ If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{
 
 \item{t}{either numeric vector, list of function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.}
 
-\item{k}{integer value. The size of the partition.}
+\item{k}{integer value. The number of the partitions.}
 
 \item{groups}{list. The first element is the partition of the first iteration, and the second element is the partition
 of the second iteration, etc. If the number of the iteration exceeds \code{length(groups)}, then new partition will be 
@@ -29,7 +29,7 @@ generated.}
 \item{tolerance}{numeric value. The threshold of convergence.}
 
 \item{cluster.tolerance}{numeric value. After iterations, if the distance of two points are smaller than \code{cluster.tolerance},
-then they are specified as the same cluster.}
+then they are identified as in the same cluster.}
 
 \item{drop}{logical value. Whether to delete the list structure if its length is 1.}
 
@@ -53,12 +53,12 @@ Each "supc" object contains the following elements:
 \item{result}{The position of data after iterations.}
 }
 \description{
-The Randomized Self-Updating Process Clustering(randomized SUPC) is a modification of the original SUPC algorithm. 
-The randomized SUPC randomly generates the partition of the instances during each iterations. 
-The self updating process is conducted independently in each partition in order to reduce the computation and the memory.
+The Randomized Self-Updating Process Clustering (randomized SUP) is a modification of the original SUP algorithm. 
+The randomized SUP randomly generates the partition of the instances during each iterations. 
+At each iteration, the self updating process is conducted independently in each partition in order to reduce the computation and the memory.
 }
 \details{
-Please check the vignettes via \code{vignettes("supc", package = "supc")} for details.
+Please check the vignettes via \code{vignette("supc", package = "supc")} for details.
 }
 \examples{
 \dontrun{

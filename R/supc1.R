@@ -124,7 +124,7 @@
 #'The algorithm mimics the process of gravitational attraction iteratively that eventually merges the samples into clusters on the sample space. 
 #'During the iterations, all samples continue moving until the system becomes stable.
 #'
-#'@param x matrix. Each row is an instance of the data.
+#'@param x data matrix. Each row is an instance of the data.
 #'@param r numeric vector or \code{NULL}. The parameter \eqn{r} of the self-updating process.
 #'@param rp numeric vector or \code{NULL}. If \code{r} is \code{NULL}, then \code{rp} will be used. 
 #'The corresponding \code{r} is the \code{rp}-percentile of the pairwise distances of the data. 
@@ -132,14 +132,14 @@
 #'@param t either numeric vector, list of function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.
 #'@param tolerance numeric value. The threshold of convergence.
 #'@param cluster.tolerance numeric value. After iterations, if the distance of two points are smaller than \code{cluster.tolerance},
-#'then they are specified as the same cluster.
+#'then they are identified as in the same cluster.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
 #'@param implementation eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the engine to calculate result.
 #'The \code{"cpp2"} parallelly computes the distance in C++ with OpenMP, which is not supported under OS X, and uses the early-stop to speed up calculation.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details
-#'Please check the vignettes via \code{vignettes("supc", package = "supc")} for details.
+#'Please check the vignettes via \code{vignette("supc", package = "supc")} for details.
 #'
 #'@return
 #'\code{supc1} returns a list of objects of \link{class} "supc".
@@ -249,29 +249,29 @@ supc1 <- function(
 #'@title Randomized Self-Updating Process Clustering
 #'
 #'@description 
-#'The Randomized Self-Updating Process Clustering(randomized SUPC) is a modification of the original SUPC algorithm. 
-#'The randomized SUPC randomly generates the partition of the instances during each iterations. 
-#'The self updating process is conducted independently in each partition in order to reduce the computation and the memory.
+#'The Randomized Self-Updating Process Clustering (randomized SUP) is a modification of the original SUP algorithm. 
+#'The randomized SUP randomly generates the partition of the instances during each iterations. 
+#'At each iteration, the self updating process is conducted independently in each partition in order to reduce the computation and the memory.
 #'
-#'@param x matrix. Each row is an instance of the data.
+#'@param x data matrix. Each row is an instance of the data.
 #'@param r numeric vector or \code{NULL}. The parameter \eqn{r} of the self-updating process.
 #'@param rp numeric vector or \code{NULL}. If \code{r} is \code{NULL}, then \code{rp} will be used. 
 #'The corresponding \code{r} is the \code{rp}-percentile of the pairwise distances of the data. 
 #'If both \code{r} and \code{rp} are \code{NULL}, then the default value is \code{rp = c(0.0005, 0.001, 0.01, 0.1, 0.3)}.
 #'@param t either numeric vector, list of function, or one of \code{"static" or "dynamic"}. The parameter \eqn{T(t)} of the self-updating process.
-#'@param k integer value. The size of the partition.
+#'@param k integer value. The number of the partitions.
 #'@param groups list. The first element is the partition of the first iteration, and the second element is the partition
 #'of the second iteration, etc. If the number of the iteration exceeds \code{length(groups)}, then new partition will be 
 #'generated.
 #'@param tolerance numeric value. The threshold of convergence.
 #'@param cluster.tolerance numeric value. After iterations, if the distance of two points are smaller than \code{cluster.tolerance},
-#'then they are specified as the same cluster.
+#'then they are identified as in the same cluster.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
 #'@param implementation eithor \code{"R"} or \code{"cpp"}. Choose the engine to calculate result.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details
-#'Please check the vignettes via \code{vignettes("supc", package = "supc")} for details.
+#'Please check the vignettes via \code{vignette("supc", package = "supc")} for details.
 #'
 #'@return
 #'\code{supc1} returns a list of objects of \link{class} "supc".
