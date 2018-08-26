@@ -62,42 +62,46 @@ Please check the vignettes via \code{vignette("supc", package = "supc")} for det
 }
 \examples{
 \dontrun{
-set.seed(1)
-X <- local({
- mu <- list(
-   x = c(0, 2, 1, 6, 8, 7, 3, 5, 4),
-   y = c(0, 0, 1, 0, 0, 1, 3, 3, 4)
- )
- X <- lapply(1:5, function(i) {
-   cbind(rnorm(9, mu$x, 1/5), rnorm(9, mu$y, 1/5))
- })
- X <- do.call(rbind, X)
- n <- nrow(X)
- X <- rbind(X, matrix(0, 20, 2))
- k <- 1
- while(k <= 20) {
-   tmp <- c(13*runif(1)-2.5, 8*runif(1)-2.5)
-   y1 <- mu$x - tmp[1]
-   y2 <- mu$y - tmp[2]
-   y <- sqrt(y1^2+y2^2)
-   if (min(y)> 2){
-     X[k+n,] <- tmp
-     k <- k+1
+# The shape data has a structure of five clusters and a number of noise data points.
+makecircle=function(N, seed){
+ n=0
+ x=matrix(NA, nrow=N, ncol=2)
+ while (n<N){
+   tmp=runif(2, min=0, max=1)*2-1
+   if (sum(tmp^2)<1) {
+      n=n+1
+      x[n,]=tmp
    }
  }
- X
-})
-X.supcs <- supc.random(X, r = c(0.9, 1.7, 2.5), t = "dynamic", k = 2)
-X.supcs$cluster
-plot(X.supcs[[1]], type = "heatmap", major.size = 2)
-plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
+ return(x)
+}
 
-X.supcs <- supc.random(X, k = 2, r = c(1.7, 2.5), t = list(
- function(t) {1.7 / 20 + exp(t) * (1.7 / 50)},
- function(t) {exp(t)}
-))
-plot(X.supcs[[1]], type = "heatmap", major.size = 2)
-plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
+makedata <- function(ns, seed) {
+ size=c(10,3,3,1,1)
+ mu=rbind(c(-0.3, -0.3), c(-0.55, 0.8), c(0.55, 0.8), c(0.9, 0), c(0.9, -0.6))
+ sd=rbind(c(0.7, 0.7), c(0.45, 0.2), c(0.45, 0.2), c(0.1, 0.1), c(0.1, 0.1))
+ x=NULL
+
+ for (i in 1:5){
+    tmp=makecircle(ns*size[i], seed+i)
+    tmp[,1]=tmp[,1]*sd[i,1]+mu[i,1]
+    tmp[,2]=tmp[,2]*sd[i,2]+mu[i,2]
+    x=rbind(x, tmp)
+ }
+ 
+ tmp=runif(floor(ns/3), min=0, max=1)/5-0.1
+ tmp=cbind(tmp, 0.8*rep(1, floor(ns/3)))
+ x=rbind(x, tmp)
+ x=rbind(x, matrix(1, nrow=2*ns, ncol=2)*2-1)
+ return(x)
+}
+
+shape1 <- makedata(5000, 1000)
+dim(shape1)
+plot(shape1)
+
+X.supc=supc.random(shape1, r=0.5, t="dynamic", k = 500)
+plot(shape1, col=X.supc$cluster)
 }
 
 }
