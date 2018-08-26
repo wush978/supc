@@ -1,18 +1,32 @@
 library(supc)
 data("golub", package = "supc")
+
+check.cl <- function(supc.obj, cluster.tolerance = 1e-3) {
+  cl <- supc.obj$cluster
+  r <- supc.obj$result
+  for(i in seq_len(max(cl))) {
+    . <- dist(r[cl == i,,drop = FALSE])
+    if (length(.) > 0) {
+      stopifnot(max(.) < cluster.tolerance)
+    }
+  }
+}
+
 if (Sys.getenv("TEST_GOLUB") == "TRUE") {
   print(system.time(
     golub.cpp <- supc1(golub, r = 4, t = "dynamic", implementation = "cpp", verbose = TRUE)
     ))
+  check.cl(golub.cpp)
   cat("===\n")
   print(system.time(
     golub.cpp2 <- supc1(golub, r = 4, t = "dynamic", implementation = "cpp2", verbose = TRUE)
     ))
+  check.cl(golub.cpp2)
   cat("===\n")
   print(system.time(
     golub.r <- supc1(golub, r = 4, t = "dynamic", implementation = "R", verbose = TRUE)
     ))
-  
+  check.cl(golub.r)
   stopifnot(isTRUE(all.equal(golub.cpp, golub.cpp2)))
   stopifnot(isTRUE(all.equal(golub.cpp, golub.r)))
   

@@ -25,47 +25,11 @@ static void fill_sym_matrix(const int m, const double * pd, const double diag, s
   }
 }
 
-// static void dsymm(const int m, const int n, const double * a, const double * b, double * retval, const CBLAS_SIDE side = CBLAS_SIDE::CblasLeft) {
-//   const CBLAS_ORDER order = CBLAS_ORDER::CblasColMajor;
-//   const CBLAS_UPLO uplo = CBLAS_UPLO::CblasLower;
-//   int lda;
-//   switch(side) {
-//     case CBLAS_SIDE::CblasLeft: {
-//       lda = std::max(1, m);
-//       break;
-//     }
-//     case CBLAS_SIDE::CblasRight: {
-//       lda = std::max(1, n);
-//       break;
-//     }
-//   }
-//   int ldb = std::max(1, m), ldc = std::max(1, m);
-//   double alpha = 1.0, beta = 0.0;
-//   ::cblas_dsymm(order, side, uplo, m, n, alpha, a, lda, b, ldb, beta, retval, ldc);
-// }
-
 static void dgemm(const int m, const int n, const double * a, const double * b, double * retval) {
   const CBLAS_ORDER order = CBLAS_ORDER::CblasColMajor;
   const CBLAS_TRANSPOSE trans_a = CBLAS_TRANSPOSE::CblasNoTrans, trans_b = CBLAS_TRANSPOSE::CblasNoTrans;
   if (::cblas_Rdgemm(order, trans_a, trans_b, m, n, m, 1.0, a, m, b, m, 0.0, retval, m) != 0) throw std::runtime_error("cblas_dgemm return non-zero");
 }
-
-// //[[Rcpp::export(".test.dsymm")]]
-// void test_dsymm(NumericVector d, double diag, NumericMatrix x, NumericMatrix retval, bool side_is_left = true) {
-//   //CBLAS_ORDER side = CBLAS_ORDER::CblasRowMajor;
-//   int m = x.nrow(), n = x.ncol();
-//   if (m != retval.nrow()) throw std::invalid_argument("Inconsistent");
-//   if (n != retval.ncol()) throw std::invalid_argument("Inconsistent");
-//   int dm;
-//   if (side_is_left) dm = m; else dm = n;
-//   std::vector<double> a(dm * dm, 0.0);
-//   fill_sym_matrix(dm, &d[0], diag, a);
-//   std::for_each(a.begin(), a.end(), [](double a_ele) {
-//     Rcout << a_ele << ",";
-//   });
-//   Rcout << std::endl;
-//   if (side_is_left) dsymm(m, n, a.data(), &x[0], &retval[0]); else dsymm(m, n, a.data(), &x[0], &retval[0], CBLAS_SIDE::CblasRight);
-// }
 
 //[[Rcpp::export(".test.dgemm")]]
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval) {

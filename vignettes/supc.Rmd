@@ -154,7 +154,12 @@ This package allows the user to choose the implementation of computing distances
 
 ### Computation of the distance
 
-The user can use `dist.mode` to select the package to compute the pairwise distances between samples. Specifying `dist.mode("stats")`, `dist.mode("amap")`, and `dist.mode("gputools")` will select `stats::dist`, `amap::Dist`, and `gputools::gpuDist` to compute the pairwise distance matrix, respectively. It is recommended to compare the computation time of `stats::dist(x)`, `amap::Dist(x)` and `gputools::gpuDist(x)` before selecting the function. The default function to compute the pairwise distances is `stats::dist`.
+The user can use `dist.mode` to select the package to compute the pairwise distances between samples. 
+Specifying `dist.mode("stats")`, `dist.mode("amap")` will select `stats::dist`, `amap::Dist` to compute the pairwise distance matrix, respectively. 
+Moreover, the user can register function for computing the pairwise distance. 
+For example, one can use GPU to compute the distance via `dist.mode("gputools", function(x) gputools::gpuDist(x, method = "euclidean", p = 2.0))` after installing the package `gputools` from github.
+It is recommended to compare the computation time of `stats::dist(x)`, `amap::Dist(x)` or other functions before selecting the function.
+The default function to compute the pairwise distances is `stats::dist`.
 
 For example, on my machine whose CPU is `Intel(R) Core(TM) i7-4820K CPU @ 3.70GHz` and GPU is `NVIDIA Corporation GK107GL [Quadro K2000]`, the computation time of different function is:
 

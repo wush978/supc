@@ -4,11 +4,23 @@
 \alias{dist.mode}
 \title{Configure which package is used to compute the distance matrix}
 \usage{
-dist.mode(mode = c("stats", "amap", "gputools"))
+dist.mode(mode = c("stats", "amap"), FUN = NULL)
 }
 \arguments{
-\item{mode}{either \code{"stats"}, \code{"amap"}, or \code{"gputools"}.}
+\item{mode}{string. The available modes are \code{"stats"} and \code{"amap"} by default.}
+
+\item{FUN}{a function which has one argument \code{x} or \code{NULL}. 
+The function should compute the pairwise distance of \code{x} and return a \code{dist} object.
+The user can skip this argument if the \code{mode} is registered. For example, \code{"stats"}
+and \code{"amap"} are registered by default.}
 }
 \description{
-Configure which package is used to compute the distance matrix. Note that the fastest implementation depends on the data and machine.
+Configure which package is used to compute the distance matrix or register one.
+Note that the speed depends on the data and the hardware.
+}
+\examples{
+# use stats::dist to compute the pairwise distance
+dist.mode("stats") 
+## use gputools to compute the pairwise distance with GPU
+# dist.mode("gputools", function(x) gputools::gpuDist(x, method = "euclidean", p = 2.0)) 
 }

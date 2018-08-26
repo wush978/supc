@@ -69,16 +69,20 @@ checkers <- local({
 })
 ## checking
 local({
-  objs <- lapply(implementations, function(f) {
-    f(X)
-  })
-  lapply(checkers, function(checker) {
-    lapply(objs, checker)
-  })
-  lapply(objs, function(obj) {
-    freq.poly(obj)
-    plot(obj)
-  })
+  # objs <- lapply(implementations, function(f) {
+  #   f(X)
+  # })
+  objs <- list()
+  for(f in implementations) {
+    objs[[length(objs) + 1 ]] <- f(X)
+  }
+  for(check in checkers) {
+    for(obj in objs) {
+      check(obj)
+      freq.poly(obj)
+      plot(obj)
+    }
+  }
   NULL
 })
   
@@ -102,25 +106,25 @@ get.implementations <- function(argv) {
 checkers <- function(supc.objs) {
   ref.obj <- supc.objs[[1]]
   list.check.names <- c("x", "d0", "r", "cluster", "centers", "size", "result", "iteration")
-  lapply(supc.objs, function(supc.obj) {
-    . <- all.equal(
-      lapply(supc.obj, "[", list.check.names),
-      lapply(ref.obj, "[", list.check.names)
-    )
-    . <- isTRUE(.)
-    if (interactive()) if (!.) browser() else stopifnot(.)
-  })
-  lapply(supc.objs, function(supc.obj) {
+  for(supc.obj in supc.objs) {
+    stopifnot(length(supc.obj) == length(ref.obj))
+    for(.i in seq_along(supc.obj)) {
+      . <- all.equal(
+        supc.obj[[.i]][list.check.names],
+        ref.obj[[.i]][list.check.names]
+      )
+      . <- isTRUE(.)
+      if (interactive()) if (!.) browser() else stopifnot(.)
+    }
     freq.poly(supc.obj)
-    lapply(supc.obj, plot)
-  })
+    for(obj in supc.obj) {
+      plot(obj)
+    }
+  }
   NULL
 }
 ## checking
 .mode.list <- c("stats", "amap")
-if (require("gputools")) {
-  .mode.list <- append(.mode.list, "gputools")
-}
 for(.mode in .mode.list) {
   dist.mode(.mode)
   local({
@@ -128,9 +132,10 @@ for(.mode in .mode.list) {
       r = quantile(dist(X), seq(.1, .5, by = .1)),
       t = quantile(dist(X), seq(.1, .5, by = .1)) / 5
     ))
-    objs <- lapply(., function(f) {
-      f(X)
-    })
+    objs <- list()
+    for(f in .) {
+      objs[[length(objs) + 1]] <- f(X)
+    }
     checkers(objs)
     NULL
   })
@@ -140,9 +145,10 @@ for(.mode in .mode.list) {
       r = quantile(dist(X), seq(.1, .5, by = .1)),
       t = "static"
     ))
-    objs <- lapply(., function(f) {
-      f(X)
-    })
+    objs <- list()
+    for(f in .) {
+      objs[[length(objs) + 1]] <- f(X)
+    }
     checkers(objs)
     NULL
   })
@@ -152,9 +158,10 @@ for(.mode in .mode.list) {
       r = quantile(dist(X), seq(.1, .5, by = .1)),
       t = "dynamic"
     ))
-    objs <- lapply(., function(f) {
-      f(X)
-    })
+    objs <- list()
+    for(f in .) {
+      objs[[length(objs) + 1]] <- f(X)
+    }
     checkers(objs)
     NULL
   })

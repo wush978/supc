@@ -6,18 +6,24 @@ matrix:
       os: linux
       dist: trusty
       sudo: false
+      env:
+        - MAKE="make -j4"
     - r: release
       os: linux
       dist: trusty
       sudo: false
       env: 
+        - MAKE="make -j4"
         - TEST_GOLUB=TRUE
     - r: devel
       os: linux
       sudo: false
       dist: trusty
+      env:
+        - MAKE="make -j4"
     - r: release
       os: osx
       env:
+        - MAKE="make -j4"
         - TEST_GOLUB=TRUE
 

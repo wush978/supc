@@ -2,17 +2,34 @@
 
 .env$dist.mode <- "stats"
 .env$dist.parallelization <- 2L
+.env$dist.FUN <- list(
+  "stats" = function(x) stats::dist(x, method = "euclidean", diag = FALSE, upper = FALSE, p = 2),
+  "amap" = function(x) amap::Dist(x, method = "euclidean", nbproc = .env$dist.parallelization, diag = FALSE, upper = FALSE)
+)
 
 #'@title Configure which package is used to compute the distance matrix
 #'
 #'@description
-#'Configure which package is used to compute the distance matrix. Note that the fastest implementation depends on the data and machine.
+#'Configure which package is used to compute the distance matrix or register one.
+#'Note that the speed depends on the data and the hardware.
 #'
-#'@param mode either \code{"stats"}, \code{"amap"}, or \code{"gputools"}.
-#'
+#'@param mode string. The available modes are \code{"stats"} and \code{"amap"} by default.
+#'@param FUN a function which has one argument \code{x} or \code{NULL}. 
+#'The function should compute the pairwise distance of \code{x} and return a \code{dist} object.
+#'The user can skip this argument if the \code{mode} is registered. For example, \code{"stats"}
+#'and \code{"amap"} are registered by default.
+#'@examples
+#'# use stats::dist to compute the pairwise distance
+#'dist.mode("stats") 
+#'## use gputools to compute the pairwise distance with GPU
+#'# dist.mode("gputools", function(x) gputools::gpuDist(x, method = "euclidean", p = 2.0)) 
 #'@export
-dist.mode <- function(mode = c("stats", "amap", "gputools")) {
-  stopifnot(mode[1] %in% c("stats", "amap", "gputools"))
+dist.mode <- function(mode = c("stats", "amap"), FUN = NULL) {
+  if (is.null(FUN)) {
+    stopifnot(mode[1] %in% names(.env$dist.FUN))
+  } else {
+    .env$dist.FUN[[mode[1]]] <- FUN
+  }
   .env$dist.mode <- mode[1]
   invisible(NULL)
 }
@@ -34,12 +51,8 @@ dist.parallelization <- function(i) {
 }
 
 .dist <- function(x) {
-  switch(.env$dist.mode[1],
-    "stats" = stats::dist(x, method = "euclidean", diag = FALSE, upper = FALSE, p = 2),
-    "amap" = amap::Dist(x, method = "euclidean", nbproc = .env$dist.parallelization, diag = FALSE, upper = FALSE),
-    "gputools" = gputools::gpuDist(x, method = "euclidean", p = 2.0),
-    stop("Unknown mode. Please use `dist.mode` to setup the function to compute distance matrix")
-  )
+  if (!.env$dist.mode[1] %in% names(.env$dist.FUN)) stop("Unknown mode. Please use `dist.mode` to setup the function to compute distance matrix")
+  .env$dist.FUN[[.env$dist.mode[1]]](x)
 }
 
 #'@importFrom Rcpp sourceCpp

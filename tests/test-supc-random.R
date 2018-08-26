@@ -49,7 +49,10 @@ implementations <- local({
 ## Checking
 local({
   check.names.ref <- c("x", "r", "cluster", "centers", "size", "result", "iteration")
-  objs <- lapply(implementations, function(.) .(X))
+  objs <- list()
+  for(f in implementations) {
+    objs[[length(objs) + 1]] <- f(X)
+  }
   stopifnot(isTRUE(all.equal(
     objs[[1]]$cluster,
     objs[[2]]$cluster
@@ -58,7 +61,9 @@ local({
     objs[[2]][check.names.ref],
     objs[[3]][check.names.ref]
   )))
-  lapply(objs, function(obj) stopifnot(is.null(obj$d0)))
+  for(obj in objs) {
+    stopifnot(is.null(obj$d0))
+  }
   invisible(NULL)
 })
 
