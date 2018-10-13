@@ -136,6 +136,7 @@
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
 #'@param implementation eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the engine to calculate result.
 #'The \code{"cpp2"} parallelly computes the distance in C++ with OpenMP, which is not supported under OS X, and uses the early-stop to speed up calculation.
+#'@param sort logical value. Whether to sort the cluster id by size.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details
@@ -207,6 +208,7 @@ supc1 <- function(
   cluster.tolerance = 10 * tolerance, 
   drop = TRUE, 
   implementation = c("cpp", "R", "cpp2"), 
+  sort = TRUE,
   verbose = (nrow(x) > 10000)
   ) {
   parameters <- .get.parameters(x, r, rp, t)
@@ -268,6 +270,7 @@ supc1 <- function(
 #'then they are identified as in the same cluster.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
 #'@param implementation eithor \code{"R"} or \code{"cpp"}. Choose the engine to calculate result.
+#'@param sort logical value. Whether to sort the cluster id by size.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details
@@ -346,6 +349,7 @@ supc.random <- function(
   cluster.tolerance = 10 * tolerance, 
   drop = TRUE, 
   implementation = c("cpp", "R"), 
+  sort = TRUE,
   verbose = (nrow(x) > 10000)
   ) {
   parameters <- .get.parameters(x, r, rp, t)
