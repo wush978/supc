@@ -24,6 +24,6 @@ Suggests:
     dbscan
 LinkingTo: Rcpp(>= 0.12), BH(>= 1.62)
 VignetteBuilder: knitr, rmarkdown
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 SystemRequirements: C++11
 Encoding: UTF-8

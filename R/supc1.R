@@ -223,6 +223,12 @@ supc1 <- function(
     function(.i) {
       .raw <- cl.raw[[.i]]
       cl <- .clusterize(.raw, cluster.tolerance)
+      cl.size <- table(cl)
+      if (sort) {
+        .rank <- rank(-cl.size, ties.method = "first")
+        cl <- .rank[cl]
+        cl.size <- table(cl) 
+      }
       cl.group <- split(seq_len(nrow(.raw)), cl)
       cl.center0 <- lapply(cl.group, function(i) {
         apply(.raw[i,,drop = FALSE], 2, mean)
@@ -235,7 +241,7 @@ supc1 <- function(
         t = parameters$t[[.i]], 
         cluster = cl, 
         centers = cl.center, 
-        size = table(cl),
+        size = cl.size,
         result = structure(as.vector(.raw), .Dim = dim(.raw)),
         iteration = attr(.raw, "iteration")
       )
@@ -373,6 +379,12 @@ supc.random <- function(
     function(.i) {
       .raw <- cl.raw[[.i]]
       cl <- .clusterize(.raw, cluster.tolerance)
+      cl.size <- table(cl)
+      if (sort) {
+        .rank <- rank(-cl.size, ties.method = "first")
+        cl <- .rank[cl]
+        cl.size <- table(cl) 
+      }
       cl.group <- split(seq_len(nrow(.raw)), cl)
       cl.center0 <- lapply(cl.group, function(i) {
         apply(.raw[i,,drop = FALSE], 2, mean)
@@ -385,7 +397,7 @@ supc.random <- function(
         t = parameters$t[[.i]], 
         cluster = cl, 
         centers = cl.center, 
-        size = table(cl),
+        size = cl.size,
         result = structure(as.vector(.raw), .Dim = dim(.raw)),
         iteration = attr(.raw, "iteration"),
         groups = attr(.raw, "groups")

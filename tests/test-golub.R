@@ -29,7 +29,7 @@ if (Sys.getenv("TEST_GOLUB") == "TRUE") {
   check.cl(golub.r)
   stopifnot(isTRUE(all.equal(golub.cpp, golub.cpp2)))
   stopifnot(isTRUE(all.equal(golub.cpp, golub.r)))
-  
+  stopifnot(!is.unsorted(golub.cpp$size))
   cat("===\n")
   print(system.time(
     golub.random.r <- supc.random(golub, r = 4, t = "dynamic", k = 10, implementation = "R", verbose = TRUE)

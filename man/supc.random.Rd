@@ -5,9 +5,10 @@
 \title{Randomized Self-Updating Process Clustering}
 \usage{
 supc.random(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
-  k = NULL, groups = NULL, tolerance = 1e-04, cluster.tolerance = 10 *
-  tolerance, drop = TRUE, implementation = c("cpp", "R"),
-  verbose = (nrow(x) > 10000))
+  k = NULL, groups = NULL, tolerance = 1e-04,
+  cluster.tolerance = 10 * tolerance, drop = TRUE,
+  implementation = c("cpp", "R"), sort = TRUE, verbose = (nrow(x) >
+  10000))
 }
 \arguments{
 \item{x}{data matrix. Each row is an instance of the data.}
@@ -34,6 +35,8 @@ then they are identified as in the same cluster.}
 \item{drop}{logical value. Whether to delete the list structure if its length is 1.}
 
 \item{implementation}{eithor \code{"R"} or \code{"cpp"}. Choose the engine to calculate result.}
+
+\item{sort}{logical value. Whether to sort the cluster id by size.}
 
 \item{verbose}{logical value. Whether to show the iteration history.}
 }

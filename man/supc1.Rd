@@ -6,7 +6,8 @@
 \usage{
 supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
   tolerance = 1e-04, cluster.tolerance = 10 * tolerance, drop = TRUE,
-  implementation = c("cpp", "R", "cpp2"), verbose = (nrow(x) > 10000))
+  implementation = c("cpp", "R", "cpp2"), sort = TRUE,
+  verbose = (nrow(x) > 10000))
 }
 \arguments{
 \item{x}{data matrix. Each row is an instance of the data.}
@@ -28,6 +29,8 @@ then they are identified as in the same cluster.}
 
 \item{implementation}{eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the engine to calculate result.
 The \code{"cpp2"} parallelly computes the distance in C++ with OpenMP, which is not supported under OS X, and uses the early-stop to speed up calculation.}
+
+\item{sort}{logical value. Whether to sort the cluster id by size.}
 
 \item{verbose}{logical value. Whether to show the iteration history.}
 }
