@@ -116,9 +116,11 @@ checkers <- function(supc.objs) {
       . <- isTRUE(.)
       if (interactive()) if (!.) browser() else stopifnot(.)
     }
-    freq.poly(supc.obj)
-    for(obj in supc.obj) {
-      plot(obj)
+    if (interactive()) {
+      freq.poly(supc.obj)
+      for(obj in supc.obj) {
+        plot(obj)
+      }
     }
   }
   NULL

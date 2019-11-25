@@ -134,7 +134,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   // acc_shift is the accumulated shift
   int d_size = m * (m - 1) / 2;
   std::vector<double> d(d_size, -1.0), d2(d_size);
-  const double tau_squared = tau * tau + DBL_EPSILON;
+  const double tau_squared = tau * tau + 100 * DBL_EPSILON;
   static std::vector<int> di, dj;
   { // construct mapping index
     di.resize(d_size);
@@ -368,7 +368,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
   SEXP pidx;
   int* idx;
   int groups_counter = 0, group_size;
-  double tau_squared = tau * tau + DBL_EPSILON;
+  double tau_squared = tau * tau + 100 * DBL_EPSILON;
 #pragma omp parallel
   {
     std::vector<double> buffer(n);

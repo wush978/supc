@@ -227,6 +227,7 @@ supc1 <- function(
       if (sort) {
         .rank <- rank(-cl.size, ties.method = "first")
         cl <- .rank[cl]
+        names(cl) <- NULL
         cl.size <- table(cl) 
       }
       cl.group <- split(seq_len(nrow(.raw)), cl)
