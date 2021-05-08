@@ -3,6 +3,7 @@
 #include <omp.h>
 #endif
 #include "cblas_R.h"
+#include <cfloat>
 #include <Rcpp.h>
 
 using namespace Rcpp;
