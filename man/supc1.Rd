@@ -4,10 +4,18 @@
 \alias{supc1}
 \title{Self-Updating Process Clustering}
 \usage{
-supc1(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
-  tolerance = 1e-04, cluster.tolerance = 10 * tolerance, drop = TRUE,
-  implementation = c("cpp", "R", "cpp2"), sort = TRUE,
-  verbose = (nrow(x) > 10000))
+supc1(
+  x,
+  r = NULL,
+  rp = NULL,
+  t = c("static", "dynamic"),
+  tolerance = 1e-04,
+  cluster.tolerance = 10 * tolerance,
+  drop = TRUE,
+  implementation = c("cpp", "R", "cpp2"),
+  sort = TRUE,
+  verbose = (nrow(x) > 10000)
+)
 }
 \arguments{
 \item{x}{data matrix. Each row is an instance of the data.}
@@ -99,5 +107,5 @@ plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
 
 }
 \references{
-Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
+Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. \doi{10.1080/00949655.2015.1049605}.
 }
