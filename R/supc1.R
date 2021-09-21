@@ -136,6 +136,7 @@
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
 #'@param implementation eithor \code{"R"}, \code{"cpp"} or \code{"cpp2"}. Choose the engine to calculate result.
 #'The \code{"cpp2"} parallelly computes the distance in C++ with OpenMP, which is not supported under OS X, and uses the early-stop to speed up calculation.
+#'@param sort logical value. Whether to sort the cluster id by size.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details
@@ -207,6 +208,7 @@ supc1 <- function(
   cluster.tolerance = 10 * tolerance, 
   drop = TRUE, 
   implementation = c("cpp", "R", "cpp2"), 
+  sort = TRUE,
   verbose = (nrow(x) > 10000)
   ) {
   parameters <- .get.parameters(x, r, rp, t)
@@ -221,6 +223,13 @@ supc1 <- function(
     function(.i) {
       .raw <- cl.raw[[.i]]
       cl <- .clusterize(.raw, cluster.tolerance)
+      cl.size <- table(cl)
+      if (sort) {
+        .rank <- rank(-cl.size, ties.method = "first")
+        cl <- .rank[cl]
+        names(cl) <- NULL
+        cl.size <- table(cl) 
+      }
       cl.group <- split(seq_len(nrow(.raw)), cl)
       cl.center0 <- lapply(cl.group, function(i) {
         apply(.raw[i,,drop = FALSE], 2, mean)
@@ -233,7 +242,7 @@ supc1 <- function(
         t = parameters$t[[.i]], 
         cluster = cl, 
         centers = cl.center, 
-        size = table(cl),
+        size = cl.size,
         result = structure(as.vector(.raw), .Dim = dim(.raw)),
         iteration = attr(.raw, "iteration")
       )
@@ -268,6 +277,7 @@ supc1 <- function(
 #'then they are identified as in the same cluster.
 #'@param drop logical value. Whether to delete the list structure if its length is 1.
 #'@param implementation eithor \code{"R"} or \code{"cpp"}. Choose the engine to calculate result.
+#'@param sort logical value. Whether to sort the cluster id by size.
 #'@param verbose logical value. Whether to show the iteration history.
 #'
 #'@details
@@ -346,6 +356,7 @@ supc.random <- function(
   cluster.tolerance = 10 * tolerance, 
   drop = TRUE, 
   implementation = c("cpp", "R"), 
+  sort = TRUE,
   verbose = (nrow(x) > 10000)
   ) {
   parameters <- .get.parameters(x, r, rp, t)
@@ -369,6 +380,13 @@ supc.random <- function(
     function(.i) {
       .raw <- cl.raw[[.i]]
       cl <- .clusterize(.raw, cluster.tolerance)
+      cl.size <- table(cl)
+      if (sort) {
+        .rank <- rank(-cl.size, ties.method = "first")
+        cl <- .rank[cl]
+        names(cl) <- NULL
+        cl.size <- table(cl) 
+      }
       cl.group <- split(seq_len(nrow(.raw)), cl)
       cl.center0 <- lapply(cl.group, function(i) {
         apply(.raw[i,,drop = FALSE], 2, mean)
@@ -381,7 +399,7 @@ supc.random <- function(
         t = parameters$t[[.i]], 
         cluster = cl, 
         centers = cl.center, 
-        size = table(cl),
+        size = cl.size,
         result = structure(as.vector(.raw), .Dim = dim(.raw)),
         iteration = attr(.raw, "iteration"),
         groups = attr(.raw, "groups")
@@ -555,8 +573,8 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
   on.exit(grDevices::dev.flush())
 
   argv <- list(..., x = seq_len(nrow(x$x)), y = seq_len(ncol(x$x)), z = x$x[order(x$cluster),], yaxt = yaxt, xlab = xlab, ylab = ylab, mgp = mgp)
+  if (is.null(argv$main)) argv$main <- sprintf("r=%s", format(x$r, digits = title.digits))
   do.call(graphics::image, argv)
-  title(sprintf("r=%s", format(x$r, digits = title.digits)), line = 2.5)
   x.at.tail <- cumsum(x$size)
   x.at.head <- c(0, utils::head(x.at.tail, -1))
   graphics::abline(v = x.at.tail[x$size > major.size] + 0.5, lty = 2)
