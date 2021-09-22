@@ -4,11 +4,20 @@
 \alias{supc.random}
 \title{Randomized Self-Updating Process Clustering}
 \usage{
-supc.random(x, r = NULL, rp = NULL, t = c("static", "dynamic"),
-  k = NULL, groups = NULL, tolerance = 1e-04,
-  cluster.tolerance = 10 * tolerance, drop = TRUE,
-  implementation = c("cpp", "R"), sort = TRUE, verbose = (nrow(x) >
-  10000))
+supc.random(
+  x,
+  r = NULL,
+  rp = NULL,
+  t = c("static", "dynamic"),
+  k = NULL,
+  groups = NULL,
+  tolerance = 1e-04,
+  cluster.tolerance = 10 * tolerance,
+  drop = TRUE,
+  implementation = c("cpp", "R"),
+  sort = TRUE,
+  verbose = (nrow(x) > 10000)
+)
 }
 \arguments{
 \item{x}{data matrix. Each row is an instance of the data.}
@@ -109,5 +118,5 @@ plot(shape1, col=X.supc$cluster)
 
 }
 \references{
-Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. doi:10.1080/00949655.2015.1049605. \url{http://dx.doi.org/10.1080/00949655.2015.1049605}.
+Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. \doi{10.1080/00949655.2015.1049605}.
 }

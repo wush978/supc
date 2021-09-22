@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <cfloat>
 using namespace Rcpp;
 
 /**
@@ -32,7 +33,7 @@ SEXP clusterize(const NumericMatrix& X, double threshold) {
   
   const double *p = &X[0];
   int nrow = X.nrow(), ncol = X.ncol();
-  double threshold_squared = threshold * threshold + DOUBLE_EPS;
+  double threshold_squared = threshold * threshold + DBL_EPSILON;
   auto is_neighbor = [&](int i, int j) {
     const double *pi = p + i;
     const double *pj = p + j;
