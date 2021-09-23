@@ -1,96 +1,102 @@
 library(supc)
-X <- local({
-  set.seed(1)
-  mu <- list(
-    x = c(0, 2, 1, 6, 8, 7, 3, 5, 4),
-    y = c(0, 0, 1, 0, 0, 1, 3, 3, 4)
-  )
-  X <- lapply(1:3, function(i) {
-    cbind(rnorm(9, mu$x, 1/5), rnorm(9, mu$y, 1/5))
-  })
-  X <- do.call(rbind, X)
-})
-
+X <- structure(
+  c(-0.125290762148466, 2.03672866484442, 0.832874277517991,
+    6.31905616042756, 8.06590155436307, 6.8359063231764,
+    3.0974858104857,  5.14766494102584, 4.1151562703307,
+    0.164244239019618, 2.1187802642435,  1.18379547432164,
+    6.15642726014621, 8.01491299667304, 6.60212966082732, 
+    3.12396514957894, 4.9887742520942, 3.96884089865893, 
+    -0.0788579907420699,  1.98813732065776, 1.22000507439678,
+    6.15263514969151, 7.96709528074928,  6.9493276639727,
+    3.13939267508095, 5.11133263973473, 3.8622488610901,
+    -0.0610776774312712, 0.30235623369017, 1.07796864728229,
+    -0.124248116108361,  -0.4429399774355, 1.22498618362862,
+    2.99101327819695, 2.99676194738021,  4.18876724213706,
+    -0.294150476779855, -0.0956300110217241, 1.08358831203994,
+    0.271735910305809, -0.0205575454685991, 1.07753432231187,
+    2.98923899188342,  2.72458808863428, 3.91700108734006,
+    -0.141499031392424, 0.0729163924273661,  1.15370658490308,
+    -0.0224692424300456, 0.176221545290843, 1.07962117607341,
+    2.87759472134985, 3.06822393828489, 3.77412738078384
+  ),
+  .Dim = c(27L,  2L)
+)
+.group <- list(
+  c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 
+    1L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 1L, 2L), 
+  c(1L, 1L, 2L, 2L, 2L, 2L, 1L, 1L, 2L, 1L, 2L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 
+    1L, 1L, 2L, 2L, 1L, 1L, 1L, 2L, 2L),
+  c(1L, 1L, 1L, 2L, 2L, 2L, 
+    2L, 1L, 2L, 2L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 2L, 
+    1L, 1L, 1L, 2L, 1L),
+  c(1L, 1L, 2L, 1L, 2L, 1L, 1L, 2L, 2L, 2L, 
+    2L, 1L, 2L, 2L, 1L, 2L, 2L, 1L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 
+    2L),
+  c(2L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 
+    1L, 2L, 1L, 1L, 2L, 2L, 2L, 2L, 1L, 2L, 2L, 2L, 1L),
+  c(2L, 1L, 
+    2L, 2L, 1L, 2L, 2L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 
+    1L, 1L, 2L, 2L, 1L, 1L, 1L, 1L, 2L),
+  c(2L, 1L, 2L, 1L, 1L, 2L, 
+    2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 2L, 1L, 
+    2L, 1L, 1L, 2L, 1L),
+  c(2L, 2L, 2L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 
+    2L, 2L, 1L, 2L, 1L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 1L, 
+    1L),
+  c(2L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 1L, 2L, 2L, 1L, 1L, 
+    1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 2L, 1L),
+  c(2L, 1L, 
+    1L, 2L, 1L, 1L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L, 
+    1L, 2L, 1L, 1L, 2L, 2L, 2L, 2L, 1L), 
+  c(1L, 1L, 1L, 2L, 2L, 2L, 
+    1L, 1L, 1L, 1L, 2L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 2L, 1L, 
+    2L, 1L, 2L, 1L, 2L), 
+  c(2L, 2L, 1L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 
+    1L, 1L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L, 2L, 2L, 1L, 
+    2L)
+)
+check.names.ref <- c("x", "r", "cluster", "centers", "size", "result", "iteration")
 # Checking with reference object
 
-
-# parameters <- list(tau = 0.9, t = function() {0.75})
 dist.mode("stats")
-implementations <- local({
-  .group <- list(c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 
-    1L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 1L, 2L), c(1L, 1L, 
-    2L, 2L, 2L, 2L, 1L, 1L, 2L, 1L, 2L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 
-    1L, 1L, 2L, 2L, 1L, 1L, 1L, 2L, 2L), c(1L, 1L, 1L, 2L, 2L, 2L, 
-    2L, 1L, 2L, 2L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 2L, 
-    1L, 1L, 1L, 2L, 1L), c(1L, 1L, 2L, 1L, 2L, 1L, 1L, 2L, 2L, 2L, 
-    2L, 1L, 2L, 2L, 1L, 2L, 2L, 1L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 
-    2L), c(2L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 
-    1L, 2L, 1L, 1L, 2L, 2L, 2L, 2L, 1L, 2L, 2L, 2L, 1L), c(2L, 1L, 
-    2L, 2L, 1L, 2L, 2L, 2L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 
-    1L, 1L, 2L, 2L, 1L, 1L, 1L, 1L, 2L), c(2L, 1L, 2L, 1L, 1L, 2L, 
-    2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 2L, 1L, 
-    2L, 1L, 1L, 2L, 1L), c(2L, 2L, 2L, 1L, 1L, 1L, 2L, 2L, 1L, 1L, 
-    2L, 2L, 1L, 2L, 1L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 1L, 
-    1L), c(2L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 1L, 2L, 2L, 1L, 1L, 
-    1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 2L, 1L), c(2L, 1L, 
-    1L, 2L, 1L, 1L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L, 
-    1L, 2L, 1L, 1L, 2L, 2L, 2L, 2L, 1L), c(1L, 1L, 1L, 2L, 2L, 2L, 
-    1L, 1L, 1L, 1L, 2L, 1L, 1L, 2L, 2L, 1L, 1L, 2L, 2L, 2L, 2L, 1L, 
-    2L, 1L, 2L, 1L, 2L), c(2L, 2L, 1L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 
-    1L, 1L, 1L, 2L, 1L, 2L, 2L, 1L, 2L, 1L, 1L, 2L, 1L, 2L, 2L, 1L, 
-    2L))
-  list(
-    function(X) supc1(X, r = 0.9, t = 0.75),
-    function(X) supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "R", groups = .group),
-    function(X) supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "cpp", groups = .group)
-  )
-})
+obj.supc1 <- supc1(X, r = 0.9, t = 0.75)
+obj.random.R <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "R", groups = .group)
+obj.random.cpp <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "cpp", groups = .group)
 
-## Checking
-local({
-  check.names.ref <- c("x", "r", "cluster", "centers", "size", "result", "iteration")
-  objs <- list()
-  for(f in implementations) {
-    objs[[length(objs) + 1]] <- f(X)
-  }
-  stopifnot(isTRUE(all.equal(
-    objs[[1]]$cluster,
-    objs[[2]]$cluster
-  )))
-  stopifnot(isTRUE(all.equal(
-    objs[[2]][check.names.ref],
-    objs[[3]][check.names.ref]
-  )))
-  for(obj in objs) {
-    stopifnot(is.null(obj$d0))
-  }
-  invisible(NULL)
-})
+stopifnot(isTRUE(all.equal(obj.supc1$cluster, obj.random.R$cluster)))
+stopifnot(isTRUE(all.equal(obj.supc1$cluster, obj.random.cpp$cluster)))
+
+stopifnot(isTRUE(all.equal(obj.random.R[check.names.ref], obj.random.cpp[check.names.ref])))
+
+stopifnot(is.null(obj.supc1$d0))
+stopifnot(is.null(obj.random.R$d0))
+stopifnot(is.null(obj.random.cpp$d0))
 
 ## check supclist
-local({
-  objs <- {
-    .k <- rpois(1, 4) + 2
-    .idx <- rep(seq_len(.k), 1 + nrow(X) / .k)
-    length(.idx) <- nrow(X)
-    .group <- lapply(1:100, function(.) {
-      sample(.idx)
-    })
-    list(
-      supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "R", groups = .group),
-      supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "cpp", groups = .group)
-    )
-  }
-  stopifnot(sapply(objs, class) == "supclist")
-  stopifnot(sapply(objs, length) == 3)
-  check.names.ref <- c("x", "r", "cluster", "centers", "size", "iteration", "result")
-  for(i in 1:3) {
-    . <- all.equal(
-      objs[[1]][[i]][check.names.ref],
-      objs[[2]][[i]][check.names.ref]
-    )
-    stopifnot(isTRUE(.))
-    
-  }  
-})
-
+objs <- {
+  .k <- rpois(1, 4) + 2
+  .idx <- rep(seq_len(.k), 1 + nrow(X) / .k)
+  length(.idx) <- nrow(X)
+  .group <- lapply(1:100, function(.) {
+    sample(.idx)
+  })
+  list(
+    supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "R", groups = .group),
+    supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "cpp", groups = .group)
+  )
+}
+stopifnot(sapply(objs, class) == "supclist")
+stopifnot(sapply(objs, length) == 3)
+check.names.ref <- c("x", "r", "cluster", "centers", "size", "iteration", "result")
+stopifnot(isTRUE(all.equal(
+  objs[[1]][[1]][check.names.ref],
+  objs[[2]][[1]][check.names.ref]
+)))
+stopifnot(isTRUE(all.equal(
+  objs[[1]][[2]][check.names.ref],
+  objs[[2]][[2]][check.names.ref]
+)))
+stopifnot(isTRUE(all.equal(
+  objs[[1]][[3]][check.names.ref],
+  objs[[2]][[3]][check.names.ref]
+)))
