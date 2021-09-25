@@ -5,15 +5,38 @@
 
 using namespace Rcpp;
 
+// get_sorted_index
+SEXP get_sorted_index(NumericVector input);
+RcppExport SEXP _supc_get_sorted_index(SEXP inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type input(inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_sorted_index(input));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_inverted_index_for_sorted_index
+SEXP get_inverted_index_for_sorted_index(IntegerVector input);
+RcppExport SEXP _supc_get_inverted_index_for_sorted_index(SEXP inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type input(inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_inverted_index_for_sorted_index(input));
+    return rcpp_result_gen;
+END_RCPP
+}
 // clusterize
-SEXP clusterize(const NumericMatrix& X, double threshold);
-RcppExport SEXP _supc_clusterize(SEXP XSEXP, SEXP thresholdSEXP) {
+SEXP clusterize(const NumericMatrix& X, double threshold, int reference_j);
+RcppExport SEXP _supc_clusterize(SEXP XSEXP, SEXP thresholdSEXP, SEXP reference_jSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type X(XSEXP);
     Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(clusterize(X, threshold));
+    Rcpp::traits::input_parameter< int >::type reference_j(reference_jSEXP);
+    rcpp_result_gen = Rcpp::wrap(clusterize(X, threshold, reference_j));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -90,7 +113,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_supc_clusterize", (DL_FUNC) &_supc_clusterize, 2},
+    {"_supc_get_sorted_index", (DL_FUNC) &_supc_get_sorted_index, 1},
+    {"_supc_get_inverted_index_for_sorted_index", (DL_FUNC) &_supc_get_inverted_index_for_sorted_index, 1},
+    {"_supc_clusterize", (DL_FUNC) &_supc_clusterize, 3},
     {"_supc_test_dgemm", (DL_FUNC) &_supc_test_dgemm, 3},
     {"_supc_supc1_cpp", (DL_FUNC) &_supc_supc1_cpp, 6},
     {"_supc_supc1_cpp2", (DL_FUNC) &_supc_supc1_cpp2, 5},

@@ -2,29 +2,64 @@
 #include <cfloat>
 using namespace Rcpp;
 
+void get_sorted_index(const double* pr, const std::size_t nrow, std::vector<int>& result) {
+  result.clear();
+  result.resize(nrow, 0);
+  for(int i = 0;i < nrow;i++) result[i] = i;
+  std::sort(result.begin(), result.end(), [&pr](int i, int j) {
+    return pr[i] < pr[j];
+  });
+}
+
+//[[Rcpp::export(".get_sorted_index")]]
+SEXP get_sorted_index(NumericVector input) {
+  const double* pr = &input[0];
+  const std::size_t nrow = input.size();
+  std::vector<int> result;
+  get_sorted_index(pr, nrow, result);
+  return wrap(result);
+}
+
+void get_inverted_index_for_sorted_index(const int* sorted_index, const std::size_t nrow, std::vector<int>& result) {
+  result.clear();
+  result.resize(nrow);
+  for(int i = 0;i < nrow;i++) result[sorted_index[i]] = i;
+}
+
+//[[Rcpp::export(".get_inverted_index_for_sorted_index")]]
+SEXP get_inverted_index_for_sorted_index(IntegerVector input) {
+  const int* pr = &input[0];
+  const std::size_t nrow = input.size();
+  std::vector<int> result;
+  get_inverted_index_for_sorted_index(pr, nrow, result);
+  return wrap(result);
+}
+
+
 /**
- * Randomly select a dimension, sort the index according to the dimension, 
+ * Select a dimension, sort the index according to the dimension, 
  * and use this to filter out the points whose distance is larger than threshold.
  */
 //[[Rcpp::export(".clusterize")]]
-SEXP clusterize(const NumericMatrix& X, double threshold) {
+SEXP clusterize(const NumericMatrix& X, double threshold, int reference_j = -1) {
   IntegerVector cluster(X.nrow());
   int last_cluster_id = 0;
   
-  // The randomly selected dimension
-  int reference_j = Rf_runif(0.0, X.ncol());
-  // The start of the reference column
+  // The randomly selected dimension `reference_j`
+  if (reference_j == -1) {
+    reference_j = Rf_runif(0.0, X.ncol());
+  }
+
+  
   const double* pr = &X[0] + X.nrow() * reference_j;
-  
-  // This vector will be sorted according to the value of the `reference_j`-th dimension
-  std::vector<int> sorted_index(X.nrow(), 0);
-  for(int i = 0;i < X.nrow();i++) sorted_index[i] = i;
-  std::sort(sorted_index.begin(), sorted_index.end(), [&pr](int i, int j) {
-    return pr[i] < pr[j];
-  });
-  std::vector<int> inverted_index_for_sorted_index(X.nrow(), 0);
-  for(int i = 0;i < X.nrow();i++) inverted_index_for_sorted_index[sorted_index[i]] = i;
-  
+  std::vector<int> sorted_index, inverted_index_for_sorted_index;
+  {
+    // The start of the reference column
+    const std::size_t nrow = X.nrow();
+    get_sorted_index(pr, nrow, sorted_index);
+    get_inverted_index_for_sorted_index(sorted_index.data(), nrow, inverted_index_for_sorted_index);
+  }
+
   // start clusterize
   std::vector<bool> visited(X.nrow(), false);
   std::vector<int> possible_candidates;
