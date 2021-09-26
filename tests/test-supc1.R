@@ -103,13 +103,12 @@ dist.mode("stats")
 obj.R <- supc1(X, r = .9, t = .75, implementation = "R")
 class.attr.checker(obj.R)
 value.checker(obj.R)
-obj.cpp <- supc1(X, r = .9, t = .75, implementation = "cpp")
+obj.cpp <- supc1(X, r = .9, t = .75, implementation = "cpp", verbose = TRUE)
 class.attr.checker(obj.cpp)
 value.checker(obj.cpp)
-obj.cpp2 <- supc1(X, r = .9, t = .75, implementation = "cpp2")
+obj.cpp2 <- supc1(X, r = .9, t = .75, implementation = "cpp2", verbose = TRUE)
 class.attr.checker(obj.cpp2)
 value.checker(obj.cpp2)
-
 # Checking with implementation of R
 
 get.implementations <- function(argv) {
