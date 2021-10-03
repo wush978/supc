@@ -59,9 +59,9 @@ check.names.ref <- c("x", "r", "cluster", "centers", "size", "result", "iteratio
 # Checking with reference object
 
 dist.mode("stats")
-obj.supc1 <- supc1(X, r = 0.9, t = 0.75)
-obj.random.R <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "R", groups = .group)
-obj.random.cpp <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "cpp", groups = .group)
+obj.supc1 <- supc1(X, r = 0.9, t = 0.75, verbose = TRUE)
+obj.random.R <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "R", groups = .group, verbose = TRUE)
+obj.random.cpp <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "cpp", groups = .group, verbose = TRUE)
 
 stopifnot(isTRUE(all.equal(obj.supc1$cluster, obj.random.R$cluster)))
 stopifnot(isTRUE(all.equal(obj.supc1$cluster, obj.random.cpp$cluster)))
@@ -81,8 +81,8 @@ objs <- {
     sample(.idx)
   })
   list(
-    supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "R", groups = .group),
-    supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "cpp", groups = .group)
+    supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "R", groups = .group, verbose = TRUE),
+    supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "cpp", groups = .group, verbose = TRUE)
   )
 }
 stopifnot(sapply(objs, class) == "supclist")
