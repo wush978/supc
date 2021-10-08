@@ -13,6 +13,10 @@
     .Call(`_supc_clusterize`, X, threshold, reference_j)
 }
 
+.set_num_threads <- function(x) {
+    invisible(.Call(`_supc_set_num_threads`, x))
+}
+
 .test.dgemm <- function(a, b, retval) {
     invisible(.Call(`_supc_test_dgemm`, a, b, retval))
 }

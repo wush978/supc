@@ -37,6 +37,13 @@ static void print_dot() {
   Rcout.flush();
 }
 
+//[[Rcpp::export(".set_num_threads")]]
+void set_num_threads(int x) {
+#if defined(_OPENMP)
+  omp_set_num_threads(x);
+#endif
+}
+
 //[[Rcpp::export(".test.dgemm")]]
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval) {
   int m = a.nrow(), n = b.ncol();

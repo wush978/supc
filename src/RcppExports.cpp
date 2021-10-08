@@ -40,6 +40,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// set_num_threads
+void set_num_threads(int x);
+RcppExport SEXP _supc_set_num_threads(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type x(xSEXP);
+    set_num_threads(x);
+    return R_NilValue;
+END_RCPP
+}
 // test_dgemm
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval);
 RcppExport SEXP _supc_test_dgemm(SEXP aSEXP, SEXP bSEXP, SEXP retvalSEXP) {
@@ -116,6 +126,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_supc_get_sorted_index", (DL_FUNC) &_supc_get_sorted_index, 1},
     {"_supc_get_inverted_index_for_sorted_index", (DL_FUNC) &_supc_get_inverted_index_for_sorted_index, 1},
     {"_supc_clusterize", (DL_FUNC) &_supc_clusterize, 3},
+    {"_supc_set_num_threads", (DL_FUNC) &_supc_set_num_threads, 1},
     {"_supc_test_dgemm", (DL_FUNC) &_supc_test_dgemm, 3},
     {"_supc_supc1_cpp", (DL_FUNC) &_supc_supc1_cpp, 6},
     {"_supc_supc1_cpp2", (DL_FUNC) &_supc_supc1_cpp2, 5},
