@@ -157,6 +157,10 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   double *ppx, *ppretval, _T, difference;
 #pragma omp parallel
   {
+#if defined(_OPENMP)
+#pragma omp master
+    if (verbose) Rcout << "The number of thread is: " << omp_get_num_threads() << std::endl;
+#endif
     std::vector<double> buffer(n);
     double *pb = &buffer[0], local_difference;
     while(true) {
@@ -377,9 +381,13 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
 #if defined(_OPENMP)
     const int tid = omp_get_thread_num();
     const int tcount = omp_get_num_threads();
+#pragma omp master
+    if (verbose) Rcout << "The number of thread is: " << tcount << std::endl;
 #else
     const int tid = 0;
     const int tcount = 1;
+#pragma omp master
+    if (verbose) Rcout << "The number of thread is: " << tcount << std::endl;
 #endif
     while(true) {
 #pragma omp master
