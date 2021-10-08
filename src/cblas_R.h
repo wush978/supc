@@ -1,6 +1,8 @@
 #ifndef __CBLAS_DGEMM_H__
 #define __CBLAS_DGEMM_H__
 
+#define USE_FC_LEN_T
+
 #include <R_ext/BLAS.h>
 
 enum CBLAS_ORDER {CblasRowMajor=101, CblasColMajor=102};
