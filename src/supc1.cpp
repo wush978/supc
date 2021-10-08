@@ -32,6 +32,11 @@ static void dgemm(const int m, const int n, const double * a, const double * b, 
   if (::cblas_Rdgemm(order, trans_a, trans_b, m, n, m, 1.0, a, m, b, m, 0.0, retval, m) != 0) throw std::runtime_error("cblas_dgemm return non-zero");
 }
 
+static void print_dot() {
+  Rcout << ".";
+  Rcout.flush();
+}
+
 //[[Rcpp::export(".test.dgemm")]]
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval) {
   int m = a.nrow(), n = b.ncol();
@@ -61,12 +66,12 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
       px = &retval2;
       pretval = &retval1;
     }
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 1
     pd.reset(new NumericVector(dist(*px)));
     if (pd->size() != d.size()) throw std::runtime_error("Inconsistent pd and d");
     double * ppd = &(pd->operator[](0)), * ppx = &(px->operator[](0)), * ppretval = &(pretval->operator[](0));
     double _T = getT(t++);
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 2
     for(int i = 0;i < d.size();i++) {
       if (ppd[i] > tau) {
         d[i] = 0.0;
@@ -75,10 +80,9 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
         d[i] = std::exp(- ppd[i] / _T);
       }
     }
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 3
     fill_sym_matrix(m, d.data(), 1.0, f1);
-    if (verbose) Rcout << ".";
-    // dsymm(m, 1, f1.data(), one_vector.data(), colsum.data());
+    if (verbose) print_dot(); // 4
     for(int j = 0;j < m;j++) {
       colsum[j] = 0;
       for(int i = 0;i < j;i++) {
@@ -88,11 +92,7 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
         colsum[j] += f1[j * m + i];
       }
     }
-    // if (verbose) Rcout << "arranging matrix ... ";
-    // for(int i = 0;i < m;i++) {
-    //   diag_matrix[i * m + i] = 1 / colsum[i];
-    // }
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 5
     // dsymm(m, m, f1.data(), diag_matrix.data(), f2.data()); //, CBLAS_SIDE::CblasRight);
     for(int j = 0;j < m;j++) {
       for(int i = 0;i < j;i++) {
@@ -102,9 +102,9 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
         f2[j * m + i] = f1[j * m + i] / colsum[i];
       }
     }
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 6
     dgemm(m, px->ncol(), f2.data(), ppx, ppretval);
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 7
     // check difference between px and pretval
     {
       double difference = 0.0;
@@ -170,7 +170,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
           pretval = &retval1;
         }
         ppx = px->begin();
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 1
       } // omp master
       { // begin computing distance
 #pragma omp barrier
@@ -211,7 +211,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
 #pragma omp master
       {
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 2
       }
       {
 #pragma omp barrier
@@ -226,7 +226,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
 #pragma omp master
       {
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 3
       }
 #pragma omp barrier
 #pragma omp for
@@ -241,7 +241,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
 #pragma omp master
       {
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 4
       }
 #pragma omp barrier
 #pragma omp for
@@ -255,9 +255,9 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
 #pragma omp master
       {
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 5
         dgemm(m, px->ncol(), f2.data(), ppx, ppretval);
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 6
       // check difference between px and pretval
         difference = 0.0;
       }
@@ -392,7 +392,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
           pretval = &retval1;
         }
         ppx = px->begin();
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 1
         skipped_distance_entry_count = 0;
         // sampling
         if (groups_counter >= groups.size()) {
@@ -462,7 +462,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
             }
           } // omp for
 #pragma omp master
-          if (verbose) Rcout << ".";
+          if (verbose) print_dot(); // 2
 #pragma omp for
           for(int col = 0;col < group_size;col++) {
             f1[col * group_size + col] = 1.0;
@@ -473,7 +473,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
             );
           }
 #pragma omp master
-          if (verbose) Rcout << ".";
+          if (verbose) print_dot(); // 3
 #pragma omp barrier
 #pragma omp for
           for(int j = 0;j < group_size;j++) {
@@ -486,7 +486,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
             }
           }
 #pragma omp master
-          if (verbose) Rcout << ".";
+          if (verbose) print_dot(); // 4
 #pragma omp barrier
 #pragma omp for
           for(int j = 0;j < group_size;j++) {
@@ -499,7 +499,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
           }
         } // end computing distance
 #pragma omp master
-          if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 5
         { // original dgemm
 #pragma omp for
           for(int q = 0;q < group_size;q++) {
@@ -509,7 +509,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
 #pragma omp master
           {
             dgemm(group_size, n, f2.data(), buf.data(), buf2.data());
-            if (verbose) Rcout << ".";
+            if (verbose) print_dot(); // 6
           }
 #pragma omp barrier
 #pragma omp for
