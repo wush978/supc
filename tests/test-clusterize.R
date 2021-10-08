@@ -1,5 +1,5 @@
 library(supc)
-
+supc:::.set_num_threads(2)
 # test get_sorted_index
 
 r <- supc:::.get_sorted_index(1:10)

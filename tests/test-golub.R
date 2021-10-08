@@ -1,4 +1,5 @@
 library(supc)
+supc:::.set_num_threads(2)
 data("golub", package = "supc")
 
 check.cl <- function(supc.obj, cluster.tolerance = 1e-3) {

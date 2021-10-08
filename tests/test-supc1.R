@@ -1,5 +1,5 @@
 library(supc)
-
+supc:::.set_num_threads(2)
 # checking with reference object
 
 ## initializing datasets
