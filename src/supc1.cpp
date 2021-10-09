@@ -11,13 +11,44 @@ using namespace Rcpp;
 struct T {
 
   Function RT;
+  
+  std::string msg;
+  
+  const char* unknown = "unknown error of T(t)";
 
-  T(Function _RT) : RT(_RT) { }
+  T(Function _RT) : msg("Unknown error"), RT(_RT) { }
 
   double operator()(int t) {
-    return as<double>(RT(wrap<int>(t)));
+    RObject r(RT(wrap<int>(t)));
+    if (is<NumericVector>(r)) return as<double>(r);
+    else if (is<CharacterVector>(r)) {
+      CharacterVector sr(r);
+      SEXP psr = wrap(sr);
+      if (sr.size() == 0) {
+        msg.assign(unknown);
+      }
+      else if (STRING_ELT(psr, 0) == NA_STRING) {
+        msg.assign(unknown);
+      } else {
+        const char* s = CHAR(STRING_ELT(psr, 0));
+        msg.assign(s);
+      }
+      return -1;
+    } else {
+      msg.assign("unknown error of T(t)");
+      return -1;
+    }
   }
 };
+
+/**
+ * Because exception handling of Rcpp will trigger the segfault on solaris,
+ * we will return a string instead and use R code to check.
+ * Ref: <https://github.com/RcppCore/Rcpp/issues/1159>
+ */
+inline SEXP return_error_message(const T& getT) {
+  return wrap(getT.msg);
+}
 
 static void fill_sym_matrix(const int m, const double * pd, const double diag, std::vector<double>& retval) {
   for(int col = 0;col < m;col++) {
@@ -55,7 +86,7 @@ void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval) {
 }
 
 //[[Rcpp::export(".supc1.cpp.internal")]]
-NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose) {
+SEXP supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose) {
   bool is_first = true;
   int t = 0;
   int m = x.nrow(), n = x.ncol();
@@ -78,6 +109,9 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
     if (pd->size() != d.size()) throw std::runtime_error("Inconsistent pd and d");
     double * ppd = &(pd->operator[](0)), * ppx = &(px->operator[](0)), * ppretval = &(pretval->operator[](0));
     double _T = getT(t++);
+    if (_T <= 0) {
+      return return_error_message(getT);
+    }
     if (verbose) print_dot(); // 2
     for(int i = 0;i < d.size();i++) {
       if (ppd[i] > tau) {
@@ -132,7 +166,7 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
 }
 
 //[[Rcpp::export(".supc1.cpp2.internal")]]
-NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose) {
+SEXP supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose) {
   bool is_first = true;
   int t = 0;
   int m = x.nrow(), n = x.ncol();
@@ -162,6 +196,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   bool retval_is_retval2 = true;
   NumericMatrix *px, *pretval;
   double *ppx, *ppretval, _T, difference;
+  bool is_getT_error = false;
 #pragma omp parallel
   {
 #if defined(_OPENMP)
@@ -209,9 +244,13 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
         ppx = px->begin();
         ppretval = pretval->begin();
         _T = getT(t++);
+        if (_T <= 0) is_getT_error = true;
       }
       // transformation
 #pragma omp barrier
+      if (is_getT_error) {
+        break;
+      }
 #pragma omp for
       for(int i = 0;i < d_size;i++) {
         if (d[i] < 0) d2[i] = 0;
@@ -318,6 +357,9 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
     } // while
   } // omp parallel
+  if (is_getT_error) {
+    return return_error_message(getT);
+  }
   return *px;
 }
 
@@ -331,7 +373,7 @@ void parallel_fill(const int tid, const int tcount, const TV x, T& v) {
 }
 
 //[[Rcpp::export(".supc.random.cpp.internal")]]
-NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose) {
+SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose) {
   bool is_first = true;
   int t = 0;
   int m = x.nrow(), n = x.ncol();
@@ -381,6 +423,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
   int* idx;
   int groups_counter = 0, group_size;
   double tau_squared = tau * tau + 100 * DBL_EPSILON;
+  bool is_getT_error = false;
 #pragma omp parallel
   {
     std::vector<double> buffer(n);
@@ -420,7 +463,12 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
         ppx = px->begin();
         ppretval = pretval->begin();
         _T = getT(t++);
+        if (_T <= 0) is_getT_error = true;
       } // omp master
+#pragma omp barrier
+      if (is_getT_error) {
+        break;
+      }
       for (int group_id = 1;group_id <= k;group_id++){
 #pragma omp master
         {
@@ -564,6 +612,9 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
       } // end check difference and tolerance
     } // while
   } // omp parallel
+  if (is_getT_error) {
+    return return_error_message(getT);
+  }
   px->attr("iteration") = wrap(++groups_counter);
   List returned_groups(groups_counter);
   for(int i = 0;i < groups_counter;i++) {

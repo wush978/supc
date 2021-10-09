@@ -1,10 +1,20 @@
 
+.check.cpp.error <- function(r) {
+  # We expect a numeric matrix is returned. If a string is returned, then it is the error message.
+  if (is.character(r)) {
+    stop(r)
+  } else if (is.numeric(r)) {
+    r
+  } else stop("Unknown top of the returned object from cpp")
+}
+
 .supc1.cpp2 <- function(x, parameters, tolerance, verbose) {
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
     .current.t <- parameters$t[[i]]
-    .supc1.cpp2.internal(x, .current.tau, .current.t, tolerance, verbose)
+    r <- .supc1.cpp2.internal(x, .current.tau, .current.t, tolerance, verbose)
+    .check.cpp.error(r)
   })
 }
 
@@ -13,7 +23,8 @@
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
     .current.t <- parameters$t[[i]]
-    .supc1.cpp.internal(x, .current.tau, .current.t, tolerance, .dist, verbose)
+    r <- .supc1.cpp.internal(x, .current.tau, .current.t, tolerance, .dist, verbose)
+    .check.cpp.error(r)
   })
 }
 
@@ -34,6 +45,8 @@
         }
       } else d <- .dist(x)
       .T <- .current.t(t)
+      if (is.character(.T)) stop(.T)
+      if (.T <= 0) stop("invalid T(t)")
       t <- t + 1
       f <- exp(-d / .T)
       f[d > .current.tau] <- 0
@@ -113,7 +126,24 @@
   } else {
     stop("Invalid parameter t")
   }
+  # add safety
+  retval$t <- lapply(retval$t, .safety_wrapper)
   retval
+}
+
+.safety_wrapper <- function(f) {
+  f <- force(f)
+  function(t) {
+    tryCatch({
+      r <- f(t[1])
+      if (!is.numeric(r)) stop(sprintf("T(%d) is not numeric", t[1]))
+      if (length(r) != 1) stop(sprintf("T(%d) is not a scalar", t[1]))
+      if (r <= 0) stop(sprintf("T(%d) is not positive", t[1]))
+      r
+    }, error = function(e) {
+      conditionMessage(e)
+    })
+  }
 }
 
 #'@title Self-Updating Process Clustering
@@ -426,7 +456,8 @@ supc.random <- function(
       stopifnot(is.list(groups))
     }
     k <- parameters$k[i]
-    .supc.random.cpp.internal(x, .current.tau, .current.t, k, groups, tolerance, verbose)
+    r <- .supc.random.cpp.internal(x, .current.tau, .current.t, k, groups, tolerance, verbose)
+    .check.cpp.error(r)
   })
 }
 
@@ -451,6 +482,8 @@ supc.random <- function(
         }
       }
       .T <- .current.t(t)
+      if (is.character(.T)) stop(.T)
+      if (.T <= 0) stop("Invalid T(t)")
       t <- t + 1
       if (t > length(groups)) {
         groups[[t]] <- .group.idx[sample(nrow(x))]

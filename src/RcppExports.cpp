@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // get_sorted_index
 SEXP get_sorted_index(NumericVector input);
 RcppExport SEXP _supc_get_sorted_index(SEXP inputSEXP) {
@@ -63,7 +68,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // supc1_cpp
-NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose);
+SEXP supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose);
 RcppExport SEXP _supc_supc1_cpp(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP toleranceSEXP, SEXP distSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -79,7 +84,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // supc1_cpp2
-NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose);
+SEXP supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose);
 RcppExport SEXP _supc_supc1_cpp2(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP toleranceSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -94,7 +99,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // supc_random_cpp
-NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose);
+SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose);
 RcppExport SEXP _supc_supc_random_cpp(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP kSEXP, SEXP groupsSEXP, SEXP toleranceSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
