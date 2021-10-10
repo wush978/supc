@@ -16,7 +16,7 @@ struct T {
   
   const char* unknown = "unknown error of T(t)";
 
-  T(Function _RT) : msg("Unknown error"), RT(_RT) { }
+  T(Function _RT) : RT(_RT), msg("Unknown error") { }
 
   double operator()(int t) {
     RObject r(RT(wrap<int>(t)));
