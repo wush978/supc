@@ -199,10 +199,16 @@ SEXP supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool
   bool is_getT_error = false;
 #pragma omp parallel
   {
-#if defined(_OPENMP)
 #pragma omp master
-    if (verbose) Rcout << "The number of thread is: " << omp_get_num_threads() << std::endl;
+    {
+      if (verbose) {
+#if defined(_OPENMP)
+        Rcout << "The number of thread is: " << omp_get_num_threads() << std::endl;
+#else
+        Rcout << "OpenMP is disabled" << std::endl;
 #endif
+      }
+    }
     std::vector<double> buffer(n);
     double *pb = &buffer[0], local_difference;
     while(true) {
@@ -431,14 +437,21 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
 #if defined(_OPENMP)
     const int tid = omp_get_thread_num();
     const int tcount = omp_get_num_threads();
-#pragma omp master
-    if (verbose) Rcout << "The number of thread is: " << tcount << std::endl;
 #else
     const int tid = 0;
     const int tcount = 1;
-#pragma omp master
-    if (verbose) Rcout << "The number of thread is: " << tcount << std::endl;
 #endif
+#pragma omp master
+    {
+      if (verbose) {
+#if defined(_OPENMP)
+        Rcout << "The number of thread is: " << tcount << std::endl;
+#else
+        Rcout << "OpenMP is disabled" << std::endl;
+#endif
+      }
+    }
+
     while(true) {
 #pragma omp master
       {
@@ -525,7 +538,9 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
             }
           } // omp for
 #pragma omp master
-          if (verbose) print_dot(); // 2
+          {
+            if (verbose) print_dot(); // 2
+          }
 #pragma omp for
           for(int col = 0;col < group_size;col++) {
             f1[col * group_size + col] = 1.0;
@@ -536,7 +551,9 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
             );
           }
 #pragma omp master
-          if (verbose) print_dot(); // 3
+          {
+            if (verbose) print_dot(); // 3
+          }
 #pragma omp barrier
 #pragma omp for
           for(int j = 0;j < group_size;j++) {
@@ -549,7 +566,9 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
             }
           }
 #pragma omp master
-          if (verbose) print_dot(); // 4
+          {
+            if (verbose) print_dot(); // 4
+          }
 #pragma omp barrier
 #pragma omp for
           for(int j = 0;j < group_size;j++) {
@@ -562,7 +581,9 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
           }
         } // end computing distance
 #pragma omp master
-        if (verbose) print_dot(); // 5
+        {
+          if (verbose) print_dot(); // 5
+        }
         { // original dgemm
 #pragma omp for
           for(int q = 0;q < group_size;q++) {
@@ -584,7 +605,9 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
       } // for loop of group_id
       { // check difference between px and pretval
 #pragma omp master
-        difference = 0.0;
+        {
+          difference = 0.0;
+        }
 #pragma omp barrier
 #pragma omp for reduction (max:difference)
         for(int i = 0;i < m;i++) {
