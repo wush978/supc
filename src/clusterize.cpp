@@ -5,7 +5,7 @@ using namespace Rcpp;
 void get_sorted_index(const double* pr, const std::size_t nrow, std::vector<int>& result) {
   result.clear();
   result.resize(nrow, 0);
-  for(int i = 0;i < nrow;i++) result[i] = i;
+  for(std::size_t i = 0;i < nrow;i++) result[i] = i;
   std::sort(result.begin(), result.end(), [&pr](int i, int j) {
     return pr[i] < pr[j];
   });
@@ -23,7 +23,7 @@ SEXP get_sorted_index(NumericVector input) {
 void get_inverted_index_for_sorted_index(const int* sorted_index, const std::size_t nrow, std::vector<int>& result) {
   result.clear();
   result.resize(nrow);
-  for(int i = 0;i < nrow;i++) result[sorted_index[i]] = i;
+  for(std::size_t i = 0;i < nrow;i++) result[sorted_index[i]] = i;
 }
 
 //[[Rcpp::export(".get_inverted_index_for_sorted_index")]]

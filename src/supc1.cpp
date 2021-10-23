@@ -50,6 +50,12 @@ inline SEXP return_error_message(const T& getT) {
   return wrap(getT.msg);
 }
 
+inline bool is_equal(const R_xlen_t a, const std::size_t b) {
+  if (a < 0) return false;
+  std::size_t aa(a);
+  return aa == b;
+}
+
 static void fill_sym_matrix(const int m, const double * pd, const double diag, std::vector<double>& retval) {
   for(int col = 0;col < m;col++) {
     retval[col * m + col] = diag;
@@ -87,7 +93,6 @@ void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval) {
 
 //[[Rcpp::export(".supc1.cpp.internal")]]
 SEXP supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose) {
-  bool is_first = true;
   int t = 0;
   int m = x.nrow(), n = x.ncol();
   std::vector<double> f1(m * m, 0.0), f2(m * m, 0.0), d(m * (m - 1) / 2, 0.0), one_vector(m, 1.0), colsum(m, 0.0);
@@ -106,14 +111,14 @@ SEXP supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Funct
     }
     if (verbose) print_dot(); // 1
     pd.reset(new NumericVector(dist(*px)));
-    if (pd->size() != d.size()) throw std::runtime_error("Inconsistent pd and d");
+    if (!is_equal(pd->size(), d.size())) throw std::runtime_error("Inconsistent pd and d");
     double * ppd = &(pd->operator[](0)), * ppx = &(px->operator[](0)), * ppretval = &(pretval->operator[](0));
     double _T = getT(t++);
     if (_T <= 0) {
       return return_error_message(getT);
     }
     if (verbose) print_dot(); // 2
-    for(int i = 0;i < d.size();i++) {
+    for(std::size_t i = 0;i < d.size();i++) {
       if (ppd[i] > tau) {
         d[i] = 0.0;
       }
@@ -161,13 +166,11 @@ SEXP supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Funct
       }
     }
     retval_is_retval2 = !retval_is_retval2;
-    is_first = false;
   }
 }
 
 //[[Rcpp::export(".supc1.cpp2.internal")]]
 SEXP supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose) {
-  bool is_first = true;
   int t = 0;
   int m = x.nrow(), n = x.ncol();
   std::vector<double> f1(m * m, 0.0), f2(m * m, 0.0), one_vector(m, 1.0), colsum(m, 0.0);
@@ -358,7 +361,6 @@ SEXP supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool
 #pragma omp master
         {
           retval_is_retval2 = !retval_is_retval2;
-          is_first = false;
         }
       }
     } // while
@@ -380,7 +382,6 @@ void parallel_fill(const int tid, const int tcount, const TV x, T& v) {
 
 //[[Rcpp::export(".supc.random.cpp.internal")]]
 SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose) {
-  bool is_first = true;
   int t = 0;
   int m = x.nrow(), n = x.ncol();
   // group_idx is the vector to resample
@@ -424,7 +425,6 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
   bool retval_is_retval2 = true;
   NumericMatrix *px, *pretval;
   double *ppx, *ppretval, _T, difference;
-  int skipped_distance_entry_count;
   SEXP pidx;
   int* idx;
   int groups_counter = 0, group_size;
@@ -464,7 +464,6 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
         }
         ppx = px->begin();
         if (verbose) print_dot(); // 1
-        skipped_distance_entry_count = 0;
         // sampling
         if (groups_counter >= groups.size()) {
           groups.push_back(Rcpp::sample(group_idx, group_idx.size()));
@@ -629,7 +628,6 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
 #pragma omp master
         {
           retval_is_retval2 = !retval_is_retval2;
-          is_first = false;
           groups_counter++;
         }
       } // end check difference and tolerance
