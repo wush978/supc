@@ -69,7 +69,7 @@ SEXP clusterize(const NumericMatrix& X, double threshold, int reference_j = -1) 
   const double *p = &X[0];
   int nrow = X.nrow(), ncol = X.ncol();
   double threshold_squared = threshold * threshold + DBL_EPSILON;
-  auto is_neighbor = [&](int i, int j) {
+  auto is_neighbor = [&](int i, int j) -> bool {
     const double *pi = p + i;
     const double *pj = p + j;
     double tmp, distance = 0;
