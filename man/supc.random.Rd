@@ -73,8 +73,8 @@ At each iteration, the self updating process is conducted independently in each 
 Please check the vignettes via \code{vignette("supc", package = "supc")} for details.
 }
 \examples{
-\dontrun{
 # The shape data has a structure of five clusters and a number of noise data points.
+\donttest{
 makecircle=function(N, seed){
  n=0
  x=matrix(NA, nrow=N, ncol=2)
@@ -108,7 +108,7 @@ makedata <- function(ns, seed) {
  return(x)
 }
 
-shape1 <- makedata(5000, 1000)
+shape1 <- makedata(250, 100)
 dim(shape1)
 plot(shape1)
 

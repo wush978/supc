@@ -9,6 +9,9 @@ dist.parallelization(i)
 \arguments{
 \item{i}{integer.}
 }
+\value{
+\code{NULL}. The function is called for side effects.
+}
 \description{
 Only affect \code{\link[amap]{Dist}}.
 }

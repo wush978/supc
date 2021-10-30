@@ -66,7 +66,6 @@ During the iterations, all samples continue moving until the system becomes stab
 Please check the vignettes via \code{vignette("supc", package = "supc")} for details.
 }
 \examples{
-\dontrun{
 set.seed(1)
 X <- local({
  mu <- list(
@@ -103,7 +102,6 @@ X.supcs <- supc1(X, r = c(1.7, 2.5), t = list(
 ))
 plot(X.supcs[[1]], type = "heatmap", major.size = 2)
 plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
-}
 
 }
 \references{

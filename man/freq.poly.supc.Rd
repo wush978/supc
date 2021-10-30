@@ -12,6 +12,9 @@
 
 \item{...}{other parameters to be passed through to \code{\link[graphics]{hist}}.}
 }
+\value{
+\code{NULL}. The function is called for side effects.
+}
 \description{
 Plot the frequency polygon of the pairwise distance. The red dashed line is the used parameter \eqn{r}.
 }

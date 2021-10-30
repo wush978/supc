@@ -187,7 +187,6 @@
 #'\item{result}{The position of data after iterations.}
 #'
 #'@examples
-#'\dontrun{
 #'set.seed(1)
 #'X <- local({
 #'  mu <- list(
@@ -224,7 +223,6 @@
 #'))
 #'plot(X.supcs[[1]], type = "heatmap", major.size = 2)
 #'plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
-#'}
 #'
 #'@references
 #'Shiu, Shang-Ying, and Ting-Li Chen. 2016. "On the Strengths of the Self-Updating Process Clustering Algorithm." Journal of Statistical Computation and Simulation 86 (5): 1010–1031. \doi{10.1080/00949655.2015.1049605}.
@@ -329,8 +327,8 @@ supc1 <- function(
 #'\item{result}{The position of data after iterations.}
 #'
 #'@examples
-#'\dontrun{
 #'# The shape data has a structure of five clusters and a number of noise data points.
+#'\donttest{
 #'makecircle=function(N, seed){
 #'  n=0
 #'  x=matrix(NA, nrow=N, ncol=2)
@@ -364,7 +362,7 @@ supc1 <- function(
 #'  return(x)
 #'}
 #'
-#'shape1 <- makedata(5000, 1000)
+#'shape1 <- makedata(250, 100)
 #'dim(shape1)
 #'plot(shape1)
 #'
@@ -522,6 +520,7 @@ supc.random <- function(
 #'@description
 #'Plot the frequency polygon of the pairwise distance.
 #'@aliases freq.poly.default freq.poly.dist
+#'@inherit graphics::hist return
 #'@export
 freq.poly <- function(x, ...) {
   UseMethod("freq.poly")
@@ -552,6 +551,7 @@ freq.poly.dist <- function(x, ...) {
 #'@description
 #'Plot the frequency polygon of the pairwise distance. The red dashed line is the used parameter \eqn{r}.
 #'@aliases freq.poly.subclist
+#'@return \code{NULL}. The function is called for side effects.
 #'@export
 freq.poly.supc <- function(x, ...) {
   if (is.null(x$d0)) x$d0 <- .dist(x$x)
@@ -587,9 +587,9 @@ freq.poly.supclist <- function(x, ...) {
 #'  \item{\code{"heatmap"}}{draw a heatmap to show the result of clustering. The clusters whose size is greater than parameter \code{major.size} are treated as major clusters.}
 #'}
 #'@param ... other parameters to be passed through.
-#'
+#'@return \code{NULL}. The function is called for side effects.
 #'@examples
-#'\dontrun{
+#'\donttest{
 #'data(golub, package = "supc")
 #'golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic")
 #'table(golub.supc$size)
@@ -633,4 +633,5 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
     }
   }
   graphics::axis(side = 3, at = c(major.at, minor.at), labels = c(major.label, minor.size), tick = FALSE, mgp = c(1.5, 0, 0), padj = -0.5)
+  invisible(NULL)
 }

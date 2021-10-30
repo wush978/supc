@@ -51,10 +51,12 @@ x.supcs <- supc1(x, r=c(0.40, 0.51, 0.73, 0.85), t = "dynamic")
 The following plots show the results of SUP clustering using each selected value of r, respectively. The plots also show that the cluster size and the number of clusters decrease with the use of a larger r value. The five-cluster-structure of this data is successfully identified when we take r to be the valley values of 0.51 and 0.73.
 
 ```{r fig.width=10, fig.height=10}
-par(mfrow=c(2,2))
-for (i in 1:4)
-plot(x, col=x.supcs$cluster[[i]], main=paste("r=", x.supcs$r[[i]], sep=""))
-
+oldpar <- par(mfrow=c(2,2))
+tryCatch({
+  for (i in 1:4) plot(x, col=x.supcs$cluster[[i]], main=paste("r=", x.supcs$r[[i]], sep=""))
+}, finally = {
+  par(oldpar)
+})
 ```
 
 
