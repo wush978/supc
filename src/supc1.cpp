@@ -652,4 +652,18 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
 }
 
 
-
+//[[Rcpp::export(".test.runtime.nthread")]]
+int test_runtime_nthread() {
+  int nthread = 1;
+#pragma omp parallel SUPC_FORCE_SINGLE_THREAD
+  {
+#pragma omp critical
+    {
+#if defined(_OPENMP)
+      int tid_plus_1 = omp_get_thread_num() + 1;
+      if (tid_plus_1 > nthread) nthread = tid_plus_1;
+#endif
+    }
+  }
+  return nthread;
+}

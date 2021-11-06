@@ -1,5 +1,6 @@
 library(supc)
 supc:::.set_num_threads(2)
+cat(sprintf("Runtime nthread: %d\n", supc:::.test.runtime.nthread()))
 # checking with reference object
 
 ## initializing datasets

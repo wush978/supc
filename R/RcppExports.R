@@ -33,6 +33,10 @@
     .Call(`_supc_supc_random_cpp`, x, tau, RT, k, groups, tolerance, verbose)
 }
 
+.test.runtime.nthread <- function() {
+    .Call(`_supc_test_runtime_nthread`)
+}
+
 .test.dist <- function(x) {
     .Call(`_supc_test_dist`, x)
 }

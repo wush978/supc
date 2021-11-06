@@ -115,6 +115,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_runtime_nthread
+int test_runtime_nthread();
+RcppExport SEXP _supc_test_runtime_nthread() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(test_runtime_nthread());
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_dist
 NumericVector test_dist(NumericMatrix x);
 RcppExport SEXP _supc_test_dist(SEXP xSEXP) {
@@ -136,6 +146,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_supc_supc1_cpp", (DL_FUNC) &_supc_supc1_cpp, 6},
     {"_supc_supc1_cpp2", (DL_FUNC) &_supc_supc1_cpp2, 5},
     {"_supc_supc_random_cpp", (DL_FUNC) &_supc_supc_random_cpp, 7},
+    {"_supc_test_runtime_nthread", (DL_FUNC) &_supc_test_runtime_nthread, 0},
     {"_supc_test_dist", (DL_FUNC) &_supc_test_dist, 1},
     {NULL, NULL, 0}
 };
