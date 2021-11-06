@@ -1,3 +1,10 @@
+// let the number of thread become 1 on solaris
+#if defined(__SUNPRO_CC)
+#define SUPC_FORCE_SINGLE_THREAD num_threads(1)
+#else
+#define SUPC_FORCE_SINGLE_THREAD
+#endif // __SUNPRO_CC
+
 #include "cblas_R.h"
 #include <Rcpp.h>
 using namespace Rcpp;
@@ -31,7 +38,7 @@ NumericVector test_dist(NumericMatrix x) {
       }
     }
   }
-#pragma omp parallel
+#pragma omp parallel SUPC_FORCE_SINGLE_THREAD
   {
     std::vector<double> buffer(n);
     double *pb = &buffer[0];

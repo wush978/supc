@@ -1,7 +1,13 @@
 #include <memory>
 #if defined(_OPENMP)
 #include <omp.h>
-#endif
+// let the number of thread become 1 on solaris
+#if defined(__SUNPRO_CC)
+#define SUPC_FORCE_SINGLE_THREAD num_threads(1)
+#else
+#define SUPC_FORCE_SINGLE_THREAD
+#endif // __SUNPRO_CC
+#endif // _OPENMP
 #include "cblas_R.h"
 #include <cfloat>
 #include <Rcpp.h>
@@ -200,7 +206,7 @@ SEXP supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool
   NumericMatrix *px, *pretval;
   double *ppx, *ppretval, _T, difference;
   bool is_getT_error = false;
-#pragma omp parallel
+#pragma omp parallel SUPC_FORCE_SINGLE_THREAD
   {
 #pragma omp master
     {
@@ -430,7 +436,7 @@ SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List group
   int groups_counter = 0, group_size;
   double tau_squared = tau * tau + 100 * DBL_EPSILON;
   bool is_getT_error = false;
-#pragma omp parallel
+#pragma omp parallel SUPC_FORCE_SINGLE_THREAD
   {
     std::vector<double> buffer(n);
     double *pb = &buffer[0];
