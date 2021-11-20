@@ -24,7 +24,7 @@ General function to draw plots for analysis
 \examples{
 \donttest{
 data(golub, package = "supc")
-golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic")
+golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic", implementation = "R")
 table(golub.supc$size)
 plot(golub.supc, type = "heatmap", major.size = 10)
 }

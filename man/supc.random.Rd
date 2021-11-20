@@ -112,7 +112,7 @@ shape1 <- makedata(250, 100)
 dim(shape1)
 plot(shape1)
 
-X.supc=supc.random(shape1, r=0.5, t="dynamic", k = 500)
+X.supc=supc.random(shape1, r=0.5, t="dynamic", k = 500, implementation = "R")
 plot(shape1, col=X.supc$cluster)
 }
 

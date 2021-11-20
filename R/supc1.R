@@ -214,7 +214,7 @@
 #'  }
 #'  X
 #'})
-#'X.supcs <- supc1(X, r = c(0.9, 1.7, 2.5), t = "dynamic")
+#'X.supcs <- supc1(X, r = c(0.9, 1.7, 2.5), t = "dynamic", implementation = "R")
 #'X.supcs$cluster
 #'plot(X.supcs[[1]], type = "heatmap", major.size = 2)
 #'plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
@@ -222,7 +222,7 @@
 #'X.supcs <- supc1(X, r = c(1.7, 2.5), t = list(
 #'  function(t) {1.7 / 20 + exp(t) * (1.7 / 50)},
 #'  function(t) {exp(t)}
-#'))
+#'), implementation = "R")
 #'plot(X.supcs[[1]], type = "heatmap", major.size = 2)
 #'plot(X.supcs[[2]], type = "heatmap", col = cm.colors(24), major.size = 5)
 #'
@@ -368,7 +368,7 @@ supc1 <- function(
 #'dim(shape1)
 #'plot(shape1)
 #'
-#'X.supc=supc.random(shape1, r=0.5, t="dynamic", k = 500)
+#'X.supc=supc.random(shape1, r=0.5, t="dynamic", k = 500, implementation = "R")
 #'plot(shape1, col=X.supc$cluster)
 #'}
 #'
@@ -594,7 +594,7 @@ freq.poly.supclist <- function(x, ...) {
 #'@examples
 #'\donttest{
 #'data(golub, package = "supc")
-#'golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic")
+#'golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic", implementation = "R)
 #'table(golub.supc$size)
 #'plot(golub.supc, type = "heatmap", major.size = 10)
 #'}
