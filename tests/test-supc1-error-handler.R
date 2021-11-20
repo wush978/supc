@@ -38,7 +38,9 @@ tryCatch({
   obj.cpp <- supc1(X, r = .9, t = list(function(t) stop("test")), implementation = "cpp", verbose = TRUE)
   stop("No error")
 }, error = function(e) {
-  stopifnot(conditionMessage(e) == "test")
+  if (conditionMessage(e) != supc:::.check.compatibility.error.msg) {
+    stopifnot(conditionMessage(e) == "test")
+  }
 })
 
 
@@ -46,7 +48,9 @@ tryCatch({
   obj.cpp2 <- supc1(X, r = .9, t = list(function(t) stop("test")), implementation = "cpp2", verbose = TRUE)
   stop("No error")
 }, error = function(e) {
-  stopifnot(conditionMessage(e) == "test")
+  if (conditionMessage(e) != supc:::.check.compatibility.error.msg) {
+    stopifnot(conditionMessage(e) == "test")
+  }
 })
 
 
@@ -61,5 +65,7 @@ tryCatch({
   obj.random.cpp <- supc.random(X, r = 0.9, t = list(function(t) stop("test")), k = 2, implementation = "cpp", verbose = TRUE)
   stop("No error")
 }, error = function(e) {
-  stopifnot(conditionMessage(e) == "test")
+  if (conditionMessage(e) != supc:::.check.compatibility.error.msg) {
+    stopifnot(conditionMessage(e) == "test")
+  }
 })

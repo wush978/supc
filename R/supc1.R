@@ -9,6 +9,7 @@
 }
 
 .supc1.cpp2 <- function(x, parameters, tolerance, verbose) {
+  .check.compatibility()
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
@@ -19,6 +20,7 @@
 }
 
 .supc1.cpp <- function(x, parameters, tolerance, verbose) {
+  .check.compatibility()
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
@@ -443,6 +445,7 @@ supc.random <- function(
 }
 
 .supc.random.cpp <- function(x, parameters, tolerance, verbose) {
+  .check.compatibility()
   stopifnot(length(parameters$tau) == length(parameters$t))
   lapply(seq_along(parameters$tau), function(i) {
     .current.tau <- parameters$tau[i]
@@ -634,4 +637,12 @@ heatmap.supc <- function(x, ..., major.size = 1, yaxt = "n", xlab = "Samples", y
   }
   graphics::axis(side = 3, at = c(major.at, minor.at), labels = c(major.label, minor.size), tick = FALSE, mgp = c(1.5, 0, 0), padj = -0.5)
   invisible(NULL)
+}
+
+.check.compatibility.error.msg <- "The implementation in cpp is not supported on Solaris"
+
+.check.compatibility <- function() {
+  if (Sys.info()[["sysname"]] == "SunOS") {
+    stop(.check.compatibility.error.msg)
+  }
 }
