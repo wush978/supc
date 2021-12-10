@@ -13,6 +13,10 @@
     .Call(`_supc_clusterize`, X, threshold, reference_j)
 }
 
+.set_num_threads <- function(x) {
+    invisible(.Call(`_supc_set_num_threads`, x))
+}
+
 .test.dgemm <- function(a, b, retval) {
     invisible(.Call(`_supc_test_dgemm`, a, b, retval))
 }
@@ -27,6 +31,10 @@
 
 .supc.random.cpp.internal <- function(x, tau, RT, k, groups, tolerance, verbose) {
     .Call(`_supc_supc_random_cpp`, x, tau, RT, k, groups, tolerance, verbose)
+}
+
+.test.runtime.nthread <- function() {
+    .Call(`_supc_test_runtime_nthread`)
 }
 
 .test.dist <- function(x) {

@@ -1,4 +1,5 @@
 library(supc)
+supc:::.set_num_threads(2)
 set.seed(1)
 x <- matrix(0, 20, 20)
 x[] <- rnorm(length(x))

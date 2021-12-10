@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // get_sorted_index
 SEXP get_sorted_index(NumericVector input);
 RcppExport SEXP _supc_get_sorted_index(SEXP inputSEXP) {
@@ -40,6 +45,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// set_num_threads
+void set_num_threads(int x);
+RcppExport SEXP _supc_set_num_threads(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type x(xSEXP);
+    set_num_threads(x);
+    return R_NilValue;
+END_RCPP
+}
 // test_dgemm
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval);
 RcppExport SEXP _supc_test_dgemm(SEXP aSEXP, SEXP bSEXP, SEXP retvalSEXP) {
@@ -53,7 +68,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // supc1_cpp
-NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose);
+SEXP supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose);
 RcppExport SEXP _supc_supc1_cpp(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP toleranceSEXP, SEXP distSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -69,7 +84,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // supc1_cpp2
-NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose);
+SEXP supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose);
 RcppExport SEXP _supc_supc1_cpp2(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP toleranceSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -84,7 +99,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // supc_random_cpp
-NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose);
+SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose);
 RcppExport SEXP _supc_supc_random_cpp(SEXP xSEXP, SEXP tauSEXP, SEXP RTSEXP, SEXP kSEXP, SEXP groupsSEXP, SEXP toleranceSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -97,6 +112,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     rcpp_result_gen = Rcpp::wrap(supc_random_cpp(x, tau, RT, k, groups, tolerance, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_runtime_nthread
+int test_runtime_nthread();
+RcppExport SEXP _supc_test_runtime_nthread() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(test_runtime_nthread());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -116,10 +141,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_supc_get_sorted_index", (DL_FUNC) &_supc_get_sorted_index, 1},
     {"_supc_get_inverted_index_for_sorted_index", (DL_FUNC) &_supc_get_inverted_index_for_sorted_index, 1},
     {"_supc_clusterize", (DL_FUNC) &_supc_clusterize, 3},
+    {"_supc_set_num_threads", (DL_FUNC) &_supc_set_num_threads, 1},
     {"_supc_test_dgemm", (DL_FUNC) &_supc_test_dgemm, 3},
     {"_supc_supc1_cpp", (DL_FUNC) &_supc_supc1_cpp, 6},
     {"_supc_supc1_cpp2", (DL_FUNC) &_supc_supc1_cpp2, 5},
     {"_supc_supc_random_cpp", (DL_FUNC) &_supc_supc_random_cpp, 7},
+    {"_supc_test_runtime_nthread", (DL_FUNC) &_supc_test_runtime_nthread, 0},
     {"_supc_test_dist", (DL_FUNC) &_supc_test_dist, 1},
     {NULL, NULL, 0}
 };

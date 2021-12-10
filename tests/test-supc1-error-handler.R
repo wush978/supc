@@ -1,0 +1,71 @@
+library(supc)
+supc:::.set_num_threads(2)
+# checking with reference object
+
+## initializing datasets
+X <- structure(
+  c(-0.125290762148466, 2.03672866484442, 0.832874277517991, 
+    6.31905616042756, 8.06590155436307, 6.8359063231764,
+    3.0974858104857,  5.14766494102584, 4.1151562703307,
+    0.164244239019618, 2.1187802642435,  1.18379547432164,
+    6.15642726014621, 8.01491299667304, 6.60212966082732, 
+    3.12396514957894, 4.9887742520942, 3.96884089865893,
+    -0.0788579907420699,  1.98813732065776, 1.22000507439678,
+    6.15263514969151, 7.96709528074928,  6.9493276639727,
+    3.13939267508095, 5.11133263973473, 3.8622488610901, 
+    -0.0610776774312712, 0.30235623369017, 1.07796864728229,
+    -0.124248116108361,  -0.4429399774355, 1.22498618362862,
+    2.99101327819695, 2.99676194738021,  4.18876724213706, 
+    -0.294150476779855, -0.0956300110217241, 1.08358831203994,
+    0.271735910305809, -0.0205575454685991, 1.07753432231187,
+    2.98923899188342,  2.72458808863428, 3.91700108734006, 
+    -0.141499031392424, 0.0729163924273661,  1.15370658490308, 
+    -0.0224692424300456, 0.176221545290843, 1.07962117607341,
+    2.87759472134985, 3.06822393828489, 3.77412738078384
+  ),
+  .Dim = c(27L,  2L)
+)
+
+dist.mode("stats")
+tryCatch({
+  obj.R <- supc1(X, r = .9, t = list(function(t) stop("test")), implementation = "R")
+  stop("No error")
+}, error = function(e) {
+  stopifnot(conditionMessage(e) == "test")
+})
+
+tryCatch({
+  obj.cpp <- supc1(X, r = .9, t = list(function(t) stop("test")), implementation = "cpp", verbose = TRUE)
+  stop("No error")
+}, error = function(e) {
+  if (conditionMessage(e) != supc:::.check.compatibility.error.msg) {
+    stopifnot(conditionMessage(e) == "test")
+  }
+})
+
+
+tryCatch({
+  obj.cpp2 <- supc1(X, r = .9, t = list(function(t) stop("test")), implementation = "cpp2", verbose = TRUE)
+  stop("No error")
+}, error = function(e) {
+  if (conditionMessage(e) != supc:::.check.compatibility.error.msg) {
+    stopifnot(conditionMessage(e) == "test")
+  }
+})
+
+
+tryCatch({
+  obj.random.R <- supc.random(X, r = 0.9, t = list(function(t) stop("test")), k = 2, implementation = "R", verbose = TRUE)
+  stop("No error")
+}, error = function(e) {
+  stopifnot(conditionMessage(e) == "test")
+})
+
+tryCatch({
+  obj.random.cpp <- supc.random(X, r = 0.9, t = list(function(t) stop("test")), k = 2, implementation = "cpp", verbose = TRUE)
+  stop("No error")
+}, error = function(e) {
+  if (conditionMessage(e) != supc:::.check.compatibility.error.msg) {
+    stopifnot(conditionMessage(e) == "test")
+  }
+})

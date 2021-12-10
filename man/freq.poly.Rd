@@ -13,6 +13,22 @@ freq.poly(x, ...)
 
 \item{...}{other parameters to be passed through to \code{\link[graphics]{hist}}.}
 }
+\value{
+an object of class \code{"histogram"} which is a list with components:
+  \item{breaks}{the \eqn{n+1} cell boundaries (= \code{breaks} if that
+    was a vector). These are the nominal breaks, not with the boundary fuzz.}
+  \item{counts}{\eqn{n} integers; for each cell, the number of
+    \code{x[]} inside.}
+  \item{density}{values \eqn{\hat f(x_i)}{f^(x[i])}, as estimated
+    density values. If \code{all(diff(breaks) == 1)}, they are the
+    relative frequencies \code{counts/n} and in general satisfy
+    \eqn{\sum_i \hat f(x_i) (b_{i+1}-b_i) = 1}{sum[i; f^(x[i])
+      (b[i+1]-b[i])] = 1}, where \eqn{b_i}{b[i]} = \code{breaks[i]}.}
+  \item{mids}{the \eqn{n} cell midpoints.}
+  \item{xname}{a character string with the actual \code{x} argument name.}
+  \item{equidist}{logical, indicating if the distances between
+    \code{breaks} are all the same.}
+}
 \description{
 Plot the frequency polygon of the pairwise distance.
 }

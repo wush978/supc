@@ -45,16 +45,18 @@ abline(v=c(0.51, 0.73, 0.85), lty=2)
 Our experience shows that the use of valley values very often produces good clustering results. For this example data, we select the influential range r to be the previously identified valley values to perform SUP clustering. 
 
 ```{r}
-x.supcs <- supc1(x, r=c(0.40, 0.51, 0.73, 0.85), t = "dynamic")
+x.supcs <- supc1(x, r=c(0.40, 0.51, 0.73, 0.85), t = "dynamic", implementation = "R")
 ```
 
 The following plots show the results of SUP clustering using each selected value of r, respectively. The plots also show that the cluster size and the number of clusters decrease with the use of a larger r value. The five-cluster-structure of this data is successfully identified when we take r to be the valley values of 0.51 and 0.73.
 
 ```{r fig.width=10, fig.height=10}
-par(mfrow=c(2,2))
-for (i in 1:4)
-plot(x, col=x.supcs$cluster[[i]], main=paste("r=", x.supcs$r[[i]], sep=""))
-
+oldpar <- par(mfrow=c(2,2))
+tryCatch({
+  for (i in 1:4) plot(x, col=x.supcs$cluster[[i]], main=paste("r=", x.supcs$r[[i]], sep=""))
+}, finally = {
+  par(oldpar)
+})
 ```
 
 
@@ -79,7 +81,7 @@ abline(v=2.25, lty=2)
 The frequency polygon shows a valley at pairwise distance=2.25. Using this value, SUP produces 34 clusters, among which are three singleton clusters, each consists of only a single data point.
 
 ```{r}
-x.supcs <- supc1(x, r =2.25, t = "dynamic")
+x.supcs <- supc1(x, r =2.25, t = "dynamic", implementation = "R")
 table(x.supcs$cluster)
 
 ```
@@ -113,7 +115,7 @@ x.freq <- freq.poly(x, breaks = 100)
 SUP using the first default `rp` value produces 1930 clusters, among which only five clusters have sizes larger than 50. There are 1866 clusters which have a single gene. 
 
 ```{r}
-x.supcs <- supc1(golub, t="dynamic")
+x.supcs <- supc1(golub, t="dynamic", implementation = "R")
 max(x.supcs[[1]]$cluster)
 table(x.supcs[[1]]$size)
 

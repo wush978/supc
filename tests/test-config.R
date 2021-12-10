@@ -1,4 +1,5 @@
 library(supc)
+supc:::.set_num_threads(2)
 wrong.dist <- function(x) {
   x[] <- 0
   stats::dist(x)
