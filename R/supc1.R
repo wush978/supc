@@ -587,14 +587,14 @@ freq.poly.supclist <- function(x, ...) {
 #'
 #'@param x \code{supc} object to plot.
 #'@param type character value. \itemize{
-#'  \item{\code{"heatmap"}}{draw a heatmap to show the result of clustering. The clusters whose size is greater than parameter \code{major.size} are treated as major clusters.}
+#'  \item{\code{"heatmap"} draw a heatmap to show the result of clustering. The clusters whose size is greater than parameter \code{major.size} are treated as major clusters.}
 #'}
 #'@param ... other parameters to be passed through.
 #'@return \code{NULL}. The function is called for side effects.
 #'@examples
 #'\donttest{
 #'data(golub, package = "supc")
-#'golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic", implementation = "R)
+#'golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic", implementation = "R")
 #'table(golub.supc$size)
 #'plot(golub.supc, type = "heatmap", major.size = 10)
 #'}

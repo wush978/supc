@@ -10,7 +10,7 @@
 \item{x}{\code{supc} object to plot.}
 
 \item{type}{character value. \itemize{
- \item{\code{"heatmap"}}{draw a heatmap to show the result of clustering. The clusters whose size is greater than parameter \code{major.size} are treated as major clusters.}
+ \item{\code{"heatmap"} draw a heatmap to show the result of clustering. The clusters whose size is greater than parameter \code{major.size} are treated as major clusters.}
 }}
 
 \item{...}{other parameters to be passed through.}
