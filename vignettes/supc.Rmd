@@ -313,7 +313,7 @@ For demonstration, the following computes clustering result by SUP using `supc::
 
 ```{r}
 library(supc)
-X.supc <- supc1(X, r = 1.7, t = "static")
+X.supc <- supc1(X, r = 1.7, t = "static", implementation = "R")
 ```
 
 The returned object has class "supc" which contains:
@@ -369,7 +369,7 @@ To compute clustering results by multiple parameters, the user can directly pass
 For demonstration, the following uses `r quoted.string("r = c(0.9, 1.7, 2.5)")` according to the approximate locations of sharp values in the frequency polygon of pairwise distances.
 
 ```{r}
-X.supcs <- supc1(X, r = c(0.9, 1.7, 2.5), t = "dynamic")
+X.supcs <- supc1(X, r = c(0.9, 1.7, 2.5), t = "dynamic", implementation = "R")
 ```
 
 The supc1 will compute the results of all given r values and t values. In this case, the X.supcs is a `supclist` object. The user can retrieve all cluster IDs via:

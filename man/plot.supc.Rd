@@ -15,13 +15,16 @@
 
 \item{...}{other parameters to be passed through.}
 }
+\value{
+\code{NULL}. The function is called for side effects.
+}
 \description{
 General function to draw plots for analysis
 }
 \examples{
-\dontrun{
+\donttest{
 data(golub, package = "supc")
-golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic")
+golub.supc <- supc1(golub, rp = 0.0005, t = "dynamic", implementation = "R")
 table(golub.supc$size)
 plot(golub.supc, type = "heatmap", major.size = 10)
 }

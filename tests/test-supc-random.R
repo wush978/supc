@@ -1,4 +1,5 @@
 library(supc)
+supc:::.set_num_threads(2)
 X <- structure(
   c(-0.125290762148466, 2.03672866484442, 0.832874277517991,
     6.31905616042756, 8.06590155436307, 6.8359063231764,
@@ -59,21 +60,32 @@ check.names.ref <- c("x", "r", "cluster", "centers", "size", "result", "iteratio
 # Checking with reference object
 
 dist.mode("stats")
-obj.supc1 <- supc1(X, r = 0.9, t = 0.75, verbose = TRUE)
+obj.supc1 <- tryCatch({
+  supc1(X, r = 0.9, t = 0.75, verbose = TRUE)
+}, error = function(e) {
+  if (conditionMessage(e) == supc:::.check.compatibility.error.msg) NULL else stop(conditionMessage(e))
+})
 obj.random.R <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "R", groups = .group, verbose = TRUE)
-obj.random.cpp <- supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "cpp", groups = .group, verbose = TRUE)
+obj.random.cpp <- tryCatch({
+  supc.random(X, r = 0.9, t = 0.75, k = 2, implementation = "cpp", groups = .group, verbose = TRUE)
+}, error = function(e) {
+  if (conditionMessage(e) == supc:::.check.compatibility.error.msg) NULL else stop(conditionMessage(e))
+})
 
-stopifnot(isTRUE(all.equal(obj.supc1$cluster, obj.random.R$cluster)))
-stopifnot(isTRUE(all.equal(obj.supc1$cluster, obj.random.cpp$cluster)))
+if (!is.null(obj.supc1) & !is.null(obj.random.cpp)) {
+  stopifnot(isTRUE(all.equal(obj.supc1$cluster, obj.random.R$cluster)))
+  stopifnot(isTRUE(all.equal(obj.supc1$cluster, obj.random.cpp$cluster)))
+  
+  stopifnot(isTRUE(all.equal(obj.random.R[check.names.ref], obj.random.cpp[check.names.ref])))
+  stopifnot(is.null(obj.supc1$d0))
+  stopifnot(is.null(obj.random.cpp$d0))
+}
 
-stopifnot(isTRUE(all.equal(obj.random.R[check.names.ref], obj.random.cpp[check.names.ref])))
 
-stopifnot(is.null(obj.supc1$d0))
 stopifnot(is.null(obj.random.R$d0))
-stopifnot(is.null(obj.random.cpp$d0))
 
 ## check supclist
-objs <- {
+objs <- tryCatch({
   .k <- 5
   .idx <- c(1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L,  1L, 2L, 3L, 4L, 5L, 1L, 2L, 3L, 4L, 5L, 1L, 2L)
   .group <- list(
@@ -182,19 +194,23 @@ objs <- {
     supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "R", groups = .group, verbose = TRUE),
     supc.random(X, r = c(.9, 1.7, 2.5), t = 0.75, k = .k, implementation = "cpp", groups = .group, verbose = TRUE)
   )
+}, error = function(e) {
+  if (conditionMessage(e) == supc:::.check.compatibility.error.msg) NULL else stop(conditionMessage(e))
+})
+if (!is.null(objs)) {
+  stopifnot(sapply(objs, class) == "supclist")
+  stopifnot(sapply(objs, length) == 3)
+  check.names.ref <- c("x", "r", "cluster", "centers", "size", "iteration", "result")
+  stopifnot(isTRUE(all.equal(
+    objs[[1]][[1]][check.names.ref],
+    objs[[2]][[1]][check.names.ref]
+  )))
+  stopifnot(isTRUE(all.equal(
+    objs[[1]][[2]][check.names.ref],
+    objs[[2]][[2]][check.names.ref]
+  )))
+  stopifnot(isTRUE(all.equal(
+    objs[[1]][[3]][check.names.ref],
+    objs[[2]][[3]][check.names.ref]
+  )))
 }
-stopifnot(sapply(objs, class) == "supclist")
-stopifnot(sapply(objs, length) == 3)
-check.names.ref <- c("x", "r", "cluster", "centers", "size", "iteration", "result")
-stopifnot(isTRUE(all.equal(
-  objs[[1]][[1]][check.names.ref],
-  objs[[2]][[1]][check.names.ref]
-)))
-stopifnot(isTRUE(all.equal(
-  objs[[1]][[2]][check.names.ref],
-  objs[[2]][[2]][check.names.ref]
-)))
-stopifnot(isTRUE(all.equal(
-  objs[[1]][[3]][check.names.ref],
-  objs[[2]][[3]][check.names.ref]
-)))

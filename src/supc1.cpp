@@ -1,7 +1,13 @@
 #include <memory>
 #if defined(_OPENMP)
 #include <omp.h>
-#endif
+// let the number of thread become 1 on solaris
+#if defined(__SUNPRO_CC)
+#define SUPC_FORCE_SINGLE_THREAD num_threads(1)
+#else
+#define SUPC_FORCE_SINGLE_THREAD
+#endif // __SUNPRO_CC
+#endif // _OPENMP
 #include "cblas_R.h"
 #include <cfloat>
 #include <Rcpp.h>
@@ -11,13 +17,50 @@ using namespace Rcpp;
 struct T {
 
   Function RT;
+  
+  std::string msg;
+  
+  const char* unknown = "unknown error of T(t)";
 
-  T(Function _RT) : RT(_RT) { }
+  T(Function _RT) : RT(_RT), msg("Unknown error") { }
 
   double operator()(int t) {
-    return as<double>(RT(wrap<int>(t)));
+    RObject r(RT(wrap<int>(t)));
+    if (is<NumericVector>(r)) return as<double>(r);
+    else if (is<CharacterVector>(r)) {
+      CharacterVector sr(r);
+      SEXP psr = wrap(sr);
+      if (sr.size() == 0) {
+        msg.assign(unknown);
+      }
+      else if (STRING_ELT(psr, 0) == NA_STRING) {
+        msg.assign(unknown);
+      } else {
+        const char* s = CHAR(STRING_ELT(psr, 0));
+        msg.assign(s);
+      }
+      return -1;
+    } else {
+      msg.assign("unknown error of T(t)");
+      return -1;
+    }
   }
 };
+
+/**
+ * Because exception handling of Rcpp will trigger the segfault on solaris,
+ * we will return a string instead and use R code to check.
+ * Ref: <https://github.com/RcppCore/Rcpp/issues/1159>
+ */
+inline SEXP return_error_message(const T& getT) {
+  return wrap(getT.msg);
+}
+
+inline bool is_equal(const R_xlen_t a, const std::size_t b) {
+  if (a < 0) return false;
+  std::size_t aa(a);
+  return aa == b;
+}
 
 static void fill_sym_matrix(const int m, const double * pd, const double diag, std::vector<double>& retval) {
   for(int col = 0;col < m;col++) {
@@ -32,6 +75,18 @@ static void dgemm(const int m, const int n, const double * a, const double * b, 
   if (::cblas_Rdgemm(order, trans_a, trans_b, m, n, m, 1.0, a, m, b, m, 0.0, retval, m) != 0) throw std::runtime_error("cblas_dgemm return non-zero");
 }
 
+static void print_dot() {
+  Rcout << ".";
+  Rcout.flush();
+}
+
+//[[Rcpp::export(".set_num_threads")]]
+void set_num_threads(int x) {
+#if defined(_OPENMP)
+  omp_set_num_threads(x);
+#endif
+}
+
 //[[Rcpp::export(".test.dgemm")]]
 void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval) {
   int m = a.nrow(), n = b.ncol();
@@ -43,8 +98,7 @@ void test_dgemm(NumericMatrix a, NumericMatrix b, NumericMatrix retval) {
 }
 
 //[[Rcpp::export(".supc1.cpp.internal")]]
-NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose) {
-  bool is_first = true;
+SEXP supc1_cpp(NumericMatrix x, double tau, Function RT, double tolerance, Function dist, bool verbose) {
   int t = 0;
   int m = x.nrow(), n = x.ncol();
   std::vector<double> f1(m * m, 0.0), f2(m * m, 0.0), d(m * (m - 1) / 2, 0.0), one_vector(m, 1.0), colsum(m, 0.0);
@@ -61,13 +115,16 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
       px = &retval2;
       pretval = &retval1;
     }
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 1
     pd.reset(new NumericVector(dist(*px)));
-    if (pd->size() != d.size()) throw std::runtime_error("Inconsistent pd and d");
+    if (!is_equal(pd->size(), d.size())) throw std::runtime_error("Inconsistent pd and d");
     double * ppd = &(pd->operator[](0)), * ppx = &(px->operator[](0)), * ppretval = &(pretval->operator[](0));
     double _T = getT(t++);
-    if (verbose) Rcout << ".";
-    for(int i = 0;i < d.size();i++) {
+    if (_T <= 0) {
+      return return_error_message(getT);
+    }
+    if (verbose) print_dot(); // 2
+    for(std::size_t i = 0;i < d.size();i++) {
       if (ppd[i] > tau) {
         d[i] = 0.0;
       }
@@ -75,10 +132,9 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
         d[i] = std::exp(- ppd[i] / _T);
       }
     }
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 3
     fill_sym_matrix(m, d.data(), 1.0, f1);
-    if (verbose) Rcout << ".";
-    // dsymm(m, 1, f1.data(), one_vector.data(), colsum.data());
+    if (verbose) print_dot(); // 4
     for(int j = 0;j < m;j++) {
       colsum[j] = 0;
       for(int i = 0;i < j;i++) {
@@ -88,11 +144,7 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
         colsum[j] += f1[j * m + i];
       }
     }
-    // if (verbose) Rcout << "arranging matrix ... ";
-    // for(int i = 0;i < m;i++) {
-    //   diag_matrix[i * m + i] = 1 / colsum[i];
-    // }
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 5
     // dsymm(m, m, f1.data(), diag_matrix.data(), f2.data()); //, CBLAS_SIDE::CblasRight);
     for(int j = 0;j < m;j++) {
       for(int i = 0;i < j;i++) {
@@ -102,9 +154,9 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
         f2[j * m + i] = f1[j * m + i] / colsum[i];
       }
     }
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 6
     dgemm(m, px->ncol(), f2.data(), ppx, ppretval);
-    if (verbose) Rcout << ".";
+    if (verbose) print_dot(); // 7
     // check difference between px and pretval
     {
       double difference = 0.0;
@@ -120,13 +172,11 @@ NumericMatrix supc1_cpp(NumericMatrix x, double tau, Function RT, double toleran
       }
     }
     retval_is_retval2 = !retval_is_retval2;
-    is_first = false;
   }
 }
 
 //[[Rcpp::export(".supc1.cpp2.internal")]]
-NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose) {
-  bool is_first = true;
+SEXP supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolerance, bool verbose) {
   int t = 0;
   int m = x.nrow(), n = x.ncol();
   std::vector<double> f1(m * m, 0.0), f2(m * m, 0.0), one_vector(m, 1.0), colsum(m, 0.0);
@@ -155,8 +205,19 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
   bool retval_is_retval2 = true;
   NumericMatrix *px, *pretval;
   double *ppx, *ppretval, _T, difference;
-#pragma omp parallel
+  bool is_getT_error = false;
+#pragma omp parallel SUPC_FORCE_SINGLE_THREAD
   {
+#pragma omp master
+    {
+      if (verbose) {
+#if defined(_OPENMP)
+        Rcout << "The number of thread is: " << omp_get_num_threads() << std::endl;
+#else
+        Rcout << "OpenMP is disabled" << std::endl;
+#endif
+      }
+    }
     std::vector<double> buffer(n);
     double *pb = &buffer[0], local_difference;
     while(true) {
@@ -170,7 +231,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
           pretval = &retval1;
         }
         ppx = px->begin();
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 1
       } // omp master
       { // begin computing distance
 #pragma omp barrier
@@ -198,9 +259,13 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
         ppx = px->begin();
         ppretval = pretval->begin();
         _T = getT(t++);
+        if (_T <= 0) is_getT_error = true;
       }
       // transformation
 #pragma omp barrier
+      if (is_getT_error) {
+        break;
+      }
 #pragma omp for
       for(int i = 0;i < d_size;i++) {
         if (d[i] < 0) d2[i] = 0;
@@ -211,7 +276,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
 #pragma omp master
       {
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 2
       }
       {
 #pragma omp barrier
@@ -226,7 +291,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
 #pragma omp master
       {
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 3
       }
 #pragma omp barrier
 #pragma omp for
@@ -241,7 +306,7 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
 #pragma omp master
       {
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 4
       }
 #pragma omp barrier
 #pragma omp for
@@ -255,9 +320,9 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
       }
 #pragma omp master
       {
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 5
         dgemm(m, px->ncol(), f2.data(), ppx, ppretval);
-        if (verbose) Rcout << ".";
+        if (verbose) print_dot(); // 6
       // check difference between px and pretval
         difference = 0.0;
       }
@@ -302,11 +367,13 @@ NumericMatrix supc1_cpp2(NumericMatrix x, double tau, Function RT, double tolera
 #pragma omp master
         {
           retval_is_retval2 = !retval_is_retval2;
-          is_first = false;
         }
       }
     } // while
   } // omp parallel
+  if (is_getT_error) {
+    return return_error_message(getT);
+  }
   return *px;
 }
 
@@ -320,8 +387,7 @@ void parallel_fill(const int tid, const int tcount, const TV x, T& v) {
 }
 
 //[[Rcpp::export(".supc.random.cpp.internal")]]
-NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose) {
-  bool is_first = true;
+SEXP supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, List groups, double tolerance, bool verbose) {
   int t = 0;
   int m = x.nrow(), n = x.ncol();
   // group_idx is the vector to resample
@@ -365,12 +431,12 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
   bool retval_is_retval2 = true;
   NumericMatrix *px, *pretval;
   double *ppx, *ppretval, _T, difference;
-  int skipped_distance_entry_count;
   SEXP pidx;
   int* idx;
   int groups_counter = 0, group_size;
   double tau_squared = tau * tau + 100 * DBL_EPSILON;
-#pragma omp parallel
+  bool is_getT_error = false;
+#pragma omp parallel SUPC_FORCE_SINGLE_THREAD
   {
     std::vector<double> buffer(n);
     double *pb = &buffer[0];
@@ -381,6 +447,17 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
     const int tid = 0;
     const int tcount = 1;
 #endif
+#pragma omp master
+    {
+      if (verbose) {
+#if defined(_OPENMP)
+        Rcout << "The number of thread is: " << tcount << std::endl;
+#else
+        Rcout << "OpenMP is disabled" << std::endl;
+#endif
+      }
+    }
+
     while(true) {
 #pragma omp master
       {
@@ -392,8 +469,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
           pretval = &retval1;
         }
         ppx = px->begin();
-        if (verbose) Rcout << ".";
-        skipped_distance_entry_count = 0;
+        if (verbose) print_dot(); // 1
         // sampling
         if (groups_counter >= groups.size()) {
           groups.push_back(Rcpp::sample(group_idx, group_idx.size()));
@@ -405,7 +481,12 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
         ppx = px->begin();
         ppretval = pretval->begin();
         _T = getT(t++);
+        if (_T <= 0) is_getT_error = true;
       } // omp master
+#pragma omp barrier
+      if (is_getT_error) {
+        break;
+      }
       for (int group_id = 1;group_id <= k;group_id++){
 #pragma omp master
         {
@@ -462,7 +543,9 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
             }
           } // omp for
 #pragma omp master
-          if (verbose) Rcout << ".";
+          {
+            if (verbose) print_dot(); // 2
+          }
 #pragma omp for
           for(int col = 0;col < group_size;col++) {
             f1[col * group_size + col] = 1.0;
@@ -473,7 +556,9 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
             );
           }
 #pragma omp master
-          if (verbose) Rcout << ".";
+          {
+            if (verbose) print_dot(); // 3
+          }
 #pragma omp barrier
 #pragma omp for
           for(int j = 0;j < group_size;j++) {
@@ -486,7 +571,9 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
             }
           }
 #pragma omp master
-          if (verbose) Rcout << ".";
+          {
+            if (verbose) print_dot(); // 4
+          }
 #pragma omp barrier
 #pragma omp for
           for(int j = 0;j < group_size;j++) {
@@ -499,7 +586,9 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
           }
         } // end computing distance
 #pragma omp master
-          if (verbose) Rcout << ".";
+        {
+          if (verbose) print_dot(); // 5
+        }
         { // original dgemm
 #pragma omp for
           for(int q = 0;q < group_size;q++) {
@@ -509,7 +598,7 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
 #pragma omp master
           {
             dgemm(group_size, n, f2.data(), buf.data(), buf2.data());
-            if (verbose) Rcout << ".";
+            if (verbose) print_dot(); // 6
           }
 #pragma omp barrier
 #pragma omp for
@@ -521,7 +610,9 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
       } // for loop of group_id
       { // check difference between px and pretval
 #pragma omp master
-        difference = 0.0;
+        {
+          difference = 0.0;
+        }
 #pragma omp barrier
 #pragma omp for reduction (max:difference)
         for(int i = 0;i < m;i++) {
@@ -543,12 +634,14 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
 #pragma omp master
         {
           retval_is_retval2 = !retval_is_retval2;
-          is_first = false;
           groups_counter++;
         }
       } // end check difference and tolerance
     } // while
   } // omp parallel
+  if (is_getT_error) {
+    return return_error_message(getT);
+  }
   px->attr("iteration") = wrap(++groups_counter);
   List returned_groups(groups_counter);
   for(int i = 0;i < groups_counter;i++) {
@@ -559,4 +652,18 @@ NumericMatrix supc_random_cpp(NumericMatrix x, double tau, Function RT, int k, L
 }
 
 
-
+//[[Rcpp::export(".test.runtime.nthread")]]
+int test_runtime_nthread() {
+  int nthread = 1;
+#pragma omp parallel SUPC_FORCE_SINGLE_THREAD
+  {
+#pragma omp critical
+    {
+#if defined(_OPENMP)
+      int tid_plus_1 = omp_get_thread_num() + 1;
+      if (tid_plus_1 > nthread) nthread = tid_plus_1;
+#endif
+    }
+  }
+  return nthread;
+}

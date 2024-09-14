@@ -1,5 +1,6 @@
 library(supc)
-
+supc:::.set_num_threads(2)
+cat(sprintf("Runtime nthread: %d\n", supc:::.test.runtime.nthread()))
 # checking with reference object
 
 ## initializing datasets
@@ -81,6 +82,7 @@ X.supc.ref <- structure(
 )
 ref.check.name <- c("cluster", "centers", "size", "result", "iteration")
 class.attr.checker <- function(supc.obj) {
+  if (is.null(supc.obj)) return()
   # check consistency
   stopifnot(class(supc.obj) == "supc")
   attr.ref <- structure(list(names = c("x", "d0", "r", "t", "cluster", "centers", 
@@ -90,6 +92,7 @@ class.attr.checker <- function(supc.obj) {
   # check with reference object
 }
 value.checker <- function(supc.obj) {
+  if (is.null(supc.obj)) return()
   . <- all.equal(supc.obj[ref.check.name], X.supc.ref)
   if (!isTRUE(.)) {
     print(.)
@@ -103,10 +106,18 @@ dist.mode("stats")
 obj.R <- supc1(X, r = .9, t = .75, implementation = "R")
 class.attr.checker(obj.R)
 value.checker(obj.R)
-obj.cpp <- supc1(X, r = .9, t = .75, implementation = "cpp", verbose = TRUE)
+obj.cpp <- tryCatch({
+  supc1(X, r = .9, t = .75, implementation = "cpp", verbose = TRUE)
+}, error = function(e) {
+  if (conditionMessage(e) == supc:::.check.compatibility.error.msg) NULL else stop(conditionMessage(e))
+})
 class.attr.checker(obj.cpp)
 value.checker(obj.cpp)
-obj.cpp2 <- supc1(X, r = .9, t = .75, implementation = "cpp2", verbose = TRUE)
+obj.cpp2 <- tryCatch({
+  supc1(X, r = .9, t = .75, implementation = "cpp2", verbose = TRUE)
+}, error = function(e) {
+  if (conditionMessage(e) == supc:::.check.compatibility.error.msg) NULL else stop(conditionMessage(e))
+})
 class.attr.checker(obj.cpp2)
 value.checker(obj.cpp2)
 # Checking with implementation of R
@@ -117,7 +128,11 @@ get.implementations <- function(argv) {
     function(x) {
       argv$x <- x
       argv$implementation <- implementation
-      do.call(supc1, argv)
+      tryCatch({
+        do.call(supc1, argv)
+      }, error = function(e) {
+        if (conditionMessage(e) == supc:::.check.compatibility.error.msg) NULL else stop(conditionMessage(e))
+      })
     }
   }
   lapply(c("R", "cpp", "cpp2"), .)
@@ -125,6 +140,7 @@ get.implementations <- function(argv) {
 
 ## construct checkers
 checkers <- function(supc.objs) {
+  if (is.null(supc.objs)) return()
   ref.obj <- supc.objs[[1]]
   list.check.names <- c("x", "d0", "r", "cluster", "centers", "size", "result", "iteration")
   for(supc.obj in supc.objs) {
