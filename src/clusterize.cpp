@@ -13,6 +13,9 @@ void get_sorted_index(const double* pr, const std::size_t nrow, std::vector<int>
 
 //[[Rcpp::export(".get_sorted_index")]]
 SEXP get_sorted_index(NumericVector input) {
+  if (input.size() == 0) {
+    return IntegerVector();
+  }
   const double* pr = &input[0];
   const std::size_t nrow = input.size();
   std::vector<int> result;
@@ -28,6 +31,9 @@ void get_inverted_index_for_sorted_index(const int* sorted_index, const std::siz
 
 //[[Rcpp::export(".get_inverted_index_for_sorted_index")]]
 SEXP get_inverted_index_for_sorted_index(IntegerVector input) {
+  if (input.size() == 0) {
+    return IntegerVector(0);
+  }
   const int* pr = &input[0];
   const std::size_t nrow = input.size();
   std::vector<int> result;
