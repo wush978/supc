@@ -11,3 +11,4 @@ README_files
 get.README.R
 vignettes/golub.Rmd
 .Rprofile
+.github/workflow/rhub.yaml
