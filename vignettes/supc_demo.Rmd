@@ -7,7 +7,7 @@ output:
     mathjax: default
 bibliography: supc_demo.bib
 vignette: >
-  %\VignetteIndexEntry{supc_demo}
+  %\VignetteIndexEntry{Demonstration of SUP Clustering}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -131,21 +131,17 @@ bluered=colorRampPalette(c("blue","white","red"))(length(qt)-1)
 
 The following three heatmaps show the patterns of the identified gene clusters obtained from SUP using the first three default `rp` values, respectively. Take the first heatmap as an example, that presents the clustering results using `rp=0.0005`, corresponding to a r value of 4.335. The resulting 1930 clusters are displayed by their sizes in the order from left to right. On the left of this heatmap shows the cluster patterns of the largest five clusters. The sizes of the clusters are denoted on top of each cluster, which are 413, 201, 143, 88 and 59, respectively. On the middle to the right of this heatmap shows the 1866 genes of singleton clusters. This heatmap demonstrates the strength of SUP that can isolate the noise data points without disturbing the clustering process and influencing the final clustering results.
 
-```{r}
-library(fields)
-
-```
-
 ```{r fig.width=8, fig.height=8}
-par(mfrow=c(3,1), oma=c(1,0,3,0))
-for (i in 1:3){
-  plot(x.supcs[[i]], type="heatmap", breaks=qt, col=bluered, major.size=50,
-       xlab="Genes", ylab="Samples")
-  image.plot(x, breaks=qt, col=bluered, 
-             legend.only=TRUE, horizontal=TRUE, legend.mar=0, smallplot=c(0.7, 0.95, 0.16, 0.20))
-
+if (require(fields)) {
+  par(mfrow=c(3,1), oma=c(1,0,3,0))
+  for (i in 1:3){
+    plot(x.supcs[[i]], type="heatmap", breaks=qt, col=bluered, major.size=50,
+         xlab="Genes", ylab="Samples")
+    fields::image.plot(x, breaks=qt, col=bluered, 
+               legend.only=TRUE, horizontal=TRUE, legend.mar=0, smallplot=c(0.7, 0.95, 0.16, 0.20))
+  
+  }
 }
-
 ```
 
 
