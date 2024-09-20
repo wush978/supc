@@ -20,7 +20,6 @@ Suggests:
     amap,
     knitr,
     rmarkdown,
-    fields,
     dbscan
 LinkingTo: Rcpp(>= 0.12), BH(>= 1.62)
 VignetteBuilder: knitr, rmarkdown
