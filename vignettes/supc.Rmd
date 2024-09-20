@@ -9,7 +9,7 @@ output:
 bibliography: supc.bib
 author: Wush Wu and Shang-Ying Shiu
 vignette: >
-  %\VignetteIndexEntry{supc}
+  %\VignetteIndexEntry{Self-Updating Process Clustering}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

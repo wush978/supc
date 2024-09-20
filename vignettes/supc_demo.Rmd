@@ -7,7 +7,7 @@ output:
     mathjax: default
 bibliography: supc_demo.bib
 vignette: >
-  %\VignetteIndexEntry{supc_demo}
+  %\VignetteIndexEntry{Demonstration of SUP Clustering}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
